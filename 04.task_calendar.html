@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>行動任務處理 - 任務行事曆</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      padding: 1rem;
+    }
+    .container {
+      max-width: 960px;
+      margin: auto;
+      padding: 20px;
+      background: #fff;
+    }
+	h2 {
+	  margin-bottom: 1em;
+	}
+    .month-nav {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+    .month-nav button {
+      padding: 6px 12px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+    .calendar {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 1px;
+      background-color: #ccc;
+    }
+    .day-name, .day {
+      background-color: #f9f9f9;
+      padding: 10px;
+      min-height: 60px;
+      text-align: center;
+    }
+    .day-name {
+      font-weight: bold;
+      background-color: #eee;
+    }
+    .weekend {
+      background-color: #ffe4e1;
+    }
+    .count-detail {
+      font-size: 0.8em;
+      color: #0077cc;
+      margin-top: 5px;
+    }
+    .footer-note {
+      margin-top: 20px;
+      font-size: 0.9em;
+      color: #666;
+    }
+
+    @media (max-width: 768px) {
+      .calendar {
+        grid-template-columns: repeat(7, 1fr);
+      }
+      .day, .day-name {
+        padding: 8px;
+        min-height: 50px;
+      }
+      .month-nav button {
+        font-size: 0.9rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h2>任務行事曆</h2>
+  <div class="container">
+    <div class="month-nav">
+      <button onclick="changeMonth(-1)">← 上月</button>
+      <div id="current-month">2025年04月</div>
+      <button onclick="changeMonth(1)">下月 →</button>
+    </div>
+
+    <div class="calendar">
+      <div class="day-name">一</div>
+      <div class="day-name">二</div>
+      <div class="day-name">三</div>
+      <div class="day-name">四</div>
+      <div class="day-name">五</div>
+      <div class="day-name weekend">六</div>
+      <div class="day-name weekend">日</div>
+
+      <!-- 空白起始日 (2025/04/01 是星期二，所以補一格) -->
+      <div></div>
+
+      <!-- 任務日曆內容（手動示意） -->
+      <div class="day">1<div class="count-detail"><a href="02.task_query.html">0/5</a></div></div>
+      <div class="day">2<div class="count-detail"><a href="02.task_query.html">0/6</a></div></div>
+      <div class="day">3<div class="count-detail"><a href="02.task_query.html">0/0</a></div></div>
+      <div class="day">4<div class="count-detail"><a href="02.task_query.html">0/0</a></div></div>
+      <div class="day">5<div class="count-detail"><a href="02.task_query.html">0/0</a></div></div>
+      <div class="day">6<div class="count-detail"><a href="02.task_query.html">0/0</a></div></div>
+      <div class="day">7<div class="count-detail"><a href="02.task_query.html">0/5</a></div></div>
+      <div class="day">8<div class="count-detail"><a href="02.task_query.html">0/2</a></div></div>
+      <div class="day">9<div class="count-detail"><a href="02.task_query.html">0/5</a></div></div>
+      <div class="day">10<div class="count-detail"><a href="02.task_query.html">0/8</a></div></div>
+      <div class="day">11<div class="count-detail"><a href="02.task_query.html">0/7</a></div></div>
+      <div class="day">12<div class="count-detail"><a href="02.task_query.html">0/0</a></div></div>
+      <div class="day">13<div class="count-detail"><a href="02.task_query.html">0/0</a></div></div>
+      <div class="day">14<div class="count-detail"><a href="02.task_query.html">1/5</a></div></div>
+      <div class="day">15<div class="count-detail"><a href="02.task_query.html">3/3</a></div></div>
+      <div class="day">16<div class="count-detail"><a href="02.task_query.html">4/4</a></div></div>
+      <div class="day">17<div class="count-detail"><a href="02.task_query.html">5/5</a></div></div>
+      <div class="day">18<div class="count-detail"><a href="02.task_query.html">7/7</a></div></div>
+      <div class="day">19<div class="count-detail"><a href="02.task_query.html">0/0</a></div></div>
+      <div class="day">20<div class="count-detail"><a href="02.task_query.html">0/0</a></div></div>
+      <div class="day">21<div class="count-detail"><a href="02.task_query.html">5/5</a></div></div>
+      <div class="day">22<div class="count-detail"><a href="02.task_query.html">3/3</a></div></div>
+      <div class="day">23<div class="count-detail"><a href="02.task_query.html">7/7</a></div></div>
+      <div class="day">24<div class="count-detail"><a href="02.task_query.html">9/9</a></div></div>
+      <div class="day">25<div class="count-detail"><a href="02.task_query.html">2/2</a></div></div>
+      <div class="day">26<div class="count-detail"><a href="02.task_query.html">0/0</a></div></div>
+      <div class="day">27<div class="count-detail"><a href="02.task_query.html">0/0</a></div></div>
+      <div class="day">28<div class="count-detail"><a href="02.task_query.html">5/5</a></div></div>
+      <div class="day">29<div class="count-detail"><a href="02.task_query.html">8/8</a></div></div>
+      <div class="day">30<div class="count-detail"><a href="02.task_query.html">6/6</a></div></div>
+      <div></div>
+    </div>
+
+    <div class="footer-note">
+      ✔ 分子代表「未完成任務數」，分母為「當日總任務數」<br>
+      ✔ 點選日期後，將導入「我的任務」查詢畫面，並自動帶入處理人員與日期條件<br>
+      ✔ 行事曆僅顯示上月、本月、次月的任務
+    </div>
+  </div>
+
+  <script>
+    function changeMonth(offset) {
+      // 你之後可以改寫為真實邏輯，目前只是佔位
+      alert("切換月份功能尚未實作，需串接後端邏輯");
+    }
+  </script>
+</body>
+</html>

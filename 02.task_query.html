@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>行動任務處理 - 任務查詢</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      padding: 1rem;
+    }
+    h2 {
+      margin-bottom: 1em;
+    }
+    .pc-wrapper {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    .query-form {
+      background: #fff;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      border-radius: 12px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    .query-form label {
+      display: block;
+      margin: 0.5rem 0 0.25rem;
+    }
+    .query-form input,
+    .query-form select {
+      width: 100%;
+      padding: 0.5rem;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+    }
+    .inline-date {
+      display: flex;
+      gap: 1rem;
+    }
+    .inline-date input {
+      flex: 1;
+    }
+    .btn-area {
+      margin-top: 1rem;
+      display: flex;
+      gap: 1rem;
+	  justify-content: center;
+    }
+    .btn {
+      padding: 0.5rem 1.2rem;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .btn-clear {
+      background: #ccc;
+      color: #000;
+    }
+    .btn-search {
+      background: #2f855a;
+      color: #fff;
+    }
+    .toggle-advanced {
+      margin-top: 0.5rem;
+      color: #007bff;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+    .advanced {
+      display: none;
+      margin-top: 0.5rem;
+    }
+    .advanced.visible {
+      display: block;
+    }
+    .card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    .card div {
+      margin-bottom: 0.3rem;
+    }
+    .card a {
+      color: #007bff;
+      text-decoration: underline;
+      font-size: 0.9rem;
+    }
+    .pc {
+      display: block;
+    }
+    .mobile {
+      display: none;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    th, td {
+      padding: 0.75rem;
+      border-bottom: 1px solid #ddd;
+      text-align: left;
+    }
+    th {
+      background-color: #f5f5f5;
+    }
+    @media screen and (max-width: 767px) {
+      .pc {
+        display: none;
+      }
+      .mobile {
+        display: block;
+      }
+	  input, select, textarea, button {
+		font-size: 16px !important;
+		height: 40px !important;
+		padding: 8px 10px !important;
+		box-sizing: border-box;
+	  }
+
+	  label {
+		font-size: 1rem;
+	  }
+
+	  .btn {
+		font-size: 1rem;
+		padding: 0.6rem 1.2rem;
+	  }
+
+	  .card div {
+		font-size: 1rem;
+	  }
+
+	  .query-form input[type="date"] {
+		font-size: 16px !important;
+	  }	  
+	  .toggle-advanced {
+		text-align: center;
+		font-size: 1.2rem;
+		display: block;
+		margin-top: 1rem;
+	  }
+    }
+  </style>
+</head>
+<body>
+  <h2>我的任務</h2>
+  <div class="pc-wrapper">
+    <div class="query-form pc">
+      <label><strong>所屬單位：</strong>北區理賠一室</label>
+      <label>排定日期</label>
+      <div class="inline-date">
+        <input type="date" value="2025-04-15">
+        <input type="date" value="2025-04-15">
+      </div>
+      <label>處理人員
+        <select>
+          <option>全部</option>
+          <option>張三</option>
+          <option>李四</option>
+          <option>王五</option>
+        </select>
+      </label>
+      <label>任務狀態
+        <select>
+          <option>全部</option>
+          <option>處理中</option>
+          <option>完成</option>
+          <option>已取消</option>
+        </select>
+      </label>
+      <div class="toggle-advanced" onclick="document.getElementById('advanced').classList.toggle('visible')">
+        展開進階條件 ▼
+      </div>
+
+      <div id="advanced" class="advanced">
+        <label>賠案號碼 <input type="text" value="10000001"></label>
+        <label>車牌號碼 <input type="text" value="AA-1234"></label>
+        <label>地點名稱 <input type="text" placeholder="可模糊查詢" value="國都"></label>
+		<label>處理事項</label>
+		<select>
+		  <option selected>全部</option>
+		  <option>勘車</option>
+		  <option>和解</option>
+		  <option>查責</option>
+		</select>
+      </div>
+
+      <div class="btn-area">
+        <button class="btn btn-clear">清除</button>
+        <button class="btn btn-search">查詢</button>
+      </div>
+    </div>
+	
+    <div class="pc">
+      <table>
+        <thead>
+          <tr>
+            <th>任務編號</th>
+            <th>排定時間</th>
+            <th>任務摘要</th>
+            <th>賠案號碼</th>
+            <th>車牌號碼</th>
+            <th>任務現況</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><a href="02.task_detail_proc.html">123456</a></td>
+            <td>2025-04-15 09:00 ~ 10:00</td>
+            <td>勘車-國都天母廠</td>
+            <td>10000001</td>
+            <td>AA-1234</td>
+            <td>張三-處理中</td>
+          </tr>
+          <tr>
+            <td><a href="#">123457</a></td>
+            <td>2025-04-15 10:30 ~ 11:30</td>
+            <td>查責-中壢交通隊</td>
+            <td>10000002</td>
+            <td>BB-5678</td>
+            <td>李四-處理中</td>
+          </tr>
+          <tr>
+            <td><a href="02.task_detail_done.html">123458</a></td>
+            <td>2025-04-15 09:00 ~ 11:00</td>
+            <td>法院出庭-內湖簡易庭民事大樓第一調解室</td>
+            <td>10000003</td>
+            <td>1234-CC</td>
+            <td>李四-完成</td>
+          </tr>
+          <tr>
+            <td><a href="02.task_detail_cancel.html">123459</a></td>
+            <td>2025-04-15 14:00 ~ 15:00</td>
+            <td>和解-土城調解委員會</td>
+            <td>10000004</td>
+            <td>1234-DD</td>
+            <td>李四-取消</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="mobile">
+    <div class="query-form">
+      <label><strong>所屬單位：</strong>北區理賠一室</label>
+      <label>排定日期起</label>
+      <div class="inline-date">
+        <input type="date" value="2025-04-15">
+      </div>
+      <label>排定日期訖</label>
+      <div class="inline-date">
+        <input type="date" value="2025-04-15">
+      </div>
+      <label>處理人員
+        <select>
+          <option>全部</option>
+          <option>張三</option>
+          <option>李四</option>
+          <option>王五</option>
+        </select>
+      </label>
+      <label>任務狀態
+        <select>
+          <option>全部</option>
+          <option>處理中</option>
+          <option>完成</option>
+          <option>已取消</option>
+        </select>
+      </label>
+
+      <div class="toggle-advanced" onclick="document.getElementById('mAdvanced').classList.toggle('visible')">
+        展開進階條件 ▼
+      </div>
+      <div id="mAdvanced" class="advanced">
+        <label>賠案號碼 <input type="text"></label>
+        <label>車牌號碼 <input type="text"></label>
+        <label>地點名稱 <input type="text" placeholder="可模糊查詢"></label>
+		<label>處理類型</label>
+		<select>
+		  <option selected>全部</option>
+		  <option>勘車</option>
+		  <option>和解</option>
+		  <option>查責</option>
+		</select>
+      </div>
+      <div class="btn-area">
+        <button class="btn btn-clear">清除</button>
+        <button class="btn btn-search">查詢</button>
+      </div>
+    </div>
+	
+    <div class="card">
+      <div><strong>任務編號：</strong>123456</div>
+      <div>排定時間：2025-04-15 09:00 ~ 10:00</div>
+      <div>任務摘要：勘車-國都天母廠</div>
+      <div>賠案號碼：10000001</div>
+      <div>車牌號碼：AA-1234</div>
+      <div>任務現況：張三-處理中</div>
+      <a href="02.task_detail_proc.html">查看明細</a>
+    </div>
+
+	<div class="card">
+		<div><strong>任務編號：</strong>123457</div>
+		<div>排定時間：2025-04-15 10:30 ~ 11:30</div>
+		<div>任務摘要：查責-中壢交通隊</div>
+		<div>賠案號碼：10000002</div>
+		<div>車牌號碼：BB-5678</div>
+		<div>任務現況：李四-處理中</div>
+		<a href="#">查看明細</a>
+	</div>
+
+	<div class="card">
+		<div><strong>任務編號：</strong>123458</div>
+		<div>排定時間：2025-04-15 09:00 ~ 11:00</div>
+		<div>任務摘要：法院出庭-內湖簡易庭民事大樓第一調解室</div>
+		<div>賠案號碼：10000003</div>
+		<div>車牌號碼：1234-CC</div>
+		<div>任務現況：李四-完成</div>
+		<a href="02.task_detail_done.html">查看明細</a>
+	</div>
+
+	<div class="card">
+		<div><strong>任務編號：</strong>123459</div>
+		<div>排定時間：2025-04-15 14:00 ~ 15:00</div>
+		<div>任務摘要：和解-土城調解委員會</div>
+		<div>賠案號碼：10000004</div>
+		<div>車牌號碼：1234-DD</div>
+		<div>任務現況：李四-取消</div>
+		<a href="02.task_detail_cancel.html">查看明細</a>
+	</div>
+  </div>
+</body>
+</html>

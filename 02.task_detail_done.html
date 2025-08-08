@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>行動任務處理 - 我的任務 - 任務明細</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                margin: 0;
+                padding: 20px;
+            }
+			h2 {
+			  margin-bottom: 1em;
+			}
+            .status {
+                font-size: 0.9em;
+                color: #fff;
+                background-color: #43a047;
+                padding: 2px 8px;
+                border-radius: 12px;
+            }
+            .text-card {
+                background: #fff;
+                padding: 10px;
+                margin-top: 20px;
+                border-radius: 4px;
+                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            }
+            .info-row {
+                display: flex;
+                justify-content: space-between;
+                margin-bottom: 6px;
+            }
+            .info-label {
+                color: #666;
+                font-weight: normal;
+                font-size: 0.9em;
+                flex: 1;
+                text-align: left;
+            }
+            .info-content {
+                font-size: 1em;
+                text-align: left;
+                flex: 2;
+            }
+            .button-wrapper {
+                display: flex;
+                justify-content: center;
+                margin-top: 20px;
+            }
+            .btn-view-log {
+                background-color: #78909c;
+                color: white;
+                padding: 10px;
+                border: none;
+                border-radius: 4px;
+                width: 100%;
+                max-width: 330px;
+                font-size: 1em;
+                cursor: pointer;
+            }
+            .log-card {
+                background: #fff;
+                border-radius: 6px;
+                padding: 16px;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                margin-top: 20px;
+            }
+            .log-header {
+                font-weight: bold;
+                margin-bottom: 10px;
+            }
+            .log-entry {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: space-between;
+                border-bottom: 1px solid #e0e0e0;
+                padding: 8px 0;
+            }
+            .log-entry:last-child {
+                border-bottom: none;
+            }
+            .log-field {
+                flex: 1 1 45%;
+                font-size: 0.95em;
+                margin: 2px 0;
+            }
+            .log-status {
+                margin-left: 8px;
+                font-size: 1.2em;
+            }
+            .status-ok {
+                color: green;
+                font-size: 0.95em;
+            }
+            .status-fail {
+                color: red;
+                font-size: 0.95em;
+            }
+            .status-process {
+                color: blue;
+                font-size: 0.95em;
+            }
+
+            .mobile-only {
+                display: none;
+            }
+            .back-button {
+                background: #666;
+                color: white;
+                border: none;
+                border-radius: 4px;
+                padding: 6px 12px;
+                font-size: 14px;
+                cursor: pointer;
+                margin-bottom: 10px;
+                margin-right: 10px;
+            }
+        </style>
+    </head>
+    <body>
+        <!-- 返回按鈕（PC版 + Mobile版） -->
+        <button class="back-button pc" onclick="goBack()">← 返回</button>
+        <div class="mobile-only">
+            <button class="back-button" onclick="goBack()">← 返回</button>
+        </div>
+		
+        <h2>任務明細 <span class="status">已完成</span></h2>
+
+        <div class="text-card">
+            <div class="info-row">
+                <div class="info-label">完成時間：</div>
+                <div class="info-content">2025-04-15 09:58:52</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">處理人員：</div>
+                <div class="info-content">張三</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">排定日期：</div>
+                <div class="info-content">2025-04-15</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">排定時間：</div>
+                <div class="info-content">09:00 ~ 10:00</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">地點名稱：</div>
+                <div class="info-content">國都天母廠</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">任務地址：</div>
+                <div class="info-content"><a href="https://www.google.com/maps?q=臺北市士林區德行西路15號" target="_blank">臺北市士林區德行西路15號</a></div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">處理事項：</div>
+                <div class="info-content">勘車</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">賠案號碼：</div>
+                <div class="info-content"><a href="04.賠案查詢_賠案明細.html">10000005</a></div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">車牌號碼：</div>
+                <div class="info-content">1234-BB</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">備註事項：</div>
+                <div class="info-content">備註文字內容</div>
+            </div>
+        </div>
+
+        <!-- 「查看處理歷程」按鈕區塊 -->
+        <div class="button-wrapper">
+            <button class="btn-view-log" onclick="toggleLog()">查看處理歷程</button>
+        </div>
+
+        <!--  Mobile：下方卡片 -->
+        <div id="log-section" class="log-card" style="display: none;">
+            <div class="log-header">處理歷程</div>
+            <div class="log-entry">
+                <div class="log-field">2025-04-15 09:48</div>
+                <div class="log-field">日誌新增<span class="log-status status-ok">成功</span></div>
+            </div>
+            <div class="log-entry">
+                <div class="log-field">2025-04-15 09:50</div>
+                <div class="log-field">檔案上傳<span class="log-status status-fail">失敗</span></div>
+            </div>
+            <div class="log-entry">
+                <div class="log-field">2025-04-15 09:55</div>
+                <div class="log-field">檔案上傳<span class="log-status status-process">處理中</span></div>
+            </div>
+        </div>
+
+        <!--  PC：彈窗 modal -->
+        <div class="modal" id="logModal" style="display: none; position: fixed; z-index: 999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.4);">
+            <div class="modal-content" style="background: #fff; margin: 10% auto; padding: 20px; border-radius: 8px; width: 400px;">
+                <span class="close" style="float: right; font-size: 24px; cursor: pointer;">×</span>
+                <h3>處理歷程</h3>
+                <div class="log-entry">2025-04-15 09:48　日誌新增 <span style="color: green;">成功</span></div>
+                <div class="log-entry">2025-04-15 09:50　檔案上傳 <span style="color: red;">失敗</span></div>
+                <div class="log-entry">2025-04-15 09:55　檔案上傳 <span style="color: blue;">處理中</span></div>
+            </div>
+        </div>
+
+        <script>
+            function toggleLog() {
+                const isMobile = window.innerWidth <= 767;
+                if (isMobile) {
+                    const logSection = document.getElementById("log-section");
+                    if (logSection) {
+                        logSection.style.display = logSection.style.display === "none" || logSection.style.display === "" ? "block" : "none";
+                    }
+                } else {
+                    const modal = document.getElementById("logModal");
+                    modal.style.display = "block";
+                    const closeBtn = modal.querySelector(".close");
+                    closeBtn.onclick = () => (modal.style.display = "none");
+                    window.onclick = (event) => {
+                        if (event.target == modal) modal.style.display = "none";
+                    };
+                }
+            }
+
+            function goBack() {
+                location.href = "02.task_query.html";
+            }
+
+        </script>
+    </body>
+</html>

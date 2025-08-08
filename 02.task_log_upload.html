@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>行動任務處理 - 我的任務 - 任務明細 - 日誌新增</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        padding: 10px;
+        background-color: #f8f8f8;
+      }
+      h2 {
+        margin-bottom: 1em;
+      }
+      .back-button {
+        background: #666;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        padding: 6px 12px;
+        font-size: 14px;
+        cursor: pointer;
+        margin-bottom: 10px;
+        margin-right: 10px;
+      }
+
+      /* PC版：橫式表單 */
+      .pc-form-wrapper {
+        max-width: 900px;
+        margin: 0 auto;
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      }
+      .form-row {
+        display: flex;
+        align-items: center;
+        margin-bottom: 14px;
+      }
+      .form-row label {
+        min-width: 120px;
+        font-weight: bold;
+        margin-right: 10px;
+        text-align: right;
+      }
+      .form-row input,
+      .form-row select,
+      .form-row textarea {
+        flex: 1;
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 1rem;
+        box-sizing: border-box;
+      }
+      .form-row textarea {
+        height: 80px;
+      }
+
+      /* 行動版卡片 */
+      .mobile-card {
+        background: white;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        margin: 0 auto;
+      }
+      .mobile-card label {
+        font-weight: bold;
+        margin-top: 10px;
+        display: block;
+      }
+      .mobile-card input,
+      .mobile-card select,
+      .mobile-card textarea {
+        width: 100%;
+        padding: 8px;
+        margin-top: 4px;
+        box-sizing: border-box;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+      }
+      .mobile-card textarea {
+        height: 80px;
+      }
+
+      .button-group {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 20px;
+        gap: 10px;
+      }
+      .button {
+        flex: 1;
+        padding: 10px;
+        border: none;
+        color: white;
+        font-size: 16px;
+        border-radius: 4px;
+      }
+      .button.upload {
+        background-color: #fb8c00;
+      }
+      .button.cancel {
+        background-color: #555;
+      }
+
+      .pc {
+        display: block;
+      }
+      .mobile-only {
+        display: none;
+      }
+
+      /* === 行動版放大與易點擊修正（關鍵） === */
+      @media (max-width: 767px) {
+        .pc {
+          display: none;
+        }
+        .mobile-only {
+          display: block;
+        }
+        .back-button {
+          font-size: 16px;
+          padding: 10px;
+          width: 100%;
+          margin-top: 10px;
+        }
+
+        /* 手機上把輸入元件拉高，字級 >=16px 避免 iOS 自動縮放 */
+        input,
+        select,
+        textarea,
+        button {
+          font-size: 16px !important;
+          height: 44px !important;
+          padding: 10px 12px !important;
+          box-sizing: border-box;
+        }
+
+        /* 文字區域別再扁，至少 120px 高，內容多則自動長高 */
+        textarea {
+          min-height: 120px !important;
+          height: auto !important;
+          line-height: 1.4;
+        }
+
+        /* Label 看起來別像備註 */
+        label {
+          font-size: 1rem;
+        }
+
+        /* 卡片間距微調，讓版面不擠 */
+        .mobile-card {
+          padding: 16px;
+        }
+
+        /* 行動版按鈕一致高度與字級 */
+        .button {
+          height: 44px !important;
+          font-size: 16px !important;
+        }
+
+        /* 有些手機內建樣式會把 select 拉得很窄，保底全寬 */
+        .mobile-card select,
+        .mobile-card input,
+        .mobile-card textarea {
+          width: 100%;
+          display: block;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <button class="back-button pc" onclick="goBack()">← 返回</button>
+    <div class="mobile-only">
+      <button class="back-button" onclick="goBack()">← 返回</button>
+    </div>
+
+    <h2>任務編號 <strong>123456</strong></h2>
+
+    <!-- PC版：橫式表單 -->
+    <div class="pc-form-wrapper pc" id="log-pc">
+      <div class="form-row">
+        <label>賠案號碼：</label>
+        <div>10000001</div>
+      </div>
+      <div class="form-row">
+        <label>車牌號碼：</label>
+        <div>1234-BB</div>
+      </div>
+
+      <div class="form-row">
+        <label for="processItem">處理項目：</label>
+        <select id="processItem">
+          <option>Notification 損失通知</option>
+          <option>Coverage 承保範圍</option>
+          <option>Initial Contact 初次聯絡</option>
+          <option>Investigation 事故調查</option>
+          <option>Case Strategy 賠案處理策略</option>
+          <option>Vendor Mgmt 協力車商管理</option>
+          <option>Evaluation 各項賠款估價</option>
+          <option>Counter Fraud 反詐欺</option>
+          <option>Reserving 預估損失金額</option>
+          <option>Neg & Settlem 談判處理</option>
+          <option>Litig. Mgmt 訴訟管理</option>
+          <option>Recovery 追償</option>
+          <option>File Mgmt 檔案管理</option>
+          <option>Quality Assurance 賠案檢核</option>
+          <option>Salvage 殘餘物作業</option>
+          <option>客戶文件上傳/留言</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label for="contactPerson">被聯絡人：</label>
+        <input type="text" id="contactPerson" />
+      </div>
+      <div class="form-row">
+        <label for="contactType">聯絡事項：</label>
+        <select id="contactType">
+          <option>體傷初步</option>
+          <option>重大車財損初步</option>
+          <option>單強/死殘初步</option>
+          <option>其他通報</option>
+          <option>視訊勘車</option>
+          <option>視訊追加</option>
+          <option>重大現勘</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label for="suspicious">可疑指標：</label>
+        <input type="text" id="suspicious" />
+      </div>
+      <div class="form-row">
+        <label for="content">內容：</label>
+        <textarea id="content"></textarea>
+      </div>
+      <div class="form-row">
+        <label for="notifyUnit">通知單位：</label>
+        <select id="notifyUnit">
+          <option>北區理賠一室</option>
+          <option>北區理賠二室</option>
+          <option>中區理賠一室_桃園</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label for="notifyUser">通知人員：</label>
+        <select id="notifyUser">
+          <option>張三</option>
+          <option>李四</option>
+          <option>王五</option>
+          <option>陳六</option>
+        </select>
+      </div>
+      <div class="button-group">
+        <button class="button upload" onclick="submitLog()">送出</button>
+        <button class="button cancel" onclick="clearForm()">取消</button>
+      </div>
+    </div>
+
+    <!-- Mobile版：直式卡片表單 -->
+    <div class="mobile-card mobile-only" id="log-mobile">
+      <div><strong>賠案號碼：</strong>10000001</div>
+      <div><strong>車牌號碼：</strong>1234-BB</div>
+
+      <label>處理項目：</label>
+      <select>
+        <option>Notification 損失通知</option>
+        <option>Coverage 承保範圍</option>
+        <option>Initial Contact 初次聯絡</option>
+        <option>Investigation 事故調查</option>
+        <option>Case Strategy 賠案處理策略</option>
+        <option>Vendor Mgmt 協力車商管理</option>
+        <option>Evaluation 各項賠款估價</option>
+        <option>Counter Fraud 反詐欺</option>
+        <option>Reserving 預估損失金額</option>
+        <option>Neg & Settlem 談判處理</option>
+        <option>Litig. Mgmt 訴訟管理</option>
+        <option>Recovery 追償</option>
+        <option>File Mgmt 檔案管理</option>
+        <option>Quality Assurance 賠案檢核</option>
+        <option>Salvage 殘餘物作業</option>
+        <option>客戶文件上傳/留言</option>
+      </select>
+
+      <label>被聯絡人：</label>
+      <input type="text" />
+
+      <label>聯絡事項：</label>
+      <select>
+        <option>體傷初步</option>
+        <option>重大車財損初步</option>
+        <option>單強/死殘初步</option>
+        <option>其他通報</option>
+        <option>視訊勘車</option>
+        <option>視訊追加</option>
+        <option>重大現勘</option>
+      </select>
+
+      <label>可疑指標：</label>
+      <input type="text" />
+
+      <label>內容：</label>
+      <textarea></textarea>
+
+      <label>通知單位：</label>
+      <select>
+        <option>北區理賠一室</option>
+        <option>北區理賠二室</option>
+        <option>中區理賠一室_桃園</option>
+      </select>
+
+      <label>通知人員：</label>
+      <select>
+        <option>張三</option>
+        <option>李四</option>
+        <option>王五</option>
+        <option>陳六</option>
+      </select>
+
+      <div class="button-group">
+        <button class="button upload" onclick="submitLog()">送出</button>
+        <button class="button cancel" onclick="clearForm()">取消</button>
+      </div>
+    </div>
+
+    <script>
+      function goBack() {
+        location.href = "02.task_detail_proc.html";
+      }
+
+      function submitLog() {
+        if (confirm("請確認是否將日誌新增至賠案裡？")) {
+          alert("新增完成");
+          window.location.href = "02.task_detail_proc.html";
+        }
+      }
+
+      function clearForm() {
+        if (confirm("是否取消新增日誌，返回任務明細頁？")) {
+          window.location.href = "02.task_detail_proc.html";
+        }
+      }
+    </script>
+  </body>
+</html>

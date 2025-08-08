@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+    <head>
+        <meta charset="utf-8" />
+        <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+        <title>
+            行動任務處理 - 我的任務 - 任務明細 - 檔案上傳
+        </title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                padding: 10px;
+                background-color: #f8f8f8;
+            }
+            h2 {
+                margin-bottom: 1em;
+            }
+
+            .back-button {
+                background: #666;
+                color: white;
+                border: none;
+                border-radius: 4px;
+                padding: 6px 12px;
+                font-size: 14px;
+                cursor: pointer;
+                margin: 0 10px 10px 0;
+            }
+
+            /* PC版表單 */
+            .pc-form-wrapper {
+                max-width: 900px;
+                margin: 0 auto;
+                background: #fff;
+                padding: 20px;
+                border-radius: 10px;
+                box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            }
+            .form-row {
+                display: flex;
+                align-items: center;
+                margin-bottom: 14px;
+                gap: 10px;
+            }
+            .form-row label {
+                min-width: 120px;
+                font-weight: bold;
+                text-align: right;
+            }
+            .form-row input,
+            .form-row select,
+            .form-row textarea {
+                flex: 1;
+                padding: 8px;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+                font-size: 1rem;
+                box-sizing: border-box;
+            }
+
+            /* Mobile 卡片 */
+            .mobile-card {
+                background: #fff;
+                border-radius: 10px;
+                padding: 20px;
+                box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+                margin: 0 auto;
+            }
+            .mobile-card label {
+                font-weight: bold;
+                margin-top: 10px;
+                display: block;
+            }
+            .mobile-card input,
+            .mobile-card select {
+                width: 100%;
+                padding: 8px;
+                margin-top: 4px;
+                box-sizing: border-box;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+            }
+
+            .button-group {
+                display: flex;
+                justify-content: space-between;
+                margin-top: 20px;
+                gap: 10px;
+            }
+            .button {
+                flex: 1;
+                padding: 10px;
+                border: none;
+                color: #fff;
+                font-size: 16px;
+                border-radius: 4px;
+            }
+            .button.upload {
+                background-color: #fb8c00;
+            }
+            .button.cancel {
+                background-color: #555;
+            }
+
+            .pc {
+                display: block;
+            }
+            .mobile-only {
+                display: none;
+            }
+
+            /* 預覽區（PC/Mobile 共用） */
+            #previewAreaPC,
+            #previewAreaMobile {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 10px;
+                margin-top: 10px;
+                padding: 8px;
+                border: 1px dashed #ccc;
+                border-radius: 6px;
+                background: #fefefe;
+                max-height: 200px; /* 固定高度，可調整 */
+                overflow-y: auto; /* 多圖時可捲動 */
+            }
+
+            #previewAreaPC img,
+            #previewAreaMobile img {
+                height: 100px;
+                border: 1px solid #aaa;
+                border-radius: 4px;
+                cursor: zoom-in;
+            }
+            
+            .remove-btn {
+                position: absolute;
+                top: -6px;
+                right: -6px;
+                background: #e53935;
+                color: #fff;
+                border-radius: 50%;
+                width: 20px;
+                height: 20px;
+                font-size: 14px;
+                line-height: 20px;
+                text-align: center;
+                cursor: pointer;
+                box-shadow: 0 0 2px rgba(0, 0, 0, 0.3);
+            }
+
+            /* 圖片放大 Modal */
+            #imageModal {
+                display: none;
+                position: fixed;
+                z-index: 999;
+                inset: 0;
+                background: rgba(0, 0, 0, 0.6);
+                justify-content: center;
+                align-items: center;
+            }
+            #imageModalContent {
+                max-width: 90%;
+                max-height: 90%;
+                border-radius: 8px;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+            }
+            #imageModal img {
+                width: 100%;
+                height: auto;
+                border-radius: 8px;
+            }
+            #imageModal .close {
+                position: absolute;
+                top: 20px;
+                right: 30px;
+                font-size: 30px;
+                color: #fff;
+                cursor: pointer;
+            }
+
+            /* === 行動版關鍵修正：可點擊高度 & 字級 === */
+            @media (max-width: 767px) {
+                .pc {
+                    display: none;
+                }
+                .mobile-only {
+                    display: block;
+                }
+                .back-button {
+                    font-size: 16px;
+                    padding: 10px;
+                    width: 100%;
+                    margin-top: 10px;
+                }
+
+                /* 元件別再扁：iOS 避免縮放，安卓也舒服 */
+                input,
+                select,
+                textarea,
+                button {
+                    font-size: 16px !important;
+                    height: 44px !important;
+                    padding: 10px 12px !important;
+                    box-sizing: border-box;
+                }
+                /* 文字區域保底高度 */
+                textarea {
+                    min-height: 120px !important;
+                    height: auto !important;
+                    line-height: 1.4;
+                }
+                label {
+                    font-size: 1rem;
+                }
+                .mobile-card {
+                    padding: 16px;
+                }
+                .button {
+                    height: 44px !important;
+                    font-size: 16px !important;
+                }
+                /* 預覽縮圖行動裝置更好滑 */
+                #previewAreaMobile img {
+                    height: 96px;
+                }
+            }
+            #summaryPC span,
+            #summaryMobile span {
+                margin-right: 16px;
+            }
+
+            /* 統一預覽卡片風格 */
+            
+
+			.preview-item img {
+				width: 100%;
+				height: 100%;
+				object-fit: cover; /* 自動裁切保比例 */
+				border-radius: 6px;
+			}
+
+            .preview-item .info-box {
+                font-size: 12px;
+                color: #444;
+                background: #f9f9f9;
+                padding: 2px 4px;
+                border-radius: 4px;
+                text-align: center;
+                white-space: pre-wrap;
+                width: 100%;
+                box-sizing: border-box;
+                border: 1px dashed #ccc;
+            }
+
+            #previewAreaPC,
+            #previewAreaMobile {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 10px;
+                padding: 10px;
+                border: 1px dashed #ccc;
+                background: #fff;
+                border-radius: 6px;
+                overflow-y: auto;
+                max-height: 250px;
+            }
+        .preview-item {
+                background: #fff;
+                border-radius: 10px;
+                padding: 8px;
+                box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: flex-start;
+                gap: 6px;
+                width: 120px;
+                height: 100px;
+                position: relative;
+            }
+</style>
+    </head>
+    <body>
+        <button class="back-button pc" onclick="goBack()">
+            ← 返回
+        </button>
+        <div class="mobile-only">
+            <button class="back-button" onclick="goBack()">
+                ← 返回
+            </button>
+        </div>
+        <h2>
+            任務編號
+            <strong>
+                123456
+            </strong>
+        </h2>
+        <!-- PC版 -->
+        <div class="pc-form-wrapper pc">
+            <div class="form-row">
+                <label>
+                    賠案號碼：
+                </label>
+                <div>
+                    10000001
+                </div>
+            </div>
+            <div class="form-row">
+                <label>
+                    車牌號碼：
+                </label>
+                <div>
+                    1234-BB
+                </div>
+            </div>
+            <div class="form-row">
+                <label for="uploadMode">
+                    上傳方式：
+                </label>
+                <select id="uploadMode">
+                    <option value="individual">
+                        逐張圖片/逐個檔案上傳
+                    </option>
+                    <option value="merge">
+                        多張圖片合併為PDF上傳
+                    </option>
+                </select>
+            </div>
+            <div class="form-row">
+                <label>
+                    類別：
+                </label>
+                <select>
+                    <option>
+                        保戶
+                    </option>
+                    <option>
+                        對造1
+                    </option>
+                    <option>
+                        對造2
+                    </option>
+                    <option>
+                        全鋒現場照
+                    </option>
+                    <option>
+                        查證資料
+                    </option>
+                    <option>
+                        訴訟、追償
+                    </option>
+                    <option>
+                        死亡查證
+                    </option>
+                    <option>
+                        客戶上傳
+                    </option>
+                    <option>
+                        其他
+                    </option>
+                </select>
+            </div>
+            <div class="form-row">
+                <label>
+                    檔案說明：
+                </label>
+                <input type="text" />
+            </div>
+            <div class="form-row">
+                <label for="fileInput">
+                    選擇檔案：
+                </label>
+                <input accept="image/*,application/pdf" id="fileInput" multiple="" type="file" />
+            </div>
+            <div class="form-row">
+                <label>
+                    預覽圖：
+                </label>
+                <div id="previewAreaPC"></div>
+            </div>
+            <div class="form-row">
+                <label>
+                    壓縮資訊：
+                </label>
+                <div id="summaryPC" style="white-space: pre-wrap; font-size: 0.9rem; line-height: 1.6;"></div>
+            </div>
+            <div class="button-group">
+                <button class="button upload" onclick="submitUpload()">
+                    上傳
+                </button>
+                <button class="button cancel" onclick="goBack()">
+                    取消
+                </button>
+            </div>
+        </div>
+        <!-- Mobile版 -->
+        <div class="mobile-card mobile-only">
+            <div><strong>賠案號碼：</strong>10000001</div>
+            <div><strong>車牌號碼：</strong>1234-BB</div>
+            <label>
+                上傳方式：
+            </label>
+            <select id="uploadModeMobile">
+                <option value="individual">
+                    逐張圖片/逐個檔案上傳
+                </option>
+                <option value="merge">
+                    多張圖片合併為PDF上傳
+                </option>
+            </select>
+            <label>
+                類別：
+            </label>
+            <select>
+                <option>
+                    保戶
+                </option>
+                <option>
+                    對造1
+                </option>
+                <option>
+                    對造2
+                </option>
+                <option>
+                    全鋒現場照
+                </option>
+                <option>
+                    查證資料
+                </option>
+                <option>
+                    訴訟、追償
+                </option>
+                <option>
+                    死亡查證
+                </option>
+                <option>
+                    客戶上傳
+                </option>
+                <option>
+                    其他
+                </option>
+            </select>
+            <label>
+                檔案說明：
+            </label>
+            <input type="text" />
+            <label>
+                選擇檔案：
+            </label>
+            <input accept="image/*,application/pdf" id="fileInputMobile" multiple="" type="file" />
+            <label>
+                預覽圖：
+            </label>
+            <div id="previewAreaMobile"></div>
+            <label>
+                壓縮資訊：
+            </label>
+            <div id="summaryMobile" style="white-space: pre-wrap; font-size: 0.95rem; line-height: 1.6;"></div>
+            <div class="button-group">
+                <button class="button upload" onclick="submitUpload()">
+                    上傳
+                </button>
+                <button class="button cancel" onclick="goBack()">
+                    取消
+                </button>
+            </div>
+        </div>
+        <!-- 圖片放大 Modal -->
+        <div id="imageModal">
+            <span class="close">
+                ×
+            </span>
+            <div id="imageModalContent">
+                <img alt="預覽圖" src="" />
+            </div>
+        </div>
+        <script>
+            function goBack() {
+                location.href = "02.task_detail_proc.html";
+            }
+
+            function submitUpload() {
+                if (confirm("是否確認上傳這些檔案？")) {
+                    alert("上傳成功！");
+                    location.href = "02.task_detail_proc.html";
+                }
+            }
+
+            // 綁定檔案選擇事件
+            document.getElementById("fileInput")?.addEventListener("change", (e) => handlePreview(e, "PC"));
+            document.getElementById("fileInputMobile")?.addEventListener("change", (e) => handlePreview(e, "Mobile"));
+
+            function handlePreview(event, mode) {
+                const previewArea = document.getElementById("previewArea" + mode);
+                if (!previewArea) return;
+                previewArea.innerHTML = "";
+
+                const files = Array.from(event.target.files);
+                files.forEach((file) => {
+                    // 只預覽圖片；PDF 不預覽縮圖
+                    if (!file.type.startsWith("image/")) return;
+
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        const container = document.createElement("div");
+                        container.className = "preview-item";
+
+                        const img = document.createElement("img");
+                        img.src = e.target.result;
+
+                        // 點縮圖放大
+                        img.addEventListener("click", () => openModal(img.src));
+
+                        const removeBtn = document.createElement("span");
+                        removeBtn.className = "remove-btn";
+                        removeBtn.innerHTML = "&times;";
+                        removeBtn.onclick = () => container.remove(); // 僅移除畫面預覽
+
+                        container.appendChild(img);
+                        container.appendChild(removeBtn);
+                        previewArea.appendChild(container);
+                    };
+                    reader.readAsDataURL(file);
+                });
+            }
+
+            // Modal 邏輯
+            function openModal(src) {
+                const modal = document.getElementById("imageModal");
+                modal.querySelector("img").src = src;
+                modal.style.display = "flex";
+            }
+            document.querySelector("#imageModal .close").onclick = () => (document.getElementById("imageModal").style.display = "none");
+            window.addEventListener("click", (evt) => {
+                const modal = document.getElementById("imageModal");
+                if (evt.target === modal) modal.style.display = "none";
+            });
+        </script>
+        <script>
+            async function compressImage(file, quality = 0.7) {
+                return new Promise((resolve) => {
+                    const img = new Image();
+                    const reader = new FileReader();
+                    reader.onload = () => {
+                        img.src = reader.result;
+                    };
+                    img.onload = () => {
+                        const canvas = document.createElement("canvas");
+                        const maxSize = 1280;
+                        let { width, height } = img;
+
+                        if (width > height) {
+                            if (width > maxSize) {
+                                height *= maxSize / width;
+                                width = maxSize;
+                            }
+                        } else {
+                            if (height > maxSize) {
+                                width *= maxSize / height;
+                                height = maxSize;
+                            }
+                        }
+
+                        canvas.width = Math.floor(width);
+                        canvas.height = Math.floor(height);
+                        const ctx = canvas.getContext("2d");
+                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                        resolve(canvas.toDataURL("image/jpeg", quality));
+                    };
+                    reader.readAsDataURL(file);
+                });
+            }
+
+            async function handlePreview(event, mode) {
+                const previewArea = document.getElementById("previewArea" + mode);
+                const summaryBox = document.getElementById("summary" + mode);
+                if (!previewArea || !summaryBox) return;
+
+                previewArea.innerHTML = "";
+                summaryBox.innerText = "正在壓縮中…請稍候";
+
+                const files = Array.from(event.target.files);
+                if (!files.length) {
+                    summaryBox.innerText = "尚未選取檔案";
+                    return;
+                }
+
+                let totalOriginal = 0;
+                let totalCompressed = 0;
+                let totalTime = 0;
+
+                for (const file of files) {
+                    if (!file.type.startsWith("image/")) continue;
+
+                    const originalSizeKB = file.size / 1024;
+                    totalOriginal += originalSizeKB;
+
+                    const start = performance.now();
+                    const compressedDataUrl = await compressImage(file, 0.7);
+                    const end = performance.now();
+                    const duration = end - start;
+                    totalTime += duration;
+
+                    const compressedSizeKB = Math.round((compressedDataUrl.length * 3) / 4 / 1024);
+                    totalCompressed += compressedSizeKB;
+
+                    const container = document.createElement("div");
+                    container.className = "preview-item";
+
+                    const img = document.createElement("img");
+                    img.src = compressedDataUrl;
+                    img.addEventListener("click", () => openModal(img.src));
+
+                    const removeBtn = document.createElement("span");
+                    removeBtn.className = "remove-btn";
+                    removeBtn.innerHTML = "&times;";
+                    removeBtn.onclick = () => container.remove();
+
+/*
+                    const infoBox = document.createElement("div");
+                    infoBox.className = "info-box";
+                    infoBox.style = "font-size: 12px; color: #333; white-space: pre-wrap; margin-top: 4px;";
+                    infoBox.innerText = `原：${originalSizeKB.toFixed(1)} KB\n壓：${compressedSizeKB} KB\n耗時：${duration.toFixed(1)} ms`;
+*/
+                    container.appendChild(img);
+                    container.appendChild(removeBtn);
+  //                  container.appendChild(infoBox);
+                    previewArea.appendChild(container);
+                }
+
+                const count = files.length;
+                const ratio = totalCompressed / totalOriginal;
+                summaryBox.innerHTML = `
+    <span>📸 圖片總數：${count} 張</span>
+    <span>📦 原始總大小：${(totalOriginal / 1024).toFixed(2)} MB</span>
+    <span>🗜️ 壓縮後總大小：${(totalCompressed / 1024).toFixed(2)} MB</span>
+    <span>📉 壓縮比率：${(ratio * 100).toFixed(1)}%</span>
+    <span>⏱️ 總壓縮耗時：${(totalTime / 1000).toFixed(1)} 秒</span>
+  `;
+            }
+        </script>
+    </body>
+</html>

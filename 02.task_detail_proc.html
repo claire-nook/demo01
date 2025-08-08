@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+
+<html lang="zh-Hant">
+    <head>
+        <meta charset="utf-8" />
+        <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+        <title>行動任務處理 - 我的任務 - 任務明細</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                margin: 0;
+                padding: 20px;
+            }
+            h2 {
+                margin-top: 0;
+                display: flex;
+                align-items: center;
+                justify-content: flex-start;
+                gap: 10px;
+            }
+            .status {
+                font-size: 0.9em;
+                color: #fff;
+                background-color: #0077cc;
+                padding: 2px 8px;
+                border-radius: 12px;
+            }
+            .readonly {
+                background-color: #eee;
+            }
+            .info-grid {
+                display: grid;
+                grid-template-columns: 150px 1fr;
+                row-gap: 10px;
+                column-gap: 16px;
+                background: #fff;
+                padding: 20px;
+                border-radius: 6px;
+                box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+                flex: 1;
+                max-width: 900px;
+                margin: 0 auto;
+            }
+            .info-grid label {
+                font-weight: bold;
+                text-align: right;
+                line-height: 2;
+            }
+            .info-grid input {
+                padding: 6px;
+                width: 100%;
+            }
+            .info-grid .double-time {
+                display: flex;
+                gap: 10px;
+            }
+            .button-col {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 10px;
+                max-width: 900px;
+                margin: 30px auto 0;
+            }
+            .button-col button {
+                flex: 1 1 140px;
+                padding: 10px;
+                font-size: 1em;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+                white-space: nowrap;
+            }
+            .btn-primary {
+                background-color: #3182ce;
+                color: white;
+            }
+            .btn-warning {
+                background-color: #fb8c00;
+                color: white;
+            }
+            .btn-cancelTask {
+                background-color: #e53935;
+                color: white;
+            }
+            .btn-view-log-pc {
+                background-color: #78909c;
+                color: white;
+            }
+            .btn-view-log-mobile {
+                background-color: #78909c;
+                color: white;
+            }
+            .btn-success {
+                background-color: #43a047;
+                color: white;
+            }
+            .text-card {
+                max-width: 900px;
+                background: #fff;
+                padding: 20px;
+                border-radius: 6px;
+                box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+                margin: 30px auto;
+            }
+            .text-row {
+                display: flex;
+                justify-content: flex-start;
+                padding: 6px 0;
+            }
+            .text-label {
+                width: 150px;
+                font-weight: bold;
+                color: #555;
+            }
+            .text-value {
+                flex: 1;
+            }
+            .pc-container {
+                max-width: 1200px;
+                margin: 0 auto;
+            }
+            .mobile-only {
+                display: none;
+            }
+            .pc {
+                display: block;
+            }
+            @media (max-width: 767px) {
+                .mobile-only {
+                    display: block;
+                }
+                .pc {
+                    display: none;
+                }
+                .back-button {
+                    font-size: 16px;
+                    padding: 10px;
+                    width: 100%;
+                    margin-top: 10px;
+                }
+            }
+
+            .back-button {
+                background: #666;
+                color: white;
+                border: none;
+                border-radius: 4px;
+                padding: 6px 12px;
+                font-size: 14px;
+                cursor: pointer;
+                margin-bottom: 10px;
+                margin-right: 10px;
+            }
+            .btn-group-row {
+                display: flex;
+                justify-content: center;
+                gap: 10px;
+                margin-top: 20px;
+                flex-wrap: wrap;
+            }
+            .btn-orange {
+                background-color: #f90;
+                color: white;
+                padding: 10px 20px;
+                border: none;
+                border-radius: 5px;
+                font-size: 16px;
+            }
+            .btn-gray {
+                background-color: #555;
+                color: white;
+                padding: 10px 20px;
+                border: none;
+                border-radius: 5px;
+                font-size: 16px;
+            }
+            #edit-mode-buttons {
+                display: flex;
+                justify-content: center;
+                gap: 10px;
+                flex-wrap: wrap;
+                margin-top: 20px;
+            }
+            .btn-orange {
+                background-color: #f90;
+                color: white;
+                padding: 10px 20px;
+                border: none;
+                border-radius: 5px;
+                font-size: 16px;
+            }
+            .btn-gray {
+                background-color: #555;
+                color: white;
+                padding: 10px 20px;
+                border: none;
+                border-radius: 5px;
+                font-size: 16px;
+            }
+            @media screen and (max-width: 768px) {
+                #edit-mode-buttons {
+                    flex-direction: row;
+                    justify-content: center;
+                    gap: 10px;
+                }
+            }
+            #log-section .log-header {
+                font-weight: bold;
+                margin-bottom: 10px;
+            }
+            #log-section .log-entry {
+                display: flex;
+                justify-content: space-between;
+                border-bottom: 1px solid #e0e0e0;
+                padding: 8px 0;
+            }
+            #log-section .log-entry:last-child {
+                border-bottom: none;
+            }
+            #log-section .log-status-ok {
+                color: green;
+            }
+            #log-section .log-status-fail {
+                color: red;
+            }
+            #log-section .log-status-process {
+                color: blue;
+            }
+        </style>
+    </head>
+    <body>
+        <!-- 返回按鈕（PC版 + Mobile版） -->
+        <button class="back-button pc" onclick="goBack()">← 返回</button>
+        <div class="mobile-only">
+            <button class="back-button" onclick="goBack()">← 返回</button>
+        </div>
+        <h2>任務明細 <span class="status">處理中</span></h2>
+        <div class="pc">
+            <div class="pc-container">
+                <div class="info-grid">
+                    <label>處理人員</label>
+                    <input class="readonly" readonly="" type="text" value="張三" />
+                    <label>排定日期</label>
+                    <input class="readonly" readonly="" type="date" value="2025-04-15" />
+                    <label>排定時間</label>
+                    <div class="double-time">
+                        <input class="readonly" readonly="" type="time" value="09:00" />
+                        <input class="readonly" readonly="" type="time" value="10:00" />
+                    </div>
+                </div>
+            </div>
+            <div class="text-card">
+                <div class="text-row">
+                    <div class="text-label">地點名稱：</div>
+                    <div class="text-value">國都天母廠</div>
+                </div>
+                <div class="text-row">
+                    <div class="text-label">任務地址：</div>
+                    <div class="text-value"><a href="https://www.google.com/maps?q=臺北市士林區德行西路15號" target="_blank">臺北市士林區德行西路15號</a></div>
+                </div>
+                <div class="text-row">
+                    <div class="text-label">處理事項：</div>
+                    <div class="text-value">勘車</div>
+                </div>
+                <div class="text-row">
+                    <div class="text-label">賠案號碼：</div>
+                    <div class="text-value"><a href="04.賠案查詢_賠案明細.html">10000001</a></div>
+                </div>
+                <div class="text-row">
+                    <div class="text-label">車牌號碼：</div>
+                    <div class="text-value">AA-1234</div>
+                </div>
+                <div class="text-row">
+                    <div class="text-label">備註事項：</div>
+                    <div class="text-value">備註文字內容</div>
+                </div>
+            </div>
+            <div class="button-col">
+                <button class="btn-warning">修改排定時間</button>
+                <button class="btn-primary" onclick="location.href='02.task_log_upload.html'">日誌新增</button>
+                <button class="btn-primary" onclick="location.href='02.task_file_upload.html'">檔案上傳</button>
+                <button class="btn-view-log-pc">查看處理歷程</button>
+                <button class="btn-cancelTask">取消任務</button>
+                <button class="btn-success">完成任務</button>
+            </div>
+        </div>
+		
+        <style>
+            @media (max-width: 767px) {
+                .mobile-only {
+                    display: block;
+                    padding: 1rem;
+                    background: #f8f8f8;
+                }
+
+				input,
+				select,
+				textarea,
+				button {
+					font-size: 16px !important;
+					height: 40px !important;
+					padding: 8px 10px !important;
+					box-sizing: border-box;
+				}				
+                .form-card,
+                .info-card {
+                    background: #fff;
+                    border-radius: 8px;
+                    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+                    padding: 1rem;
+                    margin-bottom: 1rem;
+                }
+                .form-card label {
+                    font-weight: bold;
+                    display: block;
+                    margin-top: 0.75rem;
+                    margin-bottom: 0.25rem;
+                }
+                .form-card input {
+                    width: 100%;
+                    max-width: 100%;
+                    padding: 0.5rem;
+                    background: #eee;
+                    border: none;
+                    border-radius: 6px;
+                    box-sizing: border-box;
+                }
+                .form-card .time-row {
+                    display: flex;
+                    gap: 1rem;
+                }
+                .form-card .time-row input {
+                    flex: 1;
+                }
+                .btn-warning {
+                    background-color: #fb8c00;
+                    color: white;
+                    border: none;
+                    border-radius: 6px;
+                    padding: 0.75rem;
+                    font-size: 1rem;
+                    width: 100%;
+                    margin-top: 1rem;
+                    cursor: pointer;
+                }
+                .info-row {
+                    margin-bottom: 0.5rem;
+                }
+                .info-label {
+                    font-weight: bold;
+                    color: #444;
+                }
+                .info-content {
+                    padding-left: 0.5rem;
+                }
+                .button-group {
+                    display: flex;
+                    flex-wrap: wrap;
+                    gap: 0.75rem;
+                    justify-content: space-between;
+                }
+                .button-pair {
+                    display: flex;
+                    gap: 0.75rem;
+                    width: 100%;
+                }
+                .button-pair button {
+                    flex: 1;
+                }
+                .button-group button {
+                    padding: 0.75rem;
+                    font-size: 1rem;
+                    border: none;
+                    border-radius: 6px;
+                    color: white;
+                    cursor: pointer;
+                }
+                .btn-primary {
+                    background-color: #3182ce;
+                }
+                .btn-cancelTask {
+                    background-color: #e53935;
+                }
+                .btn-view-log {
+                    background-color: #78909c;
+                }
+                .btn-success {
+                    background-color: #43a047;
+                    width: 100%;
+                    margin-top: 0.5rem;
+                }
+            }
+
+        </style>
+        <div class="mobile-only">
+            <div class="form-card">
+                <label>處理人員</label>
+                <input readonly="" type="text" value="張三" />
+                <label>排定日期</label>
+                <input readonly="" type="date" value="2025-04-15" />
+                <label>排定時間起</label>
+                <div class="time-row">
+                    <input readonly="" type="time" value="09:00" />
+                </div>
+                <label>排定時間訖</label>
+                <div class="time-row">
+                    <input readonly="" type="time" value="10:00" />
+                </div>
+                <button class="btn-warning">修改排定時間</button>
+            </div>
+            <div class="info-card">
+                <div class="info-row"><span class="info-label">地點名稱：</span><span class="info-content">國都天母廠</span></div>
+                <div class="info-row"><span class="info-label">任務地址：</span><span class="info-content"><a href="https://www.google.com/maps?q=臺北市士林區德行西路15號" target="_blank">臺北市士林區德行西路15號</a></span></div>
+                <div class="info-row"><span class="info-label">處理事項：</span><span class="info-content">勘車</span></div>
+                <div class="info-row"><span class="info-label">賠案號碼：</span><span class="info-content"><a href="04.賠案查詢_賠案明細.html">10000001</a></span></div>
+                <div class="info-row"><span class="info-label">車牌號碼：</span><span class="info-content">AA-1234</span></div>
+                <div class="info-row"><span class="info-label">備註事項：</span><span class="info-content">備註文字內容</span></div>
+            </div>
+            <div class="button-group">
+                <div class="button-pair">
+                    <button class="btn-primary" onclick="location.href='02.task_log_upload.html'">日誌新增</button>
+                    <button class="btn-primary" onclick="location.href='02.task_file_upload.html'">檔案上傳</button>
+                </div>
+                <div class="button-pair">
+                    <button class="btn-view-log-mobile">查看處理歷程</button>
+                    <button class="btn-cancelTask">取消任務</button>
+                </div>
+                <button class="btn-success">完成任務</button>
+            </div>
+        </div>
+
+		<div id="cancel-reason-section" style="display:none; max-width: 900px; margin: 20px auto;" class="text-card">
+		  <label for="cancelReason" style="font-weight:bold;">取消原因</label>
+		  <textarea id="cancelReason" rows="4" style="width: 100%; margin: 10px 0;"></textarea>
+		  <div class="btn-group-row">
+			<button class="btn-orange" onclick="confirmCancelReason()">儲存</button>
+			<button class="btn-gray" onclick="cancelCancel()">取消</button>
+		  </div>
+		</div>
+
+		
+        <script>
+            document.addEventListener("DOMContentLoaded", () => {
+                const completeBtn = document.querySelector(".btn-success");
+                const cancelBtn = document.querySelector(".btn-cancelTask");
+                const editBtns = document.querySelectorAll(".btn-warning");
+
+                // 完成任務
+				document.querySelectorAll(".btn-success").forEach((completeBtn) => {
+				  completeBtn.addEventListener("click", () => {
+					if (confirm("已上傳1個日誌/上傳2次檔案，是否要完成任務？")) {
+					  alert("任務已完成");
+					  location.href = "02.task_detail_done.html";
+					}
+				  });
+				});
+
+                // 取消任務
+				document.querySelectorAll(".btn-cancelTask").forEach((btn) => {
+				  btn.addEventListener("click", () => {
+					if (confirm("是否要取消任務？")) {
+					  // 隱藏按鈕群
+					  document.querySelectorAll(".button-col, .button-group, #edit-mode-buttons").forEach((el) => {
+						if (el) el.style.display = "none";
+					  });
+
+					  // 顯示取消區塊
+					  const block = document.getElementById("cancel-reason-section");
+					  if (block) block.style.display = "block";
+					}
+				  });
+				});
+
+				window.confirmCancelReason = function () {
+				  const reason = document.getElementById("cancelReason").value.trim();
+				  if (!reason) {
+					alert("取消原因為必填");
+					return;
+				  }
+				  alert("任務已取消");
+				  location.href = "02.task_detail_cancel.html";
+				};
+
+				window.cancelCancel = function () {
+				  if (confirm("是否取消此次操作？")) {
+					location.reload();
+				  }
+				};
+			
+			
+                // 修改排定時間
+                editBtns.forEach((editBtn) => {
+                    editBtn?.addEventListener("click", () => {
+                        if (!confirm("是否調整排定時間？")) return;
+
+                        const dateFields = document.querySelectorAll('input[type="date"]');
+                        const timeFields = document.querySelectorAll('input[type="time"]');
+
+                        // 解 readonly + disabled
+                        dateFields.forEach((f) => {
+                            f.removeAttribute("readonly");
+                            f.removeAttribute("disabled");
+                            f.classList.remove("readonly");
+                            f.style.backgroundColor = "#fff";
+                            f.style.border = "1px solid #ccc";
+                        });
+                        timeFields.forEach((tf) => {
+                            tf.removeAttribute("readonly");
+                            tf.removeAttribute("disabled");
+                            tf.classList.remove("readonly");
+                            tf.style.backgroundColor = "#fff";
+                            tf.style.border = "1px solid #ccc";
+                        });
+
+                        // 隱藏原按鈕群
+                        const buttonSections = document.querySelectorAll(".button-col, .button-group, #actionButtons, #actionButtons2");
+                        buttonSections.forEach((div) => (div.style.display = "none"));
+
+                        // 隱藏所有修改按鈕
+                        editBtns.forEach((btn) => (btn.style.display = "none"));
+
+                        // 隱藏處理歷程區塊
+                        const logSection = document.getElementById("log-section");
+                        if (logSection) logSection.style.display = "none";
+
+                        // 避免重複插入
+                        if (document.getElementById("edit-mode-buttons")) return;
+
+                        // 建立新按鈕區
+                        const newDiv = document.createElement("div");
+                        newDiv.id = "edit-mode-buttons";
+                        newDiv.className = "button-row";
+                        newDiv.style.marginTop = "20px";
+                        newDiv.style.justifyContent = "center";
+                        newDiv.style.gap = "10px";
+                        newDiv.style.display = "flex";
+                        newDiv.style.flexWrap = "wrap";
+                        newDiv.style.maxWidth = "900px";
+                        newDiv.style.marginLeft = "auto";
+                        newDiv.style.marginRight = "auto";
+
+                        const saveBtn = document.createElement("button");
+                        saveBtn.className = "btn-orange";
+                        saveBtn.innerText = "儲存";
+                        saveBtn.onclick = () => {
+                            alert("儲存完成");
+                            location.reload();
+                        };
+
+                        const cancelEditBtn = document.createElement("button");
+                        cancelEditBtn.className = "btn-gray";
+                        cancelEditBtn.innerText = "取消";
+                        cancelEditBtn.onclick = () => {
+                            if (confirm("是否取消本次修改？")) {
+                                location.reload();
+                            }
+                        };
+
+                        newDiv.appendChild(saveBtn);
+                        newDiv.appendChild(cancelEditBtn);
+                        document.body.appendChild(newDiv);
+                    });
+                });
+            });
+
+            function goBack() {
+                location.href = "02.task_query.html";
+            }
+
+            function toggleLog() {
+                const isMobile = window.innerWidth <= 767;
+                if (isMobile) {
+                    const logSection = document.getElementById("log-section");
+                    if (logSection) {
+                        logSection.style.display = logSection.style.display === "none" || logSection.style.display === "" ? "block" : "none";
+                    }
+                } else {
+                    const modal = document.getElementById("logModal");
+                    modal.style.display = "block";
+                    const closeBtn = modal.querySelector(".close");
+                    closeBtn.onclick = () => (modal.style.display = "none");
+                    window.onclick = (event) => {
+                        if (event.target == modal) modal.style.display = "none";
+                    };
+                }
+            }
+
+
+            document.querySelectorAll(".btn-view-log-pc").forEach((btn) => {
+                btn.addEventListener("click", () => {
+                    const modal = document.getElementById("logModal");
+                    modal.style.display = "block";
+                    const closeBtn = modal.querySelector(".close");
+                    closeBtn.onclick = () => (modal.style.display = "none");
+                    window.onclick = (event) => {
+                        if (event.target == modal) modal.style.display = "none";
+                    };
+                });
+            });
+
+            document.querySelectorAll(".btn-view-log-mobile").forEach((btn) => {
+                btn.addEventListener("click", () => {
+                    const logSection = document.getElementById("log-section");
+                    if (logSection) {
+                        logSection.style.display = logSection.style.display === "none" || logSection.style.display === "" ? "block" : "none";
+                    }
+                });
+            });
+        </script>
+        <!-- Modal for PC -->
+        <div class="modal" id="logModal" style="display: none; position: fixed; z-index: 999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.4);">
+            <div class="modal-content" style="background: #fff; margin: 10% auto; padding: 20px; border-radius: 8px; width: 400px;">
+                <span class="close" style="float: right; font-size: 24px; cursor: pointer;">×</span>
+                <h3>處理歷程</h3>
+                <div class="log-entry">2025-04-15 09:48　日誌新增 <span style="color: green;">成功</span></div>
+                <div class="log-entry">2025-04-15 09:50　檔案上傳 <span style="color: red;">失敗</span></div>
+                <div class="log-entry">2025-04-15 09:55　檔案上傳 <span style="color: blue;">處理中</span></div>
+            </div>
+        </div>
+        <div class="log-card mobile-only info-card" id="log-section" style="display: none;">
+            <div class="log-header">處理歷程</div>
+            <div class="log-entry">
+                <div>2025-04-15 09:48</div>
+                <div>日誌新增 <span class="log-status-ok">成功</span></div>
+            </div>
+            <div class="log-entry">
+                <div>2025-04-15 09:50</div>
+                <div>檔案上傳 <span class="log-status-fail">失敗</span></div>
+            </div>
+            <div class="log-entry">
+                <div>2025-04-15 09:55</div>
+                <div>檔案上傳 <span class="log-status-process">處理中</span></div>
+            </div>
+        </div>
+    </body>
+</html>

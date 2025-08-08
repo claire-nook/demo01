@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>理賠任務行動管理系統</title>
+        <style>
+            body {
+                margin: 0;
+                font-family: sans-serif;
+                display: flex;
+                flex-direction: column;
+                height: 100vh;
+            }
+            header {
+                background: #fff;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 0.5em 1em;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            }
+            #logo {
+                height: 40px;
+            }
+            #menuToggle {
+                display: none;
+                font-size: 1.5em;
+                cursor: pointer;
+            }
+            .main {
+                display: flex;
+                flex: 1;
+                overflow: hidden;
+            }
+            nav {
+                width: 160px;
+                background: #f5f5f5;
+                padding: 1em;
+                transition: width 0.3s;
+                overflow-y: auto;
+            }
+            nav.collapsed {
+                width: 40px;
+            }
+            nav.collapsed ul,
+            nav.collapsed details,
+            nav.collapsed summary,
+            nav.collapsed li {
+                display: none;
+            }
+            nav.collapsed #collapseBtn {
+                display: block;
+                margin: 0 auto;
+            }
+            nav ul {
+                list-style: none;
+                padding: 0;
+            }
+            nav li {
+                margin: 0.5em 0;
+                cursor: pointer;
+            }
+            nav details ul li {
+                padding-left: 1em;
+            }
+            nav details summary {
+                cursor: pointer;
+            }
+            #collapseBtn {
+                display: block;
+                background: none;
+                border: none;
+                font-size: 1.5em;
+                margin-bottom: 1em;
+                cursor: pointer;
+            }
+            #mainFrame {
+                flex: 1;
+                border: none;
+                height: 100%;
+            }
+            .header-right {
+                display: flex;
+                align-items: center;
+                gap: 1rem;
+            }
+
+            #userInfo {
+                font-weight: bold;
+                color: #333;
+            }
+
+            #logoutBtn {
+                background-color: #e53935;
+                color: white;
+                border: none;
+                padding: 6px 12px;
+                border-radius: 4px;
+                cursor: pointer;
+                font-size: 0.9rem;
+            }
+
+            @media (max-width: 768px) {
+                nav {
+                    display: none;
+                    position: absolute;
+                    z-index: 999;
+                    top: 60px;
+                    left: 0;
+                    width: 70%;
+                    height: calc(100% - 60px);
+                    background: #f5f5f5;
+                    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
+                }
+                nav.open {
+                    display: block;
+                }
+
+                .pc-only {
+                    display: none;
+                }
+                .mobile-only {
+                    display: block;
+                }
+
+                #menuToggle {
+                    display: block;
+                }
+                #collapseBtn {
+                    display: none;
+                }
+
+            }
+
+            .pc-only {
+                display: block;
+            }
+            .mobile-only {
+                display: none;
+            }
+			.center-btn {
+			  text-align: center;
+			}			
+        </style>
+    </head>
+    <body>
+        <header>
+            <img id="logo" src="logo.png" alt="公司 Logo" />
+            <div class="header-right">
+                <span id="userInfo">張三</span>
+                <div id="menuToggle">☰</div>
+            </div>
+        </header>
+        <div class="main">
+            <nav id="menu">
+                <button id="collapseBtn">☰</button>
+                <ul>
+                    <li>
+                        <details>
+                            <summary>行動任務處理</summary>
+                            <ul>
+                                <li onclick="loadIframe('01.task_notify_list.html')">新任務通知</li>
+                                <li onclick="loadIframe('02.task_query.html')">我的任務</li>
+                                <li onclick="loadIframe('03.claim_supp.html')">資料補傳</li>
+                                <li onclick="loadIframe('04.task_calendar.html')">任務行事曆</li>
+                            </ul>
+                        </details>
+                    </li>
+
+                    <li>
+                        <details>
+                            <summary>人員請假管理</summary>
+                            <ul>
+                                <li onclick="loadIframe('05.請假資料維護.html')">請假資料維護</li>
+                            </ul>
+                        </details>
+                    </li>
+
+                    <li>
+                        <details>
+                            <summary>任務派遣管理</summary>
+                            <ul>
+                                <li onclick="loadIframe('06.理賠任務維護.html')">理賠任務維護</li>
+                            </ul>
+                        </details>
+                    </li>
+
+                    <li>
+                        <details>
+                            <summary>查詢作業</summary>
+                            <ul>
+                                <li onclick="loadIframe('07.任務明細查詢.html')">任務明細查詢</li>
+                                <li onclick="loadIframe('08.API呼叫記錄查詢.html')">API呼叫記錄查詢</li>
+                                <li onclick="loadIframe('09.未結任務排程查詢.html')">未結任務排程查詢</li>
+                            </ul>
+                        </details>
+                    </li>
+
+                    <li>
+                        <details>
+                            <summary>基本資料管理</summary>
+                            <ul>
+                                <li onclick="loadIframe('10.任務地點維護.html')">任務地點維護</li>
+                                <li onclick="loadIframe('11.派遣區域維護.html')">派遣區域維護</li>
+                                <li onclick="loadIframe('12.處理事項維護.html')">處理事項維護</li>
+                                <li onclick="loadIframe('13.公司資料維護.html')">公司資料維護</li>
+                            </ul>
+                        </details>
+                    </li>
+
+                    <li>
+                        <details>
+                            <summary>帳號權限管理</summary>
+                            <ul>
+                                <li onclick="loadIframe('14.使用者帳號設定.html')">使用者帳號設定</li>
+                                <li onclick="loadIframe('15.角色權限設定.html')">角色權限設定</li>
+                            </ul>
+                        </details>
+                    </li>
+					
+					<li class="center-btn"><button onclick="logout()" id="logoutBtn">登出</button></li>
+
+                </ul>
+            </nav>
+            <iframe id="mainFrame" src="" name="mainFrame"></iframe>
+        </div>
+
+        <script>
+            const menuToggle = document.getElementById("menuToggle");
+            const menu = document.getElementById("menu");
+            const collapseBtn = document.getElementById("collapseBtn");
+
+            menuToggle.addEventListener("click", () => {
+                menu.classList.toggle("open");
+            });
+
+            collapseBtn.addEventListener("click", () => {
+                if (window.innerWidth > 768) {
+                    menu.classList.toggle("collapsed");
+                }
+            });
+
+            function loadIframe(url) {
+                document.getElementById("mainFrame").src = url;
+                if (window.innerWidth <= 768) {
+                    menu.classList.remove("open");
+                }
+            }
+            function logout() {
+                if (confirm("確定要登出？")) {
+                    alert("登出成功");
+                    // 可換成 location.href = "/login.html";
+                }
+            }
+        </script>
+    </body>
+</html>

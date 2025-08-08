@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>行動任務處理 - 通知</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      padding: 1rem;
+    }
+
+	h2 {
+	  margin-bottom: 1em;
+	}
+
+    /* PC Table Style */
+    .pc-only table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .pc-only th, .pc-only td {
+      border: 1px solid #ddd;
+      padding: 10px;
+      vertical-align: top;
+    }
+
+    .pc-only th {
+      background-color: #f2f2f2;
+      text-align: center;
+    }
+
+    .pc-only td {
+      text-align: left;
+    }
+
+    /* Mobile Card Style */
+    .mobile-only .card {
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      padding: 1em;
+      margin-bottom: 1em;
+      background-color: #fdfdfd;
+    }
+
+    .mobile-only .card .time {
+      font-weight: bold;
+      margin-bottom: 0.5em;
+    }
+
+    .mobile-only .note {
+      font-size: 0.9em;
+      color: #666;
+    }
+
+    .mobile-only {
+      display: none;
+    }
+
+    .pc-only {
+      display: block;
+    }
+
+    @media (max-width: 768px) {
+      .pc-only {
+        display: none;
+      }
+      .mobile-only {
+        display: block;
+      }
+    }
+
+	.btn-view {
+	  background-color: transparent;
+	  color: #3182ce;
+	  border: 1px solid #3182ce;
+	  border-radius: 4px;
+	  padding: 4px 8px;
+	  font-size: 0.9rem;
+	  margin-top: 0.5rem;
+	  cursor: pointer;
+	  display: inline-block;
+	  transition: all 0.2s ease;
+	}
+
+	.btn-view:hover {
+	  background-color: #3182ce;
+	  color: white;
+	}
+
+	
+  </style>
+</head>
+<body>
+  <h2>新任務通知</h2>
+
+<!-- PC 版 -->
+<div class="pc-only">
+  <table>
+    <thead>
+      <tr>
+        <th>任務時間</th>
+        <th>內容</th>
+        <th>操作</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td width="35%">2025-04-15 09:00 ~ 10:00</td>
+        <td width="50%">勘車 - 北都LS南港廠</td>
+        <td width="15%"><button class="btn-view" onclick="location.href='02.task_detail_proc.html'">查看任務</button></td>
+      </tr>
+      <tr>
+        <td>2025-05-12 11:00 ~ 12:00</td>
+        <td>法院出庭 - 內湖簡易庭民事大樓第一調解室</td>
+        <td><button class="btn-view" onclick="location.href='02.task_detail_proc.html'">查看任務</button></td>
+      </tr>
+      <tr>
+        <td>2025-06-05 14:00 ~ 15:30</td>
+        <td>和解 - 士林簡易庭一樓調解室</td>
+        <td><button class="btn-view" onclick="location.href='02.task_detail_proc.html'">查看任務</button></td>
+      </tr>
+    </tbody>
+  </table>
+  <p class="note">說明：僅顯示昨日與今日建檔之任務。</p>
+</div>
+
+<!-- Mobile 版 -->
+<div class="mobile-only">
+  <div class="card">
+    <div class="time">2025-04-15 09:00 ~ 10:00</div>
+    <div>勘車 - 北都LS南港廠</div>
+	<button class="btn-view" onclick="location.href='02.task_detail_proc.html'">查看任務</button>
+  </div>
+  <div class="card">
+    <div class="time">2025-05-12 11:00 ~ 12:00</div>
+    <div>法院出庭 - 內湖簡易庭民事大樓第一調解室</div>
+	<button class="btn-view" onclick="location.href='02.task_detail_proc.html'">查看任務</button>
+  </div>
+  <div class="card">
+    <div class="time">2025-06-05 14:00 ~ 15:30</div>
+    <div>和解 - 士林簡易庭一樓調解室</div>
+	<button class="btn-view" onclick="location.href='02.task_detail_proc.html'">查看任務</button>
+  </div>
+</div>
+
+</body>
+</html>
