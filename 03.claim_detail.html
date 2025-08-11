@@ -6,17 +6,18 @@
   <title>行動任務處理 - 資料補傳 - 賠案明細</title>
   <style>
     /* 版型與色系貼齊 02.task_detail_proc.html */
-    body { font-family: Arial, sans-serif; margin: 0; padding: 20px; }
+    body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background:#f5f6f8; }
     h2 { margin: 0 0 12px; display: flex; align-items: center; gap: 10px; }
 
     /* 卡片共用 */
     .card { background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.1); margin: 0 auto 16px; max-width: 1000px; }
-    .kv { display: grid; grid-template-columns: 150px 1fr; column-gap: 16px; row-gap: 8px; }
+    .kv { display: grid; grid-template-columns: 180px 1fr; column-gap: 16px; row-gap: 8px; }
     .kv .k { font-weight: bold; color: #555; text-align: right; }
+    .subtle { color:#666; font-size: .95rem; }
 
     /* 中段按鈕：與 02.task_detail_proc.html 同色（藍 #3182ce） */
     .btn-row { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin: 18px auto; max-width: 1000px; }
-    .btn { padding: 10px 16px; border: none; border-radius: 4px; font-size: 1rem; color: #fff; cursor: pointer; }
+    .btn { padding: 10px 16px; border: none; border-radius: 6px; font-size: 1rem; color: #fff; cursor: pointer; }
     .btn-primary { background-color: #3182ce; }
 
     /* Sheet Tabs 包在卡片內 */
@@ -32,11 +33,14 @@
     .tab-panel { display: none; }
     .tab-panel.active { display: block; }
 
+    /* 子卡片（給 array 區塊用） */
+    .sub-card { border:1px solid #e5e7eb; border-radius:8px; padding:12px 14px; margin:10px 0; background:#fafafa; }
+    .sub-title { font-weight:700; margin: 4px 0 12px; }
+
     /* Mobile 優化 */
     @media (max-width: 767px) {
       body { padding: 16px; }
-      input, select, textarea, button { font-size: 16px !important; height: 40px !important; padding: 8px 10px !important; box-sizing: border-box; }
-      .kv { grid-template-columns: 120px 1fr; }
+      .kv { grid-template-columns: 130px 1fr; }
       .kv .k { text-align: left; }
       .btn { width: 100%; }
       .btn-row { gap: 12px; }
@@ -46,26 +50,18 @@
 <body>
   <h2>賠案明細</h2>
 
-	<!-- 上半部：基本資訊卡片（來源：賠案表頭） -->
-	<div class="card" id="claim-header-card">
-	  <div class="kv">
-		<div class="k">賠案號碼</div><div id="claimNo">—</div>
-		<div class="k">案件狀態</div><div id="claimState">—</div>
-		<div class="k">被保姓名</div><div id="insuredNm">—</div>
-		<div class="k">車牌號碼</div><div id="regNum">—</div>
-		<div class="k">承辦人</div><div id="clmRepNm">—</div>
-		<div class="k">出險時間</div><div id="accDtTm">—</div>
-		<div class="k">案情摘要</div><div id="caseSummary">—</div>
-	  </div>
-	</div>
+  <!-- 上半部：賠案表頭（依 API 規格 4.1 ~ 4.9） -->
+  <div class="card" id="claim-header-card">
+    <div class="kv" id="headerKV"></div>
+  </div>
 
-  <!-- 中間：二顆按鈕（藍色 primary），連到既有頁面 -->
+  <!-- 中間：二顆按鈕（保持不動） -->
   <div class="btn-row">
     <button class="btn btn-primary" onclick="location.href='03.claim_log_upload.html'">日誌新增</button>
     <button class="btn btn-primary" onclick="location.href='03.claim_file_upload.html'">檔案上傳</button>
   </div>
 
-  <!-- 下半部：卡片包住四個 Sheet（基本資料／事故資料／承保內容／日誌） -->
+  <!-- 下半部：四個頁籤（基本資料／事故資料／承保內容／日誌） -->
   <div class="card tab-card" role="region" aria-label="賠案資訊切換">
     <div class="tab-nav" role="tablist">
       <button class="tab-btn" role="tab" aria-selected="true" aria-controls="panel-basic" id="tab-basic">基本資料</button>
@@ -76,107 +72,339 @@
     <div class="tab-panels">
       <!-- 基本資料 -->
       <section id="panel-basic" class="tab-panel active" role="tabpanel" aria-labelledby="tab-basic">
-        <div class="kv">
-          <div class="k">被保人</div><div id="basicInsured">王小明</div>
-          <div class="k">電話</div><div id="basicPhone">0912-345-678</div>
-          <div class="k">地址</div><div id="basicAddr">台北市中山區南京東路一段 100 號</div>
-          <div class="k">保單號碼</div><div id="policyNo">P-2024-00001</div>
-        </div>
+        <div class="kv" id="basicKV"></div>
       </section>
-      <!-- 事故資料 -->
+      <!-- 事故資料（含各 array 子區塊） -->
       <section id="panel-accident" class="tab-panel" role="tabpanel" aria-labelledby="tab-accident">
-        <div class="kv">
-          <div class="k">事故日期</div><div id="accDate">2025-04-10</div>
-          <div class="k">事故地點</div><div id="accPlace">台北市信義區市府路</div>
-          <div class="k">事故摘要</div><div id="accSummary">對向擦撞，前保險桿受損</div>
-          <div class="k">報案單位</div><div id="accPolice">信義分局</div>
-        </div>
+        <div class="kv" id="accidentKV"></div>
+        <div id="vehiclesWrap"></div>
+        <div id="nonVehiclesWrap"></div>
+        <div id="victimsVWrap"></div>
+        <div id="victimsCWrap"></div>
       </section>
-      <!-- 承保內容 -->
+      <!-- 承保內容（policyCoverage 為 array，用子卡片呈現） -->
       <section id="panel-coverage" class="tab-panel" role="tabpanel" aria-labelledby="tab-coverage">
-        <div class="kv">
-          <div class="k">已賠金額</div><div id="paidAmount">$120,000</div>
-          <div class="k">自負額</div><div id="deductible">$5,000</div>
-          <div class="k">未決金額</div><div id="outstanding">$30,000</div>
-          <div class="k">上次給付日</div><div id="lastPaid">2025-04-20</div>
-        </div>
+        <div id="policyCoverageWrap"></div>
       </section>
-      <!-- 日誌 -->
+      <!-- 日誌（journal） -->
       <section id="panel-log" class="tab-panel" role="tabpanel" aria-labelledby="tab-log">
-        <div class="kv">
-          <div class="k">2025-04-15 09:48</div><div>日誌新增 成功</div>
-          <div class="k">2025-04-15 09:50</div><div>檔案上傳 失敗</div>
-          <div class="k">2025-04-15 09:55</div><div>檔案上傳 處理中</div>
-        </div>
+        <div id="journalWrap"></div>
       </section>
     </div>
   </div>
 
   <script>
-
-  /**
-   * 將 API 回傳的 claimData[0] 餵進來，渲染「賠案表頭」
-   * 期望欄位來自 tmp_claims_query_API.docx：
-   * claimNo, claimState, insuredNm, regNum, clmRepNm, clmAccDt, clmAccTM, caseSummary
-   */
-  function renderClaimHeader(claim) {
-    const $ = (id) => document.getElementById(id);
-
-    const safe = (v) => (v === null || v === undefined || v === '' ? '—' : String(v));
-
-    // 出險日期時間：API 分成 clmAccDt(yyyymmdd) + clmAccTM(00~23)
-    const fmtDate = (yyyymmdd) => {
-      if (!/^\d{8}$/.test(yyyymmdd || '')) return null;
-      return `${yyyymmdd.slice(0,4)}-${yyyymmdd.slice(4,6)}-${yyyymmdd.slice(6,8)}`;
+    // ======= 內嵌 sample（不使用 fetch）。實際串接時改由 API 回傳 =======
+    const sample = {
+      "procSerial":"1",
+      "retCode":"000",
+      "retMsg":"呼叫成功",
+      "claimData":[
+        {
+          "claimNo":"01078966",
+          "clmAccDt":"20201101",
+          "clmAccTM":"10",
+          "clmRepNm":"林某人",
+          "insuredNm":"陳某人",
+          "issueBrhCD":"27",
+          "handleBrhCD":"20",
+          "caseSummary":"保車停等紅燈遭後方財車碰撞",
+          "payStat":[{"premiumCls":"TPL","reserveCD":"32","lossOutstanding":"0.00","deductible":"0","lossPaid":"15,000.00","lossInCurr":"15,000.00"}],
+          "lossCauseDesc":"13碰撞，傾覆 – 第三人過失",
+          "claimant":"陳某人",
+          "addInsuredNm":"",
+          "limitDriver":"",
+          "insuredHomeTel":"",
+          "insuredMobile":"0905123456",
+          "insuredAddr":"台北市中山區松江路126號",
+          "applicantNm":"陳某人",
+          "applicantHomeTel":"",
+          "applicantMobile":"0905123456",
+          "claimState":"1處理中",
+          "insEffDt":"20210701",
+          "insExpDtexpDt":"20220701",
+          "clmRcvDt":"20211122",
+          "policyCoverage":[
+            {"coverageCD":"B3","coverageDesc":"車體全損免折舊","coverageInsAmtDesc":"賠償最高限額","coverageInsAmt":"249,000","coverageDeduct":"52","coverageInsPrm":"178"},
+            {"coverageCD":"C3","coverageDesc":"車體許可使用免追償","coverageInsAmtDesc":"賠償最高限額","coverageInsAmt":"249,000","coverageDeduct":"52","coverageInsPrm":"190"},
+            {"coverageCD":"05","coverageDesc":"車對車碰撞車體損失險","coverageInsAmtDesc":"","coverageInsAmt":"249,000","coverageDeduct":"車碰車免自負額","coverageInsPrm":"12,692"}
+          ],
+          "policyContents":["乘客險限單一駕駛者一人","加保乙型颱風險自負額20%"],
+          "accLoc":"15苗栗縣",
+          "clmAccLocation":"苗栗縣苗栗市縣府路縣政府前",
+          "policeUnit":"苗栗分局",
+          "policeNm":"鍾某人",
+          "referClaimNo":"",
+          "inputTypDesc":"追償件，需轉法務",
+          "regNum":"ABC-0001",
+          "mtrTyp":"03自用小客車",
+          "makeCD":"3003990 ",
+          "mtrYR":"2018",
+          "driverNm":"陳某人",
+          "driverID":"A123456789",
+          "driverSex":"男",
+          "accLiabilityPcnt":"50(%) 說明：右轉疏忽 ",
+          "driverTEL":"",
+          "driverMobile":"0905123456",
+          "vehicles":[{"contRegNum":"XYZ-001","contDriverNm":"許小姐","contDriverID":"F223456789","contDriverSex":"女","contDriverAdrs":"","contAccLibilityPcnt":"50(%) 說明：右轉疏忽 ","contDriverTEL":"","contDriverMobile":"0918123456"}],
+          "nonVehicles":[{"pdNonVehicle":"電線桿","pdAccLibilityPcnt":"","ownerNm":"苗栗縣政府","ownerTEL":""}],
+          "victimsV":[{"victimDamageTypCD":"","victimAccLibilityPcnt":"","victimNm":"許小姐","victimMobile":"0918123456","victimSex":"女"}],
+          "victimsC":[],
+          "journal":[{"seqNo":1,"inputDt":"20201101 14:05:32","handleelDt":"20201101","handleelItemCD":"15","handleelItemDesc":"SMS 發送簡訊","contactNm":"陳某人","contentMatters":"XXXXXX","handlerUsrID":"","handlerUsrNm":"","inputUsrID":"","inputUsrNm":""}],
+          "transLog":[{"seqNo":1,"tranNo":"0001","inputDt":"20211122","hostUsrAcnt":"PMA1","hostUsrNm":"李某人","clmRepID":"OP001","clmRepNm":"張某人","tranDesc":"賠案登錄","reasonDesc":"","premiumCls":"TPL","reserveCD":"32","lossPaid":"0.00","revbal":"25,000.00","chgbal":"25,000.00"},{"seqNo":2,"TranNo":"0002","inputDt":"20211123","hostUsrAcnt":"PMA1","hostUsrNm":"李某人","clmRepID":"OP001","clmRepNm":"張某人","tranDesc":"賠案修正","reasonDesc":"修改RESERVE","premiumCls":" TPL","reserveCD":"32","lossPaid":"0.00","revbal":"-5,000","chgbal":"10,000"}]
+        }
+      ]
     };
-    const fmtTimeHH = (hh) => {
-      if (hh === null || hh === undefined || hh === '') return null;
-      const n = String(hh).padStart(2,'0');
-      if (!/^\d{2}$/.test(n)) return null;
-      return `${n}:00`;
-    };
-    const accDate = fmtDate(claim.clmAccDt);
-    const accTime = fmtTimeHH(claim.clmAccTM);
-    const accDtTm = accDate && accTime ? `${accDate} ${accTime}` : (accDate || accTime || '—');
 
-    // 寫進去
-    $('claimNo').textContent     = safe(claim.claimNo);
-    $('claimState').textContent  = safe(claim.claimState);      // 例如「1處理中」
-    $('insuredNm').textContent   = safe(claim.insuredNm);
-    $('regNum').textContent      = safe(claim.regNum);          // 保車車號
-    $('clmRepNm').textContent    = safe(claim.clmRepNm);        // 承辦人姓名
-    $('accDtTm').textContent     = accDtTm;
-    $('caseSummary').textContent = safe(claim.caseSummary);
-  }
+    const data = sample.claimData && sample.claimData.length ? sample.claimData[0] : {};
 
-  /* 範例：如果你想先用 sample 驗證畫面，解除下面註解即可。 */
-  fetch('tmp_claim_query_API_sample.json')
-    .then(r => r.json())
-    .then(json => {
-      if (json.retCode === '000' && Array.isArray(json.claimData) && json.claimData.length) {
-        renderClaimHeader(json.claimData[0]);
+    // ======= 小工具 =======
+    const text = (v) => (v === undefined || v === null || v === "" ? "—" : String(v));
+
+    function fillKV(container, entries) {
+      const frag = document.createDocumentFragment();
+      for (const [k, v] of entries) {
+        const kEl = document.createElement('div');
+        kEl.className = 'k';
+        kEl.textContent = k;
+        const vEl = document.createElement('div');
+        vEl.textContent = text(v);
+        frag.appendChild(kEl);
+        frag.appendChild(vEl);
       }
-    })
-    .catch(() => {/* 安靜失敗，不吵 */});
+      container.innerHTML = '';
+      container.appendChild(frag);
+    }
 
+    function makeSubCard(title) {
+      const box = document.createElement('div');
+      box.className = 'sub-card';
+      if (title) {
+        const t = document.createElement('div');
+        t.className = 'sub-title';
+        t.textContent = title;
+        box.appendChild(t);
+      }
+      return box;
+    }
 
+    function yyyymmddToDash(s){
+      if(!s) return s; const m = String(s).match(/^\d{8}$/); if(!m) return s; return s.slice(0,4)+'-'+s.slice(4,6)+'-'+s.slice(6,8);
+    }
 
+    // ======= Header（賠案表頭 4.1~4.9） =======
+    function renderHeader() {
+      const headerKV = document.getElementById('headerKV');
+      const entries = [
+        ['賠案號碼', data.claimNo],
+        ['出險日期', yyyymmddToDash(data.clmAccDt)],
+        ['出險時間', data.clmAccTM],
+        ['承辦人姓名', data.clmRepNm],
+        ['被保險人姓名', data.insuredNm],
+        ['出單單位代號', data.issueBrhCD],
+        ['處理單位代號', data.handleBrhCD],
+        ['案情摘要', data.caseSummary],
+      ];
+      fillKV(headerKV, entries);
 
-  
-    // 簡易 Sheet 切換
-    const tabBtns = document.querySelectorAll('.tab-btn');
-    const panels = document.querySelectorAll('.tab-panel');
-    tabBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        tabBtns.forEach(b => b.setAttribute('aria-selected', String(b === btn)));
-        panels.forEach(p => p.classList.remove('active'));
-        const pid = btn.getAttribute('aria-controls');
-        document.getElementById(pid).classList.add('active');
+    }
+
+    // ======= 基本資料（4.10 ~ 4.24） =======
+    function renderBasic() {
+      const kv = document.getElementById('basicKV');
+      const insExp = data.insExpDt || data.insExpDtexpDt; // sample 有誤字，做容錯
+      fillKV(kv, [
+        ['出險原因', data.lossCauseDesc],
+        ['索賠人姓名', data.claimant],
+        ['附加被保險人姓名', data.addInsuredNm],
+        ['限定駕駛人姓名', data.limitDriver],
+        ['被保險人姓名', data.insuredNm],
+        ['被保險人室內電話', data.insuredHomeTel],
+        ['被保險人行動電話', data.insuredMobile],
+        ['被保險人地址', data.insuredAddr],
+        ['要保人姓名', data.applicantNm],
+        ['要保人住宅電話', data.applicantHomeTel],
+        ['要保人行動電話', data.applicantMobile],
+        ['賠案狀況', data.claimState],
+        ['起保日期', yyyymmddToDash(data.insEffDt)],
+        ['到期日期', yyyymmddToDash(insExp)],
+        ['收件日期', yyyymmddToDash(data.clmRcvDt)],
+      ]);
+    }
+
+    // ======= 事故資料（4.27 ~ 4.46） + 各 array 區塊 =======
+    function renderAccident() {
+      const kv = document.getElementById('accidentKV');
+      fillKV(kv, [
+        ['出險地點', data.accLoc],
+        ['出險詳細位置', data.clmAccLocation],
+        ['警方單位', data.policeUnit],
+        ['警員姓名', data.policeNm],
+        ['任意/強制險賠案號', data.referClaimNo],
+        ['案件類型', data.inputTypDesc],
+        // 保車資料
+        ['保車車號', data.regNum],
+        ['車輛種類', data.mtrTyp],
+        ['廠牌車型', data.makeCD],
+        ['製造年份', data.mtrYR],
+        ['保車駕駛人姓名', data.driverNm],
+        ['保車駕駛ID', data.driverID],
+        ['保車駕駛性別', data.driverSex],
+        ['保車肇責比例', data.accLiabilityPcnt],
+        ['保車駕駛室內電話', data.driverTEL],
+        ['保車駕駛行動電話', data.driverMobile],
+      ]);
+
+      // vehicles（財車資料）
+      const vehicles = Array.isArray(data.vehicles) ? data.vehicles : [];
+      const vWrap = document.getElementById('vehiclesWrap'); vWrap.innerHTML = '';
+      if (vehicles.length) {
+        const title = document.createElement('div'); title.className='subtle'; title.textContent='財車資料 vehicles'; vWrap.appendChild(title);
+        vehicles.forEach((v, i) => {
+          const box = makeSubCard(`財車 ${i+1}`);
+          const kv = document.createElement('div'); kv.className='kv';
+          fillKV(kv, [
+            ['財車車號', v.contRegNum],
+            ['財車駕駛人姓名', v.contDriverNm],
+            ['財車駕駛ID', v.contDriverID],
+            ['財車駕駛性別', v.contDriverSex],
+            ['財車駕駛地址', v.contDriverAdrs],
+            ['財車肇責比例', v.contAccLibilityPcnt],
+            ['財車駕駛室內電話', v.contDriverTEL],
+            ['財車駕駛行動電話', v.contDriverMobile],
+          ]);
+          box.appendChild(kv); vWrap.appendChild(box);
+        });
+      }
+
+      // nonVehicles（非車財損）
+      const nonV = Array.isArray(data.nonVehicles) ? data.nonVehicles : [];
+      const nWrap = document.getElementById('nonVehiclesWrap'); nWrap.innerHTML = '';
+      if (nonV.length) {
+        const title = document.createElement('div'); title.className='subtle'; title.textContent='非車財損資料 nonVehicles'; nWrap.appendChild(title);
+        nonV.forEach((nv, i) => {
+          const box = makeSubCard(`財損 ${i+1}`);
+          const kv = document.createElement('div'); kv.className='kv';
+          fillKV(kv, [
+            ['非車輛財損', nv.pdNonVehicle],
+            ['財損肇責比例', nv.pdAccLibilityPcnt],
+            ['物主姓名', nv.ownerNm],
+            ['物主電話', nv.ownerTEL],
+          ]);
+          box.appendChild(kv); nWrap.appendChild(box);
+        });
+      }
+
+      // victimsV（任意險受害人）
+      const vV = Array.isArray(data.victimsV) ? data.victimsV : [];
+      const vVWrap = document.getElementById('victimsVWrap'); vVWrap.innerHTML = '';
+      if (vV.length) {
+        const title = document.createElement('div'); title.className='subtle'; title.textContent='受害人資料 – 任意險 victimsV'; vVWrap.appendChild(title);
+        vV.forEach((vv, i) => {
+          const box = makeSubCard(`受害人(任意) ${i+1}`);
+          const kv = document.createElement('div'); kv.className='kv';
+          fillKV(kv, [
+            ['傷情代號', vv.victimDamageTypCD],
+            ['受害人肇責比例', vv.victimAccLibilityPcnt],
+            ['受害人姓名', vv.victimNm],
+            ['受害人行動電話', vv.victimMobile],
+            ['受害人性別', vv.victimSex],
+          ]);
+          box.appendChild(kv); vVWrap.appendChild(box);
+        });
+      }
+
+      // victimsC（強制險受害人）
+      const vC = Array.isArray(data.victimsC) ? data.victimsC : [];
+      const vCWrap = document.getElementById('victimsCWrap'); vCWrap.innerHTML = '';
+      if (vC.length) {
+        const title = document.createElement('div'); title.className='subtle'; title.textContent='受害人資料 – 強制險 victimsC'; vCWrap.appendChild(title);
+        vC.forEach((vc, i) => {
+          const box = makeSubCard(`受害人(強制) ${i+1}`);
+          const kv = document.createElement('div'); kv.className='kv';
+          fillKV(kv, [
+            ['傷情代號', vc.victimDamageTypCD],
+            ['受害人肇責比例', vc.victimAccLibilityPcnt],
+            ['受害人姓名', vc.victimNm],
+            ['受害人行動電話', vc.victimMobile],
+            ['受害人性別', vc.victimSex],
+          ]);
+          box.appendChild(kv); vCWrap.appendChild(box);
+        });
+      }
+    }
+
+    // ======= 承保內容（policyCoverage Array） =======
+    function renderCoverage() {
+      const wrap = document.getElementById('policyCoverageWrap'); wrap.innerHTML = '';
+      const arr = Array.isArray(data.policyCoverage) ? data.policyCoverage : [];
+      if (!arr.length) { wrap.textContent = '—'; return; }
+      arr.forEach((p, i) => {
+        const box = makeSubCard(`承保項目 ${i+1}`);
+        const kv = document.createElement('div'); kv.className='kv';
+        fillKV(kv, [
+          ['險種', p.coverageCD],
+          ['保險種類', p.coverageDesc],
+          ['給付項目', p.coverageInsAmtDesc],
+          ['保險金額', p.coverageInsAmt],
+          ['自負額', p.coverageDeduct],
+          ['保險費', p.coverageInsPrm],
+        ]);
+        box.appendChild(kv); wrap.appendChild(box);
       });
+    }
+
+    // ======= 日誌（journal Array） =======
+    function renderJournal() {
+      const wrap = document.getElementById('journalWrap'); wrap.innerHTML = '';
+      const arr = Array.isArray(data.journal) ? data.journal : [];
+      if (!arr.length) { wrap.textContent = '—'; return; }
+      arr.forEach((j) => {
+        const box = makeSubCard(`日誌序號 ${j.seqNo ?? ''}`);
+        const kv = document.createElement('div'); kv.className='kv';
+        // sample JSON 欄位有誤字，做容錯：handleDt/handleItemCD
+        const handleDt = j.handleDt || j.handleelDt;
+        const handleItemCD = j.handleItemCD || j.handleelItemCD;
+        const handleItemDesc = j.handleItemDesc || j.handleelItemDesc;
+        fillKV(kv, [
+          ['輸入日期', j.inputDt],
+          ['處理日期', handleDt],
+          ['處理項目代號', handleItemCD],
+          ['處理項目名稱', handleItemDesc],
+          ['聯絡人員姓名', j.contactNm],
+          ['處理內容', j.contentMatters],
+          ['處理人員代號', j.handlerUsrID],
+          ['處理人員姓名', j.handlerUsrNm],
+          ['輸入人員代號', j.inputUsrID],
+          ['輸入人員姓名', j.inputUsrNm],
+        ]);
+        box.appendChild(kv); wrap.appendChild(box);
+      });
+    }
+
+    // ======= Tab 切換 =======
+    function initTabs(){
+      const tabBtns = document.querySelectorAll('.tab-btn');
+      const panels = document.querySelectorAll('.tab-panel');
+      tabBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          tabBtns.forEach(b => b.setAttribute('aria-selected', String(b === btn)));
+          panels.forEach(p => p.classList.remove('active'));
+          const pid = btn.getAttribute('aria-controls');
+          document.getElementById(pid).classList.add('active');
+        });
+      });
+    }
+
+    // ======= 進場 =======
+    document.addEventListener('DOMContentLoaded', () => {
+      renderHeader();
+      renderBasic();
+      renderAccident();
+      renderCoverage();
+      renderJournal();
+      initTabs();
     });
-	
-	
-	
   </script>
 </body>
 </html>
