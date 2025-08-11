@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>行動任務處理 - 資料補傳 - 賠案查詢</title>
+  <style>
+    /* 風格貼齊 02.task_query.html：白卡、圓角、陰影、綠色查詢鈕 */
+    body { font-family: sans-serif; margin: 0; padding: 1rem; }
+    h2 { margin: 0 0 1rem; }
+    .pc-wrapper { max-width: 1000px; margin: 0 auto; }
+
+    .query-form { background: #fff; padding: 1rem; margin-bottom: 1rem; border-radius: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
+    .query-form label { display: block; margin: 0.5rem 0 0.25rem; }
+    .query-form input { width: 100%; padding: 0.5rem; border-radius: 6px; border: 1px solid #ccc; box-sizing: border-box; }
+
+    .btn-area { margin-top: 1rem; display: flex; gap: 1rem; justify-content: center; }
+    .btn { padding: 0.5rem 1.2rem; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
+    .btn-clear { background: #ccc; color: #000; }
+    .btn-search { background: #2f855a; color: #fff; }
+
+    @media screen and (max-width: 767px) {
+      input, button { font-size: 16px !important; height: 40px !important; padding: 8px 10px !important; box-sizing: border-box; }
+      label { font-size: 1rem; }
+      .btn { font-size: 1rem; padding: 0.6rem 1.2rem; }
+    }
+  </style>
+</head>
+<body>
+  <h2>資料補傳</h2>
+  <div class="pc-wrapper">
+    <div class="query-form">
+      <label for="claimNo"><strong>賠案號碼</strong></label>
+      <input id="claimNo" type="text" placeholder="請輸入賠案號（例：10000001）" />
+      <div class="btn-area">
+        <button class="btn btn-clear" id="btnClear">清除</button>
+        <button class="btn btn-search" id="btnSearch">查詢</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // 清除
+    document.getElementById('btnClear').addEventListener('click', () => {
+      document.getElementById('claimNo').value = '';
+    });
+
+    // 查詢：雛型先做前端必填檢核，後續再換成 call API 成功後導頁
+    document.getElementById('btnSearch').addEventListener('click', () => {
+      const claimNo = document.getElementById('claimNo').value.trim();
+      if (!claimNo) { alert('請輸入賠案號碼'); return; }
+      // TODO: 呼叫中間層 API（claim_query）成功後再導頁
+      location.href = '03.claim_detail.html';
+    });
+  </script>
+</body>
+</html>

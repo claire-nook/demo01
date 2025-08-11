@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>行動任務處理 - 資料補傳 - 賠案明細</title>
+  <style>
+    /* 版型與色系貼齊 02.task_detail_proc.html */
+    body { font-family: Arial, sans-serif; margin: 0; padding: 20px; }
+    h2 { margin: 0 0 12px; display: flex; align-items: center; gap: 10px; }
+
+    /* 卡片共用 */
+    .card { background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.1); margin: 0 auto 16px; max-width: 1000px; }
+    .kv { display: grid; grid-template-columns: 150px 1fr; column-gap: 16px; row-gap: 8px; }
+    .kv .k { font-weight: bold; color: #555; text-align: right; }
+
+    /* 中段按鈕：與 02.task_detail_proc.html 同色（藍 #3182ce） */
+    .btn-row { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin: 18px auto; max-width: 1000px; }
+    .btn { padding: 10px 16px; border: none; border-radius: 4px; font-size: 1rem; color: #fff; cursor: pointer; }
+    .btn-primary { background-color: #3182ce; }
+
+    /* Sheet Tabs 包在卡片內 */
+    .tab-card { padding: 0; }
+    .tab-nav {
+      display: flex; gap: 6px; overflow-x: auto; white-space: nowrap;
+      border-bottom: 1px solid #e5e7eb; padding: 10px; border-top-left-radius: 8px; border-top-right-radius: 8px;
+      background: #fff;
+    }
+    .tab-btn { border: none; background: #f3f4f6; color: #333; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-weight: 600; }
+    .tab-btn[aria-selected="true"] { background: #ffffff; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+    .tab-panels { padding: 16px 20px 20px; }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* Mobile 優化 */
+    @media (max-width: 767px) {
+      body { padding: 16px; }
+      input, select, textarea, button { font-size: 16px !important; height: 40px !important; padding: 8px 10px !important; box-sizing: border-box; }
+      .kv { grid-template-columns: 120px 1fr; }
+      .kv .k { text-align: left; }
+      .btn { width: 100%; }
+      .btn-row { gap: 12px; }
+    }
+  </style>
+</head>
+<body>
+  <h2>賠案明細</h2>
+
+	<!-- 上半部：基本資訊卡片（來源：賠案表頭） -->
+	<div class="card" id="claim-header-card">
+	  <div class="kv">
+		<div class="k">賠案號碼</div><div id="claimNo">—</div>
+		<div class="k">案件狀態</div><div id="claimState">—</div>
+		<div class="k">被保姓名</div><div id="insuredNm">—</div>
+		<div class="k">車牌號碼</div><div id="regNum">—</div>
+		<div class="k">承辦人</div><div id="clmRepNm">—</div>
+		<div class="k">出險時間</div><div id="accDtTm">—</div>
+		<div class="k">案情摘要</div><div id="caseSummary">—</div>
+	  </div>
+	</div>
+
+  <!-- 中間：二顆按鈕（藍色 primary），連到既有頁面 -->
+  <div class="btn-row">
+    <button class="btn btn-primary" onclick="location.href='03.claim_log_upload.html'">日誌新增</button>
+    <button class="btn btn-primary" onclick="location.href='03.claim_file_upload.html'">檔案上傳</button>
+  </div>
+
+  <!-- 下半部：卡片包住四個 Sheet（基本資料／事故資料／承保內容／日誌） -->
+  <div class="card tab-card" role="region" aria-label="賠案資訊切換">
+    <div class="tab-nav" role="tablist">
+      <button class="tab-btn" role="tab" aria-selected="true" aria-controls="panel-basic" id="tab-basic">基本資料</button>
+      <button class="tab-btn" role="tab" aria-selected="false" aria-controls="panel-accident" id="tab-accident">事故資料</button>
+      <button class="tab-btn" role="tab" aria-selected="false" aria-controls="panel-coverage" id="tab-coverage">承保內容</button>
+      <button class="tab-btn" role="tab" aria-selected="false" aria-controls="panel-log" id="tab-log">日誌</button>
+    </div>
+    <div class="tab-panels">
+      <!-- 基本資料 -->
+      <section id="panel-basic" class="tab-panel active" role="tabpanel" aria-labelledby="tab-basic">
+        <div class="kv">
+          <div class="k">被保人</div><div id="basicInsured">王小明</div>
+          <div class="k">電話</div><div id="basicPhone">0912-345-678</div>
+          <div class="k">地址</div><div id="basicAddr">台北市中山區南京東路一段 100 號</div>
+          <div class="k">保單號碼</div><div id="policyNo">P-2024-00001</div>
+        </div>
+      </section>
+      <!-- 事故資料 -->
+      <section id="panel-accident" class="tab-panel" role="tabpanel" aria-labelledby="tab-accident">
+        <div class="kv">
+          <div class="k">事故日期</div><div id="accDate">2025-04-10</div>
+          <div class="k">事故地點</div><div id="accPlace">台北市信義區市府路</div>
+          <div class="k">事故摘要</div><div id="accSummary">對向擦撞，前保險桿受損</div>
+          <div class="k">報案單位</div><div id="accPolice">信義分局</div>
+        </div>
+      </section>
+      <!-- 承保內容 -->
+      <section id="panel-coverage" class="tab-panel" role="tabpanel" aria-labelledby="tab-coverage">
+        <div class="kv">
+          <div class="k">已賠金額</div><div id="paidAmount">$120,000</div>
+          <div class="k">自負額</div><div id="deductible">$5,000</div>
+          <div class="k">未決金額</div><div id="outstanding">$30,000</div>
+          <div class="k">上次給付日</div><div id="lastPaid">2025-04-20</div>
+        </div>
+      </section>
+      <!-- 日誌 -->
+      <section id="panel-log" class="tab-panel" role="tabpanel" aria-labelledby="tab-log">
+        <div class="kv">
+          <div class="k">2025-04-15 09:48</div><div>日誌新增 成功</div>
+          <div class="k">2025-04-15 09:50</div><div>檔案上傳 失敗</div>
+          <div class="k">2025-04-15 09:55</div><div>檔案上傳 處理中</div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+
+  /**
+   * 將 API 回傳的 claimData[0] 餵進來，渲染「賠案表頭」
+   * 期望欄位來自 tmp_claims_query_API.docx：
+   * claimNo, claimState, insuredNm, regNum, clmRepNm, clmAccDt, clmAccTM, caseSummary
+   */
+  function renderClaimHeader(claim) {
+    const $ = (id) => document.getElementById(id);
+
+    const safe = (v) => (v === null || v === undefined || v === '' ? '—' : String(v));
+
+    // 出險日期時間：API 分成 clmAccDt(yyyymmdd) + clmAccTM(00~23)
+    const fmtDate = (yyyymmdd) => {
+      if (!/^\d{8}$/.test(yyyymmdd || '')) return null;
+      return `${yyyymmdd.slice(0,4)}-${yyyymmdd.slice(4,6)}-${yyyymmdd.slice(6,8)}`;
+    };
+    const fmtTimeHH = (hh) => {
+      if (hh === null || hh === undefined || hh === '') return null;
+      const n = String(hh).padStart(2,'0');
+      if (!/^\d{2}$/.test(n)) return null;
+      return `${n}:00`;
+    };
+    const accDate = fmtDate(claim.clmAccDt);
+    const accTime = fmtTimeHH(claim.clmAccTM);
+    const accDtTm = accDate && accTime ? `${accDate} ${accTime}` : (accDate || accTime || '—');
+
+    // 寫進去
+    $('claimNo').textContent     = safe(claim.claimNo);
+    $('claimState').textContent  = safe(claim.claimState);      // 例如「1處理中」
+    $('insuredNm').textContent   = safe(claim.insuredNm);
+    $('regNum').textContent      = safe(claim.regNum);          // 保車車號
+    $('clmRepNm').textContent    = safe(claim.clmRepNm);        // 承辦人姓名
+    $('accDtTm').textContent     = accDtTm;
+    $('caseSummary').textContent = safe(claim.caseSummary);
+  }
+
+  /* 範例：如果你想先用 sample 驗證畫面，解除下面註解即可。 */
+  fetch('tmp_claim_query_API_sample.json')
+    .then(r => r.json())
+    .then(json => {
+      if (json.retCode === '000' && Array.isArray(json.claimData) && json.claimData.length) {
+        renderClaimHeader(json.claimData[0]);
+      }
+    })
+    .catch(() => {/* 安靜失敗，不吵 */});
+
+
+
+
+  
+    // 簡易 Sheet 切換
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    const panels = document.querySelectorAll('.tab-panel');
+    tabBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        tabBtns.forEach(b => b.setAttribute('aria-selected', String(b === btn)));
+        panels.forEach(p => p.classList.remove('active'));
+        const pid = btn.getAttribute('aria-controls');
+        document.getElementById(pid).classList.add('active');
+      });
+    });
+	
+	
+	
+  </script>
+</body>
+</html>
