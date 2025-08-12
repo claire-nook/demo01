@@ -2,9 +2,14 @@
 <html lang="zh-Hant">
     <head>
         <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>行動任務處理 - 資料補傳 - 賠案明細（美化版）</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>行動任務處理 - 資料補傳 - 賠案明細</title>
         <style>
+            *,
+            *::before,
+            *::after {
+                box-sizing: border-box;
+            }
             :root {
                 --bg: #f5f6f8;
                 --card: #fff;
@@ -12,9 +17,6 @@
                 --muted: #6b7280;
                 --line: #e5e7eb;
                 --brand: #2563eb;
-                --brand-weak: #eff6ff;
-                --ok: #059669;
-                --warn: #ea580c;
                 --muted-bg: #f3f4f6;
                 --radius: 10px;
                 --r-sm: 8px;
@@ -429,22 +431,25 @@
             .plain-list li {
                 margin: 6px 0;
             }
-
             /* 日誌：工具列與時間線 */
             .toolbar {
                 display: flex;
                 flex-wrap: wrap;
                 gap: 10px;
                 align-items: center;
-                margin-bottom: 10px;
+                margin-bottom: 8px;
             }
-            .chip-toggle {
-                border: 1px solid var(--line);
+            .chip {
+                display: inline-block;
+                padding: 4px 10px;
+                border-radius: 999px;
                 background: var(--muted-bg);
+                font-size: var(--fs-xs);
+                border: 1px solid var(--line);
                 cursor: pointer;
                 user-select: none;
             }
-            .chip-toggle.active {
+            .chip.active {
                 background: #eaf1ff;
                 color: #1d4ed8;
                 border-color: #c7d2fe;
@@ -460,15 +465,39 @@
             .search-box {
                 display: none;
                 margin: 6px 0 10px;
+                width: min(100%, 26rem);
             }
             .search-box.open {
                 display: block;
             }
             .search-box input {
-                width: 95%;
+                width: 100%;
                 padding: 8px 10px;
                 border: 1px solid #e5e7eb;
                 border-radius: 8px;
+                font-size: 1rem;
+            }
+            .bar-actions {
+                margin-left: auto;
+                display: flex;
+                gap: 8px;
+            }
+            .link-xs {
+                font-size: 0.86rem;
+                color: #1d4ed8;
+                background: none;
+                border: none;
+                cursor: pointer;
+            }
+            .select-wrap {
+                width: min(100%, 30rem);
+            }
+            .select-wrap select {
+                width: 100%;
+                padding: 8px 10px;
+                border: 1px solid #e5e7eb;
+                border-radius: 8px;
+                background: #fff;
                 font-size: 1rem;
             }
             .timeline {
@@ -487,10 +516,12 @@
                 font-size: 0.9rem;
             }
             .t-card {
+                position: relative;
                 border: 1px solid #e6e9ef;
                 background: #fafbfc;
                 border-radius: 12px;
                 box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+                overflow: hidden;
             }
             .t-head {
                 display: flex;
@@ -522,21 +553,7 @@
             }
             .t-body {
                 padding: 10px 12px;
-            }
-            .t-body .kv {
-                margin-bottom: 0;
-            }
-            .t-actions {
-                display: flex;
-                gap: 8px;
-                align-items: center;
-            }
-            .link-xs {
-                font-size: 0.86rem;
-                color: #1d4ed8;
-                background: none;
-                border: none;
-                cursor: pointer;
+                background: #fff;
             }
             @media (max-width: 767px) {
                 .t-item {
@@ -547,16 +564,13 @@
     </head>
     <body>
         <h2>賠案明細</h2>
-
         <div class="card head" id="claim-header-card"></div>
-
         <div class="btn-row">
             <button class="btn btn-primary" onclick="location.href='03.claim_log_upload.html'">日誌新增</button>
             <button class="btn btn-primary" onclick="location.href='03.claim_file_upload.html'">檔案上傳</button>
         </div>
-
-        <div class="card tab-card" role="region" aria-label="賠案資訊切換">
-            <div class="tab-nav" role="tablist">
+        <div class="card tab-card">
+            <div class="tab-nav">
                 <button class="tab-btn" role="tab" aria-selected="true" aria-controls="panel-basic" id="tab-basic">基本資料</button>
                 <button class="tab-btn" role="tab" aria-selected="false" aria-controls="panel-accident" id="tab-accident">事故資料</button>
                 <button class="tab-btn" role="tab" aria-selected="false" aria-controls="panel-coverage" id="tab-coverage">承保內容</button>
@@ -566,16 +580,13 @@
                 <section id="panel-basic" class="tab-panel active" role="tabpanel" aria-labelledby="tab-basic">
                     <div class="kv" id="basicKV"></div>
                 </section>
-
                 <section id="panel-accident" class="tab-panel" role="tabpanel" aria-labelledby="tab-accident">
                     <div id="accidentBase"></div>
                     <div id="accidentCards"></div>
                 </section>
-
                 <section id="panel-coverage" class="tab-panel" role="tabpanel" aria-labelledby="tab-coverage">
                     <div id="policyCoverageWrap"></div>
                 </section>
-
                 <section id="panel-log" class="tab-panel" role="tabpanel" aria-labelledby="tab-log">
                     <div id="journalWrap"></div>
                 </section>
@@ -583,6 +594,7 @@
         </div>
 
         <script>
+            // ===== sample data =====
             const sample = {
                 procSerial: "1",
                 retCode: "000",
@@ -713,7 +725,7 @@
             const text = (v) => (v === undefined || v === null || v === "" ? "—" : String(v));
             const yyyymmddToDash = (s) => {
                 if (!s) return s;
-                const m = String(s).match(/^\\d{8}$/);
+                const m = String(s).match(/^\d{8}$/);
                 if (!m) return s;
                 return s.slice(0, 4) + "-" + s.slice(4, 6) + "-" + s.slice(6, 8);
             };
@@ -796,7 +808,7 @@
                 const p = safe(val);
                 if (p === "—") return p;
                 const a = document.createElement("a");
-                a.href = "tel:" + p.replace(/[^\\d+]/g, "");
+                a.href = "tel:" + p.replace(/[^\d+]/g, "");
                 a.textContent = p;
                 return a;
             }
@@ -1033,7 +1045,7 @@
                 }
             }
 
-            // ======= 日誌：合併時間線 =======
+            // ======= 日誌：合併時間線 + 下拉 + 全展開/收合 =======
             function normalizeTimeline({ journal = [], transLog = [] }) {
                 const J = journal.map((j) => ({
                     kind: "JOURNAL",
@@ -1058,76 +1070,106 @@
                     amounts: { lossPaid: t.lossPaid, revbal: t.revbal, chgbal: t.chgbal },
                     raw: t,
                 }));
-                return [...J, ...T].filter((e) => e.ts).sort((a, b) => tsToNumber(b.ts) - tsToNumber(a.ts));
+                return [...J, ...T]
+                    .filter((e) => e.ts)
+                    .sort((a, b) => tsToNumber(b.ts) - tsToNumber(a.ts))
+                    .reverse();
             }
             function tsToNumber(s) {
                 if (!s) return 0;
                 const str = String(s).replace(/[^0-9]/g, "");
-                // YYYYMMDDHHMMSS or YYYYMMDD
                 if (str.length >= 14) {
                     return Number(str.slice(0, 14));
-                } else if (str.length >= 8) {
+                }
+                if (str.length >= 8) {
                     return Number(str.slice(0, 8) + "000000");
                 }
                 return Number(str) || 0;
             }
             function fmtTS(s) {
                 if (!s) return "—";
-                const onlyDigits = String(s).replace(/[^0-9]/g, "");
-                if (onlyDigits.length >= 14) {
-                    const y = onlyDigits.slice(0, 4),
-                        m = onlyDigits.slice(4, 6),
-                        d = onlyDigits.slice(6, 8),
-                        hh = onlyDigits.slice(8, 10),
-                        mm = onlyDigits.slice(10, 12);
-                    return `${y}-${m}-${d} ${hh}:${mm}`;
-                } else if (onlyDigits.length >= 8) {
-                    const y = onlyDigits.slice(0, 4),
-                        m = onlyDigits.slice(4, 6),
-                        d = onlyDigits.slice(6, 8);
-                    return `${y}-${m}-${d}`;
+                const d = String(s).replace(/[^0-9]/g, "");
+                if (d.length >= 14) {
+                    return `${d.slice(0, 4)}-${d.slice(4, 6)}-${d.slice(6, 8)} ${d.slice(8, 10)}:${d.slice(10, 12)}`;
+                }
+                if (d.length >= 8) {
+                    return `${d.slice(0, 4)}-${d.slice(4, 6)}-${d.slice(6, 8)}`;
                 }
                 return s;
             }
-
-            const journalState = { filter: "ALL", query: "" };
+            const PROCESS_ITEMS = [
+                "Notification 損失通知",
+                "Coverage 承保範圍",
+                "Initial Contact 初次聯絡",
+                "Investigation 事故調查",
+                "Case Strategy 賠案處理策略",
+                "Vendor Mgmt 協力廠商管理",
+                "Evaluation 各項賠款估價",
+                "Counter Fraud 反詐欺",
+                "Reserving 預估損失金額",
+                "Neg & Settlem 談判處理",
+                "Litig. Mgmt 訴訟管理",
+                "Recovery 追償",
+                "File Mgmt 檔案管理",
+                "Quality Assurance 賠案稽核",
+                "SMS 發送簡訊",
+                "系統自動通知",
+                "Line推播",
+                "客戶文件上傳/留言",
+                "Auto Log賠案異動自動記錄",
+                "賠案登錄",
+                "賠案修正",
+            ];
+            const journalState = { filter: "ALL", query: "", process: "ALL" };
 
             function renderJournal() {
                 const wrap = document.getElementById("journalWrap");
                 wrap.innerHTML = "";
 
-                // Toolbar: chips + collapsible search
-                const bar = el("div", "toolbar");
-                const chips = [
-                    { key: "ALL", label: "全部" },
-                    { key: "JOURNAL", label: "人工日誌" },
-                    { key: "TRANS", label: "系統異動" },
-                ];
-                const counts = { ALL: 0, JOURNAL: 0, TRANS: 0 };
                 const itemsAll = normalizeTimeline({ journal: data.journal || [], transLog: data.transLog || [] });
-                itemsAll.forEach((it) => {
-                    counts.ALL++;
-                    counts[it.kind]++;
-                });
+                const counts = { ALL: itemsAll.length, JOURNAL: itemsAll.filter((x) => x.kind === "JOURNAL").length, TRANS: itemsAll.filter((x) => x.kind === "TRANS").length };
 
-                chips.forEach((c) => {
-                    const b = el("span", "chip chip-toggle", `${c.label} ${counts[c.key] || 0}`);
-                    b.setAttribute("data-key", c.key);
-                    if (c.key === journalState.filter) b.classList.add("active");
-                    b.addEventListener("click", () => {
-                        journalState.filter = c.key;
+                const bar = el("div", "toolbar");
+                ["ALL", "JOURNAL", "TRANS"].forEach((k) => {
+                    const map = { ALL: "全部", JOURNAL: "人工日誌", TRANS: "系統異動" };
+                    const chip = el("span", "chip" + (journalState.filter === k ? " active" : ""), `${map[k]} ${counts[k]}`);
+                    chip.addEventListener("click", () => {
+                        journalState.filter = k;
                         renderJournal();
                     });
-                    bar.appendChild(b);
+                    bar.appendChild(chip);
                 });
-
-                const searchTgl = el("button", "search-toggle", "片語搜尋");
-                bar.appendChild(searchTgl);
+                const actions = el("div", "bar-actions");
+                const btnOpen = el("button", "link-xs", "全部展開");
+                const btnClose = el("button", "link-xs", "全部收合");
+                btnOpen.addEventListener("click", () => expandAll(true));
+                btnClose.addEventListener("click", () => expandAll(false));
+                actions.appendChild(btnOpen);
+                actions.appendChild(btnClose);
+                bar.appendChild(actions);
                 wrap.appendChild(bar);
 
+                const selWrap = el("div", "select-wrap");
+                const sel = document.createElement("select");
+                ["ALL", ...PROCESS_ITEMS].forEach((label) => {
+                    const opt = document.createElement("option");
+                    opt.value = label;
+                    opt.textContent = label === "ALL" ? "全部處理項目" : label;
+                    if (label === journalState.process) opt.selected = true;
+                    sel.appendChild(opt);
+                });
+                sel.addEventListener("change", () => {
+                    journalState.process = sel.value;
+                    renderJournal();
+                });
+                selWrap.appendChild(sel);
+                wrap.appendChild(selWrap);
+
+                const searchTgl = el("button", "search-toggle", "片語搜尋");
+                wrap.appendChild(searchTgl);
                 const searchBox = el("div", "search-box");
                 const inp = document.createElement("input");
-                inp.placeholder = "輸入關鍵字，如 處理人、處理項目、AS400序號、金額… 按 Enter 搜尋";
+                inp.placeholder = "輸入關鍵字，如 處理人、處理項目、AS400序號… 按 Enter 搜尋";
                 inp.value = journalState.query || "";
                 inp.addEventListener("keydown", (e) => {
                     if (e.key === "Enter") {
@@ -1136,85 +1178,62 @@
                     }
                 });
                 searchBox.appendChild(inp);
+                wrap.appendChild(searchBox);
                 searchTgl.addEventListener("click", () => {
                     searchBox.classList.toggle("open");
                     if (searchBox.classList.contains("open")) inp.focus();
                 });
-                wrap.appendChild(searchBox);
 
-                // Filter items
                 let items = itemsAll.slice();
-                if (journalState.filter !== "ALL") {
-                    items = items.filter((it) => it.kind === journalState.filter);
+                if (journalState.filter !== "ALL") items = items.filter((x) => x.kind === journalState.filter);
+                if (journalState.process !== "ALL") {
+                    const key = journalState.process.toLowerCase();
+                    items = items.filter((x) => (x.title || "").toLowerCase().includes(key) || (x.subTitle || "").toLowerCase().includes(key));
                 }
                 const q = (journalState.query || "").toLowerCase();
                 if (q) {
                     items = items.filter((it) => {
-                        const pool = [
-                            it.title,
-                            it.subTitle,
-                            it.actor,
-                            it.actorId,
-                            it.contact,
-                            it.content,
-                            it.as400No,
-                            it.userAcct,
-                            it.userName,
-                            it.premiumCls,
-                            it.reserveCD,
-                            it.amounts ? it.amounts.lossPaid + " " + it.amounts.revbal + " " + it.amounts.chgbal : "",
-                        ]
+                        const pool = [it.title, it.subTitle, it.actor, it.as400No, it.userAcct, it.userName, it.premiumCls, it.reserveCD, it.content, it.amounts ? it.amounts.lossPaid + " " + it.amounts.revbal + " " + it.amounts.chgbal : ""]
                             .join(" ")
                             .toLowerCase();
-                        return pool.indexOf(q) >= 0;
+                        return pool.includes(q);
                     });
                 }
 
-                // Timeline
                 const tl = el("div", "timeline");
                 if (!items.length) {
-                    const empty = el("div", "muted", "沒有符合條件的紀錄。");
-                    wrap.appendChild(empty);
+                    tl.appendChild(el("div", "muted", "沒有符合條件的紀錄。"));
+                    wrap.appendChild(tl);
                     return;
                 }
-                items.forEach((it, i) => {
+                items.forEach((it) => {
                     const row = el("div", "t-item");
                     row.appendChild(el("div", "t-time", fmtTS(it.ts)));
-
                     const card = el("section", "t-card");
                     const head = el("div", "t-head");
-                    const title = el("div", "t-title", it.title || (it.kind === "TRANS" ? "系統異動" : "處理日誌"));
-                    head.appendChild(title);
-                    const act = el("div", "t-actions");
-                    const src = el("span", "badge-src " + (it.kind === "TRANS" ? "system" : "manual"), it.kind === "TRANS" ? "系統" : "人工");
-                    act.appendChild(src);
+                    head.appendChild(el("div", "t-title", it.title || (it.kind === "TRANS" ? "系統異動" : "處理日誌")));
+                    const right = el("div");
+                    right.appendChild(el("span", "badge-src " + (it.kind === "TRANS" ? "system" : "manual"), it.kind === "TRANS" ? "系統" : "人工"));
                     const btn = el("button", "link-xs", "詳細");
-                    head.appendChild(act);
+                    right.appendChild(btn);
+                    head.appendChild(right);
                     card.appendChild(head);
 
                     const body = el("div", "t-body");
-                    // make content grid
+                    body.style.display = "none";
                     const grid = el("div", "kv kv-two kv-plain");
-
                     if (it.kind === "JOURNAL") {
-                        const j = it.raw || {};
-                        const pairs = [
+                        [
                             ["處理項目", it.title],
                             ["處理人員", it.actor || "—"],
-                            ["輸入日期", j.inputDt || "—"],
-                            ["處理日期", j.handleDt || j.handleelDt || "—"],
-                            ["聯絡人員", it.contact || "—"],
                             ["內容", it.content || "—"],
-                        ];
-                        const frag = document.createDocumentFragment();
-                        pairs.forEach(([k, v]) => {
-                            frag.appendChild(el("div", "k", k));
-                            frag.appendChild(el("div", "v", text(v)));
+                        ].forEach(([k, v]) => {
+                            grid.appendChild(el("div", "k", k));
+                            grid.appendChild(el("div", "v", v == null ? "—" : String(v)));
                         });
-                        grid.appendChild(frag);
                     } else {
                         const t = it.raw || {};
-                        const pairs = [
+                        [
                             ["異動類型", it.title],
                             ["說明", it.subTitle || "—"],
                             ["AS400序號", it.as400No || "—"],
@@ -1224,29 +1243,31 @@
                             ["已決", t.lossPaid || "—"],
                             ["未決", t.revbal || "—"],
                             ["異動", t.chgbal || "—"],
-                        ];
-                        const frag = document.createDocumentFragment();
-                        pairs.forEach(([k, v]) => {
-                            frag.appendChild(el("div", "k", k));
-                            frag.appendChild(el("div", "v", text(v)));
+                        ].forEach(([k, v]) => {
+                            grid.appendChild(el("div", "k", k));
+                            grid.appendChild(el("div", "v", v == null ? "—" : String(v)));
                         });
-                        grid.appendChild(frag);
                     }
-
                     body.appendChild(grid);
-                    body.style.display = "none";
                     btn.addEventListener("click", () => {
-                        const show = body.style.display === "none";
-                        body.style.display = show ? "" : "none";
-                        btn.textContent = show ? "收合" : "詳細";
+                        const open = body.style.display === "none";
+                        body.style.display = open ? "" : "";
+                        btn.textContent = open ? "收合" : "詳細";
                     });
-                    act.appendChild(btn);
-
                     card.appendChild(body);
                     row.appendChild(card);
                     tl.appendChild(row);
                 });
                 wrap.appendChild(tl);
+            }
+
+            function expandAll(open) {
+                document.querySelectorAll("#journalWrap .t-body").forEach((b) => {
+                    b.style.display = open ? "" : "none";
+                });
+                document.querySelectorAll("#journalWrap .t-head .link-xs").forEach((btn) => {
+                    btn.textContent = open ? "收合" : "詳細";
+                });
             }
 
             function initTabs() {
@@ -1273,4 +1294,3 @@
         </script>
     </body>
 </html>
-
