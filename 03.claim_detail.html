@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>行動任務處理 - 資料補傳 - 賠案明細</title>
+  <title>行動任務處理 - 資料補傳 - 賠案明細（美化版）</title>
   <style>
     :root{
       --bg:#f5f6f8; --card:#fff; --text:#111827; --muted:#6b7280; --line:#e5e7eb;
@@ -72,6 +72,12 @@
       .btn{width:100%}
       .chip{margin-bottom:6px}
       .head-top{align-items:flex-start}
+	  .tab-btn {
+		font-size: 1.05rem; /* 比現在大一點 */
+		padding: 10px 10px; /* 上下左右加寬，方便點擊 */
+		min-height: 36px; /* iOS 推薦的最小可點擊高度 */
+		line-height: 1.4;
+	  }	  
     }
 	.divider{
 	  grid-column: 1 / -1;
@@ -456,14 +462,11 @@
 	  root.innerHTML = '';
 	  root.classList.add('basic-compact');   // ← 新增：開啟精簡樣式
 
-		// 用外層的 data；只留 insExp 推導
-		const insExp = data.insExpDt || data.insExp || '';
-
 	  // 1) 上半段：一般欄位 + 在「索賠人」後自動分隔
 	  const basicPairsTop = [
 		['收件日期', safe(yyyymmddToDash(data.clmRcvDt))],
 		['起保日期', safe(yyyymmddToDash(data.insEffDt))],
-		['到期日期', safe(yyyymmddToDash(insExp))],
+		['到期日期', safe(yyyymmddToDash(data.insExpDtexpDt))],
 		['出險原因', safe(data.lossCauseDesc)],
 		['索賠人',   safe(data.claimant)]
 	  ];
