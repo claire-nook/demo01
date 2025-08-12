@@ -47,11 +47,12 @@
 
     // 查詢：雛型先做前端必填檢核，後續再換成 call API 成功後導頁
     document.getElementById('btnSearch').addEventListener('click', () => {
-      const claimNo = document.getElementById('claimNo').value.trim();
-      if (!claimNo) { alert('請輸入賠案號碼'); return; }
+      //const claimNo = document.getElementById('claimNo').value.trim();
+      //if (!claimNo) { alert('請輸入賠案號碼'); return; }
       // TODO: 呼叫中間層 API（claim_query）成功後再導頁
       location.href = '03.claim_detail.html';
     });
   </script>
 </body>
 </html>
+
