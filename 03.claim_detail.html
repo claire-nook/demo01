@@ -33,8 +33,6 @@
                 --keyw: 140px;
                 --keyw-m: 110px;
             }
-
-            /* base */
             html,
             body {
                 height: 100%;
@@ -53,8 +51,6 @@
                 gap: 10px;
                 font-size: var(--fs-lg);
             }
-
-            /* card */
             .card {
                 background: var(--card);
                 padding: 18px;
@@ -63,8 +59,6 @@
                 margin: 0 auto 16px;
                 max-width: 1000px;
             }
-
-            /* buttons */
             .btn-row {
                 display: flex;
                 justify-content: center;
@@ -84,8 +78,6 @@
             .btn-primary {
                 background: var(--brand);
             }
-
-            /* tabs */
             .tab-card {
                 padding: 0;
             }
@@ -122,8 +114,6 @@
             .tab-panel.active {
                 display: block;
             }
-
-            /* kv grid */
             .kv {
                 display: grid;
                 grid-template-columns: var(--keyw) 1fr;
@@ -137,7 +127,6 @@
             .v {
                 font-size: var(--fs-md);
             }
-            /* sub-cards for arrays */
             .sub-card {
                 border: 1px solid var(--line);
                 border-radius: var(--r-sm);
@@ -149,8 +138,6 @@
                 font-weight: 700;
                 margin: 4px 0 12px;
             }
-
-            /* pretty header */
             .head {
                 padding: 16px 18px;
             }
@@ -169,8 +156,6 @@
             .muted {
                 color: var(--muted);
             }
-
-            /* chips & badges */
             .chip {
                 display: inline-block;
                 padding: 2px 8px;
@@ -196,8 +181,6 @@
                 color: #065f46;
                 border-color: #a7f3d0;
             }
-
-            /* truncation */
             .clamp-2 {
                 display: -webkit-box;
                 -webkit-line-clamp: 2;
@@ -212,13 +195,9 @@
                 color: var(--brand);
                 cursor: pointer;
             }
-
-            /* journal kv smaller */
             .kv.kv-tight {
                 gap: 6px 14px;
             }
-
-            /* mobile */
             @media (max-width: 767px) {
                 body {
                     padding: 16px;
@@ -245,20 +224,11 @@
                     line-height: 1.4;
                 }
             }
-
-            .divider {
-                grid-column: 1 / -1;
-                height: 1px;
-                background: var(--line);
-                margin: 8px 0 6px;
-            }
             .basic-sep {
                 border: 0;
                 border-top: 1px dashed #d8dbe0;
                 margin: 14px 0 18px;
             }
-
-            /* key-value grid，與基本資料一致 */
             .kv-grid {
                 display: grid;
                 grid-template-columns: 1fr 1fr;
@@ -283,8 +253,6 @@
                 font-weight: 600;
                 word-break: break-all;
             }
-
-            /* 卡片外觀（與基本資料一致） */
             .info-card {
                 border: 1px solid #e6e9ef;
                 border-radius: 12px;
@@ -314,7 +282,6 @@
                 padding: 12px;
                 margin-bottom: 0;
             }
-            /* 可收合卡片 */
             .collapsible {
                 overflow: hidden;
             }
@@ -341,11 +308,6 @@
                 padding: 2px 8px;
                 border-radius: 999px;
             }
-            .ghost {
-                display: none;
-            }
-
-            /* 多筆清單：粗體標題 + 無框欄位 + 分隔線 */
             .sub-collection {
                 padding: 10px 12px;
             }
@@ -359,8 +321,6 @@
                 border-top: 1px dashed #e3e7ee;
                 margin: 10px 0;
             }
-
-            /* 無框的 key-value（與基本資料上半部一致） */
             .kv-plain .kv-row {
                 background: transparent;
                 border: 0;
@@ -372,42 +332,6 @@
                 padding-top: 6px;
                 margin-top: 6px;
             }
-
-            /* 無框的 key-value（與基本資料上半部一致） */
-            .kv-plain .kv-row {
-                background: transparent;
-                border: 0;
-                border-radius: 0;
-                padding: 2px 0;
-            }
-            .kv-plain .kv-row + .kv-row {
-                border-top: 1px dotted #eceff3;
-                padding-top: 6px;
-                margin-top: 6px;
-            }
-
-            /* 多筆清單的視覺層次 */
-            .sub-collection {
-                padding: 10px 12px;
-            }
-            .sub-item {
-                border: 1px solid #e6e9ef;
-                border-radius: 10px;
-                background: #fff;
-                margin: 10px 0;
-                box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
-                border-left: 4px solid #c7d2fe;
-            }
-            .sub-item > .sub-title {
-                background: #f8fafc;
-                border-bottom: 1px solid #e6e9ef;
-                padding: 8px 10px;
-                font-weight: 700;
-            }
-            .sub-item .kv-grid {
-                padding: 8px 10px;
-            }
-
             @media (max-width: 767px) {
                 .kv-grid {
                     grid-template-columns: 1fr;
@@ -422,8 +346,6 @@
                     font-size: 0.98rem;
                 }
             }
-
-            /* 基本資料：極簡模式（保留一致性） */
             #panel-basic.basic-compact .kv-grid {
                 gap: 6px 16px;
                 margin-bottom: 10px;
@@ -472,7 +394,6 @@
                 padding-top: 6px;
                 margin-top: 6px;
             }
-
             @media (max-width: 767px) {
                 #panel-basic.basic-compact .kv-grid {
                     grid-template-columns: 1fr;
@@ -486,33 +407,154 @@
                     grid-template-columns: 68px 1fr;
                 }
             }
-			
-			/* 承保內容：總保費與清單 */
-			.coverage-total{font-weight:800; font-size:1.05rem; margin:4px 0 12px}
+            /* 承保內容 */
+            .coverage-total {
+                font-weight: 800;
+                font-size: 1.05rem;
+                margin: 4px 0 12px;
+            }
+            .kv.kv-two {
+                grid-template-columns: var(--keyw) 1fr var(--keyw) 1fr;
+                gap: 8px 18px;
+            }
+            @media (max-width: 767px) {
+                .kv.kv-two {
+                    grid-template-columns: var(--keyw-m) 1fr;
+                }
+            }
+            .plain-list {
+                margin: 6px 0 0 0;
+                padding-left: 1.1em;
+            }
+            .plain-list li {
+                margin: 6px 0;
+            }
 
-			/* PC 兩欄，Mobile 一欄 */
-			.kv.kv-two{grid-template-columns: var(--keyw) 1fr var(--keyw) 1fr; gap:8px 18px}
-			@media (max-width:767px){ .kv.kv-two{grid-template-columns: var(--keyw-m) 1fr} }
-
-			/* 極簡清單（無框） */
-			.plain-list{margin:6px 0 0 0; padding-left:1.1em}
-			.plain-list li{margin:6px 0}
-			
+            /* 日誌：工具列與時間線 */
+            .toolbar {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 10px;
+                align-items: center;
+                margin-bottom: 10px;
+            }
+            .chip-toggle {
+                border: 1px solid var(--line);
+                background: var(--muted-bg);
+                cursor: pointer;
+                user-select: none;
+            }
+            .chip-toggle.active {
+                background: #eaf1ff;
+                color: #1d4ed8;
+                border-color: #c7d2fe;
+            }
+            .search-toggle {
+                font-size: 0.9rem;
+                color: #1d4ed8;
+                background: none;
+                border: none;
+                cursor: pointer;
+                padding: 4px 8px;
+            }
+            .search-box {
+                display: none;
+                margin: 6px 0 10px;
+            }
+            .search-box.open {
+                display: block;
+            }
+            .search-box input {
+                width: 100%;
+                padding: 8px 10px;
+                border: 1px solid #e5e7eb;
+                border-radius: 8px;
+                font-size: 1rem;
+            }
+            .timeline {
+                display: flex;
+                flex-direction: column;
+                gap: 12px;
+            }
+            .t-item {
+                display: grid;
+                grid-template-columns: 120px 1fr;
+                gap: 12px;
+                align-items: start;
+            }
+            .t-time {
+                color: var(--muted);
+                font-size: 0.9rem;
+            }
+            .t-card {
+                border: 1px solid #e6e9ef;
+                background: #fafbfc;
+                border-radius: 12px;
+                box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+            }
+            .t-head {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                gap: 10px;
+                padding: 10px 12px;
+                border-bottom: 1px solid #e6e9ef;
+                background: #f3f5f8;
+            }
+            .t-title {
+                font-weight: 700;
+            }
+            .badge-src {
+                border: 1px solid #e5e7eb;
+                border-radius: 999px;
+                padding: 2px 8px;
+                font-size: 0.78rem;
+            }
+            .badge-src.manual {
+                background: #ecfdf5;
+                color: #065f46;
+                border-color: #a7f3d0;
+            }
+            .badge-src.system {
+                background: #fef3c7;
+                color: #92400e;
+                border-color: #fcd34d;
+            }
+            .t-body {
+                padding: 10px 12px;
+            }
+            .t-body .kv {
+                margin-bottom: 0;
+            }
+            .t-actions {
+                display: flex;
+                gap: 8px;
+                align-items: center;
+            }
+            .link-xs {
+                font-size: 0.86rem;
+                color: #1d4ed8;
+                background: none;
+                border: none;
+                cursor: pointer;
+            }
+            @media (max-width: 767px) {
+                .t-item {
+                    grid-template-columns: 1fr;
+                }
+            }
         </style>
     </head>
     <body>
         <h2>賠案明細</h2>
 
-        <!-- Header 美化版 -->
         <div class="card head" id="claim-header-card"></div>
 
-        <!-- 中間：二顆按鈕（保持不動） -->
         <div class="btn-row">
             <button class="btn btn-primary" onclick="location.href='03.claim_log_upload.html'">日誌新增</button>
             <button class="btn btn-primary" onclick="location.href='03.claim_file_upload.html'">檔案上傳</button>
         </div>
 
-        <!-- Tabs -->
         <div class="card tab-card" role="region" aria-label="賠案資訊切換">
             <div class="tab-nav" role="tablist">
                 <button class="tab-btn" role="tab" aria-selected="true" aria-controls="panel-basic" id="tab-basic">基本資料</button>
@@ -525,7 +567,6 @@
                     <div class="kv" id="basicKV"></div>
                 </section>
 
-                <!-- 事故資料：改成與基本資料一致的風格 + 可收合卡片 -->
                 <section id="panel-accident" class="tab-panel" role="tabpanel" aria-labelledby="tab-accident">
                     <div id="accidentBase"></div>
                     <div id="accidentCards"></div>
@@ -534,6 +575,7 @@
                 <section id="panel-coverage" class="tab-panel" role="tabpanel" aria-labelledby="tab-coverage">
                     <div id="policyCoverageWrap"></div>
                 </section>
+
                 <section id="panel-log" class="tab-panel" role="tabpanel" aria-labelledby="tab-log">
                     <div id="journalWrap"></div>
                 </section>
@@ -541,7 +583,6 @@
         </div>
 
         <script>
-            // ======= 內嵌 sample（不使用 fetch）。實際串接時改由 API 回傳 =======
             const sample = {
                 procSerial: "1",
                 retCode: "000",
@@ -667,14 +708,12 @@
                     },
                 ],
             };
-
             const data = sample.claimData && sample.claimData.length ? sample.claimData[0] : {};
 
-            // ======= 小工具 =======
             const text = (v) => (v === undefined || v === null || v === "" ? "—" : String(v));
             const yyyymmddToDash = (s) => {
                 if (!s) return s;
-                const m = String(s).match(/^\d{8}$/);
+                const m = String(s).match(/^\\d{8}$/);
                 if (!m) return s;
                 return s.slice(0, 4) + "-" + s.slice(4, 6) + "-" + s.slice(6, 8);
             };
@@ -693,11 +732,9 @@
                 if (txt !== undefined) n.textContent = txt;
                 return n;
             }
-
             function makeDivider() {
                 return el("hr", "basic-sep");
             }
-
             function makeKVGrid(pairs) {
                 const wrap = el("div", "kv-grid");
                 pairs.forEach(([k, v]) => {
@@ -714,7 +751,6 @@
                 });
                 return wrap;
             }
-
             function makeInfoCard(title, pairs) {
                 const card = el("section", "info-card");
                 const head = el("div", "info-card-head");
@@ -723,7 +759,6 @@
                 card.appendChild(makeKVGrid(pairs));
                 return card;
             }
-
             function makeCollapsibleCard(title, contentEl, count, defaultOpen = false) {
                 const card = el("section", "info-card collapsible");
                 const head = el("div", "info-card-head");
@@ -739,49 +774,36 @@
                 card.appendChild(head);
                 const body = contentEl || el("div");
                 card.appendChild(body);
-
-                // 初始是否展開
                 if (defaultOpen) {
                     card.classList.add("is-open");
                     body.style.display = "";
                 } else {
                     body.style.display = "none";
                 }
-
                 head.addEventListener("click", () => {
                     const open = card.classList.toggle("is-open");
-                    // 重新抓最後一個孩子作為 body，避免後續替換失聯
-                    const b = card.lastElementChild;
-                    b.style.display = open ? "" : "none";
+                    card.lastElementChild.style.display = open ? "" : "none";
                 });
                 return card;
             }
-
-			// 文字金額轉數字、數字加千分位
-			const moneyToNumber = s => {
-			  if (s == null) return 0;
-			  const n = Number(String(s).replace(/[^0-9.-]/g,''));
-			  return Number.isFinite(n) ? n : 0;
-			};
-			const fmtTW = n => Number(n || 0).toLocaleString('zh-TW');
-
-
-
-            // 讓字串電話變成可撥號連結
+            const moneyToNumber = (s) => {
+                if (s == null) return 0;
+                const n = Number(String(s).replace(/[^0-9.-]/g, ""));
+                return Number.isFinite(n) ? n : 0;
+            };
+            const fmtTW = (n) => Number(n || 0).toLocaleString("zh-TW");
             function telify(val) {
                 const p = safe(val);
                 if (p === "—") return p;
                 const a = document.createElement("a");
-                a.href = "tel:" + p.replace(/[^\d+]/g, "");
+                a.href = "tel:" + p.replace(/[^\\d+]/g, "");
                 a.textContent = p;
                 return a;
             }
 
-            // ======= Header（美化渲染） =======
             function renderHeader() {
                 const card = document.getElementById("claim-header-card");
                 card.innerHTML = "";
-
                 const top = el("div", "head-top");
                 const left = el("div");
                 left.appendChild(el("div", "muted", "賠案號碼"));
@@ -792,7 +814,6 @@
                 top.appendChild(left);
                 top.appendChild(right);
                 card.appendChild(top);
-
                 const kv = el("div", "kv kv-tight");
                 const dt = [yyyymmddToDash(data.clmAccDt), hhmmFrom(data.clmAccTM)].filter(Boolean).join(" ");
                 const unitCell = el("div");
@@ -811,7 +832,6 @@
                 });
                 caseCell.appendChild(summary);
                 caseCell.appendChild(btn);
-
                 const frag = document.createDocumentFragment();
                 [
                     ["出險時間", dt],
@@ -833,12 +853,10 @@
                 card.appendChild(kv);
             }
 
-            // ======= 基本資料（保持原樣式） =======
             function renderBasic() {
                 const root = document.getElementById("panel-basic");
                 root.innerHTML = "";
                 root.classList.add("basic-compact");
-
                 const topPairs = [
                     ["收件日期", safe(yyyymmddToDash(data.clmRcvDt))],
                     ["起保日期", safe(yyyymmddToDash(data.insEffDt))],
@@ -848,13 +866,11 @@
                 ];
                 root.appendChild(makeKVGrid(topPairs));
                 root.appendChild(makeDivider());
-
                 const bottomPairs = [
                     ["附加被保險人", safe(data.addInsuredNm)],
                     ["限定駕駛人", safe(data.limitDriver)],
                 ];
                 root.appendChild(makeKVGrid(bottomPairs));
-
                 root.appendChild(
                     makeInfoCard("被保險人資訊", [
                         ["姓名", safe(data.insuredNm)],
@@ -863,7 +879,6 @@
                         ["地址", safe(data.insuredAddr)],
                     ])
                 );
-
                 root.appendChild(
                     makeInfoCard("要保人資訊", [
                         ["姓名", safe(data.applicantNm)],
@@ -874,9 +889,7 @@
                 );
             }
 
-            // ======= 事故資料（一致風格 + 分隔線 + 5 卡片） =======
             function renderAccident() {
-                // 1) 基本欄位 + 分隔線（無框樣式）
                 const base = document.getElementById("accidentBase");
                 base.innerHTML = "";
                 const g1 = makeKVGrid([
@@ -894,8 +907,6 @@
                 ]);
                 g2.classList.add("kv-plain");
                 base.appendChild(g2);
-
-                // 2) 保車資訊（預設收合）
                 const cards = document.getElementById("accidentCards");
                 cards.innerHTML = "";
                 const insuredCarGrid = makeKVGrid([
@@ -910,10 +921,8 @@
                     ["室內電話", safe(data.driverTEL)],
                     ["行動電話", telify(data.driverMobile)],
                 ]);
-                insuredCarGrid.classList.add("kv-plain"); // ← 新增這行
+                insuredCarGrid.classList.add("kv-plain");
                 cards.appendChild(makeCollapsibleCard("保車資訊", insuredCarGrid, undefined, false));
-
-                // 3) 財車資料（多筆，預設收合；粗體標題 + 無框欄位 + 分隔線）
                 const vehicles = Array.isArray(data.vehicles) ? data.vehicles : [];
                 const vList = el("div", "sub-collection");
                 vehicles.forEach((v, i) => {
@@ -933,8 +942,6 @@
                     if (i < vehicles.length - 1) vList.appendChild(el("hr", "sub-divider"));
                 });
                 cards.appendChild(makeCollapsibleCard("財車資料", vList, vehicles.length, false));
-
-                // 4) 非財車資料
                 const nonV = Array.isArray(data.nonVehicles) ? data.nonVehicles : [];
                 const nList = el("div", "sub-collection");
                 nonV.forEach((nv, i) => {
@@ -950,8 +957,6 @@
                     if (i < nonV.length - 1) nList.appendChild(el("hr", "sub-divider"));
                 });
                 cards.appendChild(makeCollapsibleCard("非財車資料", nList, nonV.length, false));
-
-                // 5) 受害人-任意
                 const vV = Array.isArray(data.victimsV) ? data.victimsV : [];
                 const vVList = el("div", "sub-collection");
                 vV.forEach((vv, i) => {
@@ -968,8 +973,6 @@
                     if (i < vV.length - 1) vVList.appendChild(el("hr", "sub-divider"));
                 });
                 cards.appendChild(makeCollapsibleCard("受害人-任意", vVList, vV.length, false));
-
-                // 6) 受害人-強制
                 const vC = Array.isArray(data.victimsC) ? data.victimsC : [];
                 const vCList = el("div", "sub-collection");
                 vC.forEach((vc, i) => {
@@ -988,86 +991,31 @@
                 cards.appendChild(makeCollapsibleCard("受害人-強制", vCList, vC.length, false));
             }
 
-			// ======= 承保內容 =======
-			function renderCoverage(){
-			  const wrap = document.getElementById('policyCoverageWrap');
-			  wrap.innerHTML = '';
-
-			  const arr = Array.isArray(data.policyCoverage) ? data.policyCoverage : [];
-			  if (!arr.length){
-				wrap.textContent = '—';
-				return;
-			  }
-
-			  // 1) 總保險費（置頂，無框）
-			  const totalPrm = arr.reduce((sum,p)=> sum + moneyToNumber(p.coverageInsPrm), 0);
-			  wrap.appendChild(el('div','coverage-total', `總保險費 ${fmtTW(totalPrm)} 元`));
-
-			  // 2) 逐項卡片：標題 = 險種代碼 + 保險種類；內容四欄位；PC 兩欄、Mobile 一欄
-			  arr.forEach((p,i)=>{
-				const titleTxt = [p.coverageCD, p.coverageDesc]
-				  .map(x => (x==null || x==='' ? null : String(x)))
-				  .filter(Boolean)
-				  .join(' ') || `承保項目 ${i+1}`;
-
-				const box = el('div','sub-card');                    // 保留輕量外框
-				box.appendChild(el('div','sub-title', titleTxt));    // 改成你要的抬頭
-
-				const kv = el('div','kv kv-two');                    // 兩欄版（手機自動單欄）
-				const frag = document.createDocumentFragment();
-				[
-				  ['給付項目', p.coverageInsAmtDesc],
-				  ['保險金額', p.coverageInsAmt],
-				  ['自負額',   p.coverageDeduct],
-				  ['保險費',   p.coverageInsPrm],
-				].forEach(([k,v])=>{
-				  frag.appendChild(el('div','k', k));
-				  frag.appendChild(el('div','v', text(v)));
-				});
-				kv.appendChild(frag);
-				box.appendChild(kv);
-				wrap.appendChild(box);
-			  });
-
-			  // 3) 保單紀錄內容（置底，無框）
-			  const contents = Array.isArray(data.policyContents) ? data.policyContents : [];
-			  if (contents.length){
-				wrap.appendChild(el('div','sub-title','保單紀錄內容'));
-				const ul = el('ul','plain-list');
-				contents.forEach(c => ul.appendChild(el('li','', text(c))));
-				wrap.appendChild(ul);
-			  }
-			}
-
-
-            // ======= 日誌 =======
-            function renderJournal() {
-                const wrap = document.getElementById("journalWrap");
+            function renderCoverage() {
+                const wrap = document.getElementById("policyCoverageWrap");
                 wrap.innerHTML = "";
-                const arr = Array.isArray(data.journal) ? data.journal : [];
+                const arr = Array.isArray(data.policyCoverage) ? data.policyCoverage : [];
                 if (!arr.length) {
                     wrap.textContent = "—";
                     return;
                 }
-                arr.forEach((j) => {
+                const totalPrm = arr.reduce((sum, p) => sum + (Number(String(p.coverageInsPrm).replace(/[^0-9.-]/g, "")) || 0), 0);
+                wrap.appendChild(el("div", "coverage-total", `總保險費 ${Number(totalPrm).toLocaleString("zh-TW")} 元`));
+                arr.forEach((p, i) => {
+                    const titleTxt =
+                        [p.coverageCD, p.coverageDesc]
+                            .map((x) => (x == null || x === "" ? null : String(x)))
+                            .filter(Boolean)
+                            .join(" ") || `承保項目 ${i + 1}`;
                     const box = el("div", "sub-card");
-                    box.appendChild(el("div", "sub-title", `日誌序號 ${j.seqNo ?? ""}`));
-                    const kv = el("div", "kv");
-                    const handleDt = j.handleDt || j.handleelDt;
-                    const handleItemCD = j.handleItemCD || j.handleelItemCD;
-                    const handleItemDesc = j.handleItemDesc || j.handleelItemDesc;
+                    box.appendChild(el("div", "sub-title", titleTxt));
+                    const kv = el("div", "kv kv-two");
                     const frag = document.createDocumentFragment();
                     [
-                        ["輸入日期", j.inputDt],
-                        ["處理日期", handleDt],
-                        ["處理項目代號", handleItemCD],
-                        ["處理項目名稱", handleItemDesc],
-                        ["聯絡人員姓名", j.contactNm],
-                        ["處理內容", j.contentMatters],
-                        ["處理人員代號", j.handlerUsrID],
-                        ["處理人員姓名", j.handlerUsrNm],
-                        ["輸入人員代號", j.inputUsrID],
-                        ["輸入人員姓名", j.inputUsrNm],
+                        ["給付項目", p.coverageInsAmtDesc],
+                        ["保險金額", p.coverageInsAmt],
+                        ["自負額", p.coverageDeduct],
+                        ["保險費", p.coverageInsPrm],
                     ].forEach(([k, v]) => {
                         frag.appendChild(el("div", "k", k));
                         frag.appendChild(el("div", "v", text(v)));
@@ -1076,9 +1024,231 @@
                     box.appendChild(kv);
                     wrap.appendChild(box);
                 });
+                const contents = Array.isArray(data.policyContents) ? data.policyContents : [];
+                if (contents.length) {
+                    wrap.appendChild(el("div", "sub-title", "保單紀錄內容"));
+                    const ul = el("ul", "plain-list");
+                    contents.forEach((c) => ul.appendChild(el("li", "", text(c))));
+                    wrap.appendChild(ul);
+                }
             }
 
-            // ======= Tab 切換 =======
+            // ======= 日誌：合併時間線 =======
+            function normalizeTimeline({ journal = [], transLog = [] }) {
+                const J = journal.map((j) => ({
+                    kind: "JOURNAL",
+                    ts: j.inputDt || j.handleDt || j.handleelDt,
+                    title: j.handleItemDesc || j.handleelItemDesc || "處理日誌",
+                    actor: j.handlerUsrNm || j.inputUsrNm,
+                    actorId: j.handlerUsrID || j.inputUsrID,
+                    contact: j.contactNm,
+                    content: j.contentMatters,
+                    raw: j,
+                }));
+                const T = transLog.map((t) => ({
+                    kind: "TRANS",
+                    ts: t.inputDt,
+                    title: t.tranDesc || "系統異動",
+                    subTitle: t.reasonDesc,
+                    as400No: t.tranNo || t.TranNo,
+                    userAcct: t.hostUsrAcnt,
+                    userName: t.hostUsrNm,
+                    premiumCls: (t.premiumCls || "").trim(),
+                    reserveCD: (t.reserveCD || "").trim(),
+                    amounts: { lossPaid: t.lossPaid, revbal: t.revbal, chgbal: t.chgbal },
+                    raw: t,
+                }));
+                return [...J, ...T].filter((e) => e.ts).sort((a, b) => tsToNumber(b.ts) - tsToNumber(a.ts));
+            }
+            function tsToNumber(s) {
+                if (!s) return 0;
+                const str = String(s).replace(/[^0-9]/g, "");
+                // YYYYMMDDHHMMSS or YYYYMMDD
+                if (str.length >= 14) {
+                    return Number(str.slice(0, 14));
+                } else if (str.length >= 8) {
+                    return Number(str.slice(0, 8) + "000000");
+                }
+                return Number(str) || 0;
+            }
+            function fmtTS(s) {
+                if (!s) return "—";
+                const onlyDigits = String(s).replace(/[^0-9]/g, "");
+                if (onlyDigits.length >= 14) {
+                    const y = onlyDigits.slice(0, 4),
+                        m = onlyDigits.slice(4, 6),
+                        d = onlyDigits.slice(6, 8),
+                        hh = onlyDigits.slice(8, 10),
+                        mm = onlyDigits.slice(10, 12);
+                    return `${y}-${m}-${d} ${hh}:${mm}`;
+                } else if (onlyDigits.length >= 8) {
+                    const y = onlyDigits.slice(0, 4),
+                        m = onlyDigits.slice(4, 6),
+                        d = onlyDigits.slice(6, 8);
+                    return `${y}-${m}-${d}`;
+                }
+                return s;
+            }
+
+            const journalState = { filter: "ALL", query: "" };
+
+            function renderJournal() {
+                const wrap = document.getElementById("journalWrap");
+                wrap.innerHTML = "";
+
+                // Toolbar: chips + collapsible search
+                const bar = el("div", "toolbar");
+                const chips = [
+                    { key: "ALL", label: "全部" },
+                    { key: "JOURNAL", label: "人工日誌" },
+                    { key: "TRANS", label: "系統異動" },
+                ];
+                const counts = { ALL: 0, JOURNAL: 0, TRANS: 0 };
+                const itemsAll = normalizeTimeline({ journal: data.journal || [], transLog: data.transLog || [] });
+                itemsAll.forEach((it) => {
+                    counts.ALL++;
+                    counts[it.kind]++;
+                });
+
+                chips.forEach((c) => {
+                    const b = el("span", "chip chip-toggle", `${c.label} ${counts[c.key] || 0}`);
+                    b.setAttribute("data-key", c.key);
+                    if (c.key === journalState.filter) b.classList.add("active");
+                    b.addEventListener("click", () => {
+                        journalState.filter = c.key;
+                        renderJournal();
+                    });
+                    bar.appendChild(b);
+                });
+
+                const searchTgl = el("button", "search-toggle", "片語搜尋");
+                bar.appendChild(searchTgl);
+                wrap.appendChild(bar);
+
+                const searchBox = el("div", "search-box");
+                const inp = document.createElement("input");
+                inp.placeholder = "輸入關鍵字，如 處理人、處理項目、AS400序號、金額… 按 Enter 搜尋";
+                inp.value = journalState.query || "";
+                inp.addEventListener("keydown", (e) => {
+                    if (e.key === "Enter") {
+                        journalState.query = inp.value.trim();
+                        renderJournal();
+                    }
+                });
+                searchBox.appendChild(inp);
+                searchTgl.addEventListener("click", () => {
+                    searchBox.classList.toggle("open");
+                    if (searchBox.classList.contains("open")) inp.focus();
+                });
+                wrap.appendChild(searchBox);
+
+                // Filter items
+                let items = itemsAll.slice();
+                if (journalState.filter !== "ALL") {
+                    items = items.filter((it) => it.kind === journalState.filter);
+                }
+                const q = (journalState.query || "").toLowerCase();
+                if (q) {
+                    items = items.filter((it) => {
+                        const pool = [
+                            it.title,
+                            it.subTitle,
+                            it.actor,
+                            it.actorId,
+                            it.contact,
+                            it.content,
+                            it.as400No,
+                            it.userAcct,
+                            it.userName,
+                            it.premiumCls,
+                            it.reserveCD,
+                            it.amounts ? it.amounts.lossPaid + " " + it.amounts.revbal + " " + it.amounts.chgbal : "",
+                        ]
+                            .join(" ")
+                            .toLowerCase();
+                        return pool.indexOf(q) >= 0;
+                    });
+                }
+
+                // Timeline
+                const tl = el("div", "timeline");
+                if (!items.length) {
+                    const empty = el("div", "muted", "沒有符合條件的紀錄。");
+                    wrap.appendChild(empty);
+                    return;
+                }
+                items.forEach((it, i) => {
+                    const row = el("div", "t-item");
+                    row.appendChild(el("div", "t-time", fmtTS(it.ts)));
+
+                    const card = el("section", "t-card");
+                    const head = el("div", "t-head");
+                    const title = el("div", "t-title", it.title || (it.kind === "TRANS" ? "系統異動" : "處理日誌"));
+                    head.appendChild(title);
+                    const act = el("div", "t-actions");
+                    const src = el("span", "badge-src " + (it.kind === "TRANS" ? "system" : "manual"), it.kind === "TRANS" ? "系統" : "人工");
+                    act.appendChild(src);
+                    const btn = el("button", "link-xs", "詳細");
+                    head.appendChild(act);
+                    card.appendChild(head);
+
+                    const body = el("div", "t-body");
+                    // make content grid
+                    const grid = el("div", "kv kv-two kv-plain");
+
+                    if (it.kind === "JOURNAL") {
+                        const j = it.raw || {};
+                        const pairs = [
+                            ["處理項目", it.title],
+                            ["處理人員", it.actor || "—"],
+                            ["輸入日期", j.inputDt || "—"],
+                            ["處理日期", j.handleDt || j.handleelDt || "—"],
+                            ["聯絡人員", it.contact || "—"],
+                            ["內容", it.content || "—"],
+                        ];
+                        const frag = document.createDocumentFragment();
+                        pairs.forEach(([k, v]) => {
+                            frag.appendChild(el("div", "k", k));
+                            frag.appendChild(el("div", "v", text(v)));
+                        });
+                        grid.appendChild(frag);
+                    } else {
+                        const t = it.raw || {};
+                        const pairs = [
+                            ["異動類型", it.title],
+                            ["說明", it.subTitle || "—"],
+                            ["AS400序號", it.as400No || "—"],
+                            ["使用者", (it.userName ? it.userName + " " : "") + (it.userAcct || "") || "—"],
+                            ["險別", it.premiumCls || "—"],
+                            ["類別", it.reserveCD || "—"],
+                            ["已決", t.lossPaid || "—"],
+                            ["未決", t.revbal || "—"],
+                            ["異動", t.chgbal || "—"],
+                        ];
+                        const frag = document.createDocumentFragment();
+                        pairs.forEach(([k, v]) => {
+                            frag.appendChild(el("div", "k", k));
+                            frag.appendChild(el("div", "v", text(v)));
+                        });
+                        grid.appendChild(frag);
+                    }
+
+                    body.appendChild(grid);
+                    body.style.display = "none";
+                    btn.addEventListener("click", () => {
+                        const show = body.style.display === "none";
+                        body.style.display = show ? "" : "none";
+                        btn.textContent = show ? "收合" : "詳細";
+                    });
+                    act.appendChild(btn);
+
+                    card.appendChild(body);
+                    row.appendChild(card);
+                    tl.appendChild(row);
+                });
+                wrap.appendChild(tl);
+            }
+
             function initTabs() {
                 const tabBtns = document.querySelectorAll(".tab-btn");
                 const panels = document.querySelectorAll(".tab-panel");
@@ -1092,7 +1262,6 @@
                 });
             }
 
-            // ======= 進場 =======
             document.addEventListener("DOMContentLoaded", () => {
                 renderHeader();
                 renderBasic();
