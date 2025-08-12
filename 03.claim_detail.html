@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>行動任務處理 - 資料補傳 - 賠案明細（美化版）</title>
+  <title>行動任務處理 - 資料補傳 - 賠案明細</title>
   <style>
     :root{
       --bg:#f5f6f8; --card:#fff; --text:#111827; --muted:#6b7280; --line:#e5e7eb;
@@ -79,6 +79,158 @@
 	  background: var(--line);
 	  margin: 8px 0 6px;
 	}	
+	
+	/* 分隔線：在「索賠人」後的那條 */
+	.basic-sep {
+	  border: 0;
+	  border-top: 1px dashed #d8dbe0;
+	  margin: 14px 0 18px;
+	}
+
+	/* key-value 整體 */
+	.kv-grid {
+	  display: grid;
+	  grid-template-columns: 1fr 1fr;   /* 兩欄 */
+	  gap: 10px 18px;
+	  margin-bottom: 12px;
+	}
+	.kv-row {
+	  display: grid;
+	  grid-template-columns: 120px 1fr; /* 左窄右寬 */
+	  align-items: center;
+	  min-height: 32px;
+	  background: #fff;
+	  padding: 6px 10px;
+	  border: 1px solid #eef0f3;
+	  border-radius: 8px;
+	}
+	.kv-key {
+	  color: #6b7280; /* 次要字色 */
+	  font-size: 0.92rem;
+	}
+	.kv-val {
+	  font-weight: 600;
+	  word-break: break-all;
+	}
+
+	/* 卡片外觀 */
+	.info-card {
+	  border: 1px solid #e6e9ef;
+	  border-radius: 12px;
+	  background: #fafbfc;
+	  margin: 14px 0 8px;
+	  overflow: hidden;
+	  box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+	}
+	.info-card-head {
+	  padding: 10px 12px;
+	  background: #f3f5f8;
+	  border-bottom: 1px solid #e6e9ef;
+	}
+	.info-card-title {
+	  font-weight: 700;
+	  font-size: 1rem;
+	  letter-spacing: 0.02em;
+	}
+
+	/* 卡片內的 grid 讓邊距對齊 */
+	.info-card .kv-grid {
+	  padding: 12px;
+	  margin-bottom: 0;
+	}
+
+	/* 手機優化：單欄 + 行高友善 */
+	@media (max-width: 767px) {
+	  .kv-grid {
+		grid-template-columns: 1fr;   /* 單欄 */
+		gap: 8px;
+	  }
+	  .kv-row {
+		grid-template-columns: 90px 1fr;
+		min-height: 38px;
+		padding: 8px 10px;
+	  }
+	  .info-card-title {
+		font-size: 0.98rem;
+	  }
+	}
+	
+	/* ===== 基本資料：極簡模式，不要每列的方框 ===== */
+	#panel-basic.basic-compact .kv-grid {
+	  gap: 6px 16px;            /* 緊湊一點 */
+	  margin-bottom: 10px;
+	}
+
+	#panel-basic.basic-compact .kv-row {
+	  /* 拿掉背景、邊框、圓角 */
+	  background: transparent;
+	  border: 0;
+	  border-radius: 0;
+	  padding: 2px 0;           /* 幾乎只留行距 */
+	  min-height: unset;
+	  display: grid;
+	  grid-template-columns: 92px 1fr;   /* 左短右長，桌機再放寬 */
+	}
+
+	#panel-basic.basic-compact .kv-row + .kv-row {
+	  /* 輕量分隔，不是框框 */
+	  border-top: 1px dotted #eceff3;
+	  padding-top: 6px;
+	  margin-top: 6px;
+	}
+
+	#panel-basic.basic-compact .kv-key {
+	  color: #8a94a3;
+	  font-weight: 500;
+	  font-size: 0.92rem;
+	}
+
+	#panel-basic.basic-compact .kv-val {
+	  font-weight: 600;
+	  word-break: break-word;
+	}
+
+	/* 卡片外層保留群組感，內層一樣去框 */
+	#panel-basic.basic-compact .info-card {
+	  border: 1px solid #e6e9ef;
+	  background: #f7f9fb;      /* 很淡的底，幫助視線分組 */
+	  margin: 12px 0 10px;
+	  border-radius: 12px;
+	}
+
+	#panel-basic.basic-compact .info-card .kv-grid {
+	  padding: 10px 12px;
+	}
+
+	#panel-basic.basic-compact .info-card .kv-row {
+	  background: transparent;
+	  border: 0;
+	  border-radius: 0;
+	  padding: 2px 0;
+	  grid-template-columns: 72px 1fr;   /* 卡片內 label 更短一點 */
+	}
+
+	#panel-basic.basic-compact .info-card .kv-row + .kv-row {
+	  border-top: 1px dotted #e9edf2;
+	  padding-top: 6px;
+	  margin-top: 6px;
+	}
+
+	/* 手機：單欄、留一點觸控空間就好 */
+	@media (max-width: 767px) {
+	  #panel-basic.basic-compact .kv-grid {
+		grid-template-columns: 1fr;
+		gap: 6px;
+	  }
+	  #panel-basic.basic-compact .kv-row {
+		grid-template-columns: 88px 1fr;
+		padding: 4px 0;
+	  }
+	  #panel-basic.basic-compact .info-card .kv-row {
+		grid-template-columns: 68px 1fr;
+	  }
+	}
+	
   </style>
 </head>
 <body>
@@ -297,28 +449,91 @@
 	  caseCell.appendChild(btn);
     }
 
-    // ======= 基本資料（4.10 ~ 4.24） =======
-    function renderBasic() {
-      const kv = document.getElementById('basicKV');
-      const insExp = data.insExpDt || data.insExpDtexpDt; // sample 有誤字，做容錯
-      fillKV(kv, [
-        ['出險原因', data.lossCauseDesc],
-        ['索賠人', data.claimant],
-        ['附加被保險人', data.addInsuredNm],
-        ['限定駕駛人', data.limitDriver],
-        ['被保險人', data.insuredNm],
-        ['被保險人室內電話', data.insuredHomeTel],
-        ['被保險人行動電話', data.insuredMobile],
-        ['被保險人地址', data.insuredAddr],
-        ['要保人', data.applicantNm],
-        ['要保人住宅電話', data.applicantHomeTel],
-        ['要保人行動電話', data.applicantMobile],
-        ['賠案狀況', data.claimState],
-        ['起保日期', yyyymmddToDash(data.insEffDt)],
-        ['到期日期', yyyymmddToDash(insExp)],
-        ['收件日期', yyyymmddToDash(data.clmRcvDt)],
-      ]);
-    }
+	// ======= 基本資料（4.10 ~ 4.24） =======
+	function renderBasic() {
+	  const root = document.getElementById('panel-basic'); // 這個才是面板
+	  if (!root) return;
+	  root.innerHTML = '';
+	  root.classList.add('basic-compact');   // ← 新增：開啟精簡樣式
+
+		// 用外層的 data；只留 insExp 推導
+		const insExp = data.insExpDt || data.insExp || '';
+
+	  // 1) 上半段：一般欄位 + 在「索賠人」後自動分隔
+	  const basicPairsTop = [
+		['收件日期', safe(yyyymmddToDash(data.clmRcvDt))],
+		['起保日期', safe(yyyymmddToDash(data.insEffDt))],
+		['到期日期', safe(yyyymmddToDash(insExp))],
+		['出險原因', safe(data.lossCauseDesc)],
+		['索賠人',   safe(data.claimant)]
+	  ];
+	  root.appendChild(makeKVGrid(basicPairsTop));
+
+	  // 分隔線
+	  root.appendChild(makeDivider());
+
+	  // 2) 分隔後的續列欄位
+	  const basicPairsBottom = [
+		['附加被保險人', safe(data.addInsuredNm)],
+		['限定駕駛人',   safe(data.limitDriver)]
+	  ];
+	  root.appendChild(makeKVGrid(basicPairsBottom));
+
+	  // 3) 被保險人資訊卡片（簡短 label）
+	  root.appendChild(makeInfoCard('被保險人資訊', [
+		['姓名',     safe(data.insuredNm)],
+		['室內電話', safe(data.insuredHomeTel)],
+		['行動電話', safe(data.insuredMobile)],
+		['地址',     safe(data.insuredAddr)]
+	  ]));
+
+	  // 4) 要保人資訊卡片（同規格）
+	  root.appendChild(makeInfoCard('要保人資訊', [
+		['姓名',     safe(data.applicantNm)],
+		['室內電話', safe(data.applicantHomeTel)],
+		['行動電話', safe(data.applicantMobile)],
+		['地址',     safe(data.applicantAddr)]
+	  ]));
+	}
+
+	/* ===== 小工具區：不污染你原有命名 ===== */
+	function safe(v){ return (v === null || v === undefined || v === '') ? '—' : String(v); }
+
+	function el(tag, className, text){
+	  const n = document.createElement(tag);
+	  if (className) n.className = className;
+	  if (text !== undefined) n.textContent = text;
+	  return n;
+	}
+
+	function makeDivider(){
+	  return el('hr', 'basic-sep');
+	}
+
+	// key-value grid（兩欄；手機自動單欄）
+	function makeKVGrid(pairs){
+	  const wrap = el('div', 'kv-grid');
+	  pairs.forEach(([k, v]) => {
+		const row = el('div', 'kv-row');
+		row.appendChild(el('div', 'kv-key', k));
+		const val = el('div', 'kv-val');
+		val.textContent = v;
+		row.appendChild(val);
+		wrap.appendChild(row);
+	  });
+	  return wrap;
+	}
+
+	// 卡片：含標題 + 內部 key-value grid
+	function makeInfoCard(title, pairs){
+	  const card = el('section', 'info-card');
+	  const head = el('div', 'info-card-head');
+	  head.appendChild(el('div', 'info-card-title', title));
+	  card.appendChild(head);
+	  card.appendChild(makeKVGrid(pairs));
+	  return card;
+	}
+
 
     // ======= 事故資料（4.27 ~ 4.46） + 各 array 區塊 =======
     function renderAccident() {
