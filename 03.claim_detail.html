@@ -486,7 +486,7 @@
 	  root.appendChild(makeInfoCard('被保險人資訊', [
 		['姓名',     safe(data.insuredNm)],
 		['室內電話', safe(data.insuredHomeTel)],
-		['行動電話', safe(data.insuredMobile)],
+		['行動電話', (function(){var p=safe(data.insuredMobile);if(p!=='—'){var a=document.createElement('a');a.href='tel:'+p.replace(/-/g,'');a.textContent=p;return a;}return p;})()],
 		['地址',     safe(data.insuredAddr)]
 	  ]));
 
@@ -494,7 +494,7 @@
 	  root.appendChild(makeInfoCard('要保人資訊', [
 		['姓名',     safe(data.applicantNm)],
 		['室內電話', safe(data.applicantHomeTel)],
-		['行動電話', safe(data.applicantMobile)],
+		['行動電話', (function(){var p=safe(data.applicantMobile);if(p!=='—'){var a=document.createElement('a');a.href='tel:'+p.replace(/-/g,'');a.textContent=p;return a;}return p;})()],
 		['地址',     safe(data.applicantAddr)]
 	  ]));
 	}
@@ -520,7 +520,7 @@
 		const row = el('div', 'kv-row');
 		row.appendChild(el('div', 'kv-key', k));
 		const val = el('div', 'kv-val');
-		val.textContent = v;
+		if(v instanceof HTMLElement){val.appendChild(v);}else{val.textContent = v;}
 		row.appendChild(val);
 		wrap.appendChild(row);
 	  });
