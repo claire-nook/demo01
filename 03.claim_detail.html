@@ -486,6 +486,18 @@
                     grid-template-columns: 68px 1fr;
                 }
             }
+			
+			/* 承保內容：總保費與清單 */
+			.coverage-total{font-weight:800; font-size:1.05rem; margin:4px 0 12px}
+
+			/* PC 兩欄，Mobile 一欄 */
+			.kv.kv-two{grid-template-columns: var(--keyw) 1fr var(--keyw) 1fr; gap:8px 18px}
+			@media (max-width:767px){ .kv.kv-two{grid-template-columns: var(--keyw-m) 1fr} }
+
+			/* 極簡清單（無框） */
+			.plain-list{margin:6px 0 0 0; padding-left:1.1em}
+			.plain-list li{margin:6px 0}
+			
         </style>
     </head>
     <body>
@@ -745,6 +757,16 @@
                 return card;
             }
 
+			// 文字金額轉數字、數字加千分位
+			const moneyToNumber = s => {
+			  if (s == null) return 0;
+			  const n = Number(String(s).replace(/[^0-9.-]/g,''));
+			  return Number.isFinite(n) ? n : 0;
+			};
+			const fmtTW = n => Number(n || 0).toLocaleString('zh-TW');
+
+
+
             // 讓字串電話變成可撥號連結
             function telify(val) {
                 const p = safe(val);
@@ -966,36 +988,57 @@
                 cards.appendChild(makeCollapsibleCard("受害人-強制", vCList, vC.length, false));
             }
 
-            // ======= 承保內容 =======
-            function renderCoverage() {
-                const wrap = document.getElementById("policyCoverageWrap");
-                wrap.innerHTML = "";
-                const arr = Array.isArray(data.policyCoverage) ? data.policyCoverage : [];
-                if (!arr.length) {
-                    wrap.textContent = "—";
-                    return;
-                }
-                arr.forEach((p, i) => {
-                    const box = el("div", "sub-card");
-                    box.appendChild(el("div", "sub-title", `承保項目 ${i + 1}`));
-                    const kv = el("div", "kv");
-                    const frag = document.createDocumentFragment();
-                    [
-                        ["險種", p.coverageCD],
-                        ["保險種類", p.coverageDesc],
-                        ["給付項目", p.coverageInsAmtDesc],
-                        ["保險金額", p.coverageInsAmt],
-                        ["自負額", p.coverageDeduct],
-                        ["保險費", p.coverageInsPrm],
-                    ].forEach(([k, v]) => {
-                        frag.appendChild(el("div", "k", k));
-                        frag.appendChild(el("div", "v", text(v)));
-                    });
-                    kv.appendChild(frag);
-                    box.appendChild(kv);
-                    wrap.appendChild(box);
-                });
-            }
+			// ======= 承保內容 =======
+			function renderCoverage(){
+			  const wrap = document.getElementById('policyCoverageWrap');
+			  wrap.innerHTML = '';
+
+			  const arr = Array.isArray(data.policyCoverage) ? data.policyCoverage : [];
+			  if (!arr.length){
+				wrap.textContent = '—';
+				return;
+			  }
+
+			  // 1) 總保險費（置頂，無框）
+			  const totalPrm = arr.reduce((sum,p)=> sum + moneyToNumber(p.coverageInsPrm), 0);
+			  wrap.appendChild(el('div','coverage-total', `總保險費 ${fmtTW(totalPrm)} 元`));
+
+			  // 2) 逐項卡片：標題 = 險種代碼 + 保險種類；內容四欄位；PC 兩欄、Mobile 一欄
+			  arr.forEach((p,i)=>{
+				const titleTxt = [p.coverageCD, p.coverageDesc]
+				  .map(x => (x==null || x==='' ? null : String(x)))
+				  .filter(Boolean)
+				  .join(' ') || `承保項目 ${i+1}`;
+
+				const box = el('div','sub-card');                    // 保留輕量外框
+				box.appendChild(el('div','sub-title', titleTxt));    // 改成你要的抬頭
+
+				const kv = el('div','kv kv-two');                    // 兩欄版（手機自動單欄）
+				const frag = document.createDocumentFragment();
+				[
+				  ['給付項目', p.coverageInsAmtDesc],
+				  ['保險金額', p.coverageInsAmt],
+				  ['自負額',   p.coverageDeduct],
+				  ['保險費',   p.coverageInsPrm],
+				].forEach(([k,v])=>{
+				  frag.appendChild(el('div','k', k));
+				  frag.appendChild(el('div','v', text(v)));
+				});
+				kv.appendChild(frag);
+				box.appendChild(kv);
+				wrap.appendChild(box);
+			  });
+
+			  // 3) 保單紀錄內容（置底，無框）
+			  const contents = Array.isArray(data.policyContents) ? data.policyContents : [];
+			  if (contents.length){
+				wrap.appendChild(el('div','sub-title','保單紀錄內容'));
+				const ul = el('ul','plain-list');
+				contents.forEach(c => ul.appendChild(el('li','', text(c))));
+				wrap.appendChild(ul);
+			  }
+			}
+
 
             // ======= 日誌 =======
             function renderJournal() {
