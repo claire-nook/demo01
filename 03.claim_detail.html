@@ -813,6 +813,7 @@
                 return a;
             }
 
+            // ======= 上半部 =======
             function renderHeader() {
                 const card = document.getElementById("claim-header-card");
                 card.innerHTML = "";
@@ -865,6 +866,7 @@
                 card.appendChild(kv);
             }
 
+            // ======= 頁籤:基本資料 =======
             function renderBasic() {
                 const root = document.getElementById("panel-basic");
                 root.innerHTML = "";
@@ -901,6 +903,7 @@
                 );
             }
 
+            // ======= 頁籤:事故資料 =======
             function renderAccident() {
                 const base = document.getElementById("accidentBase");
                 base.innerHTML = "";
@@ -1003,6 +1006,7 @@
                 cards.appendChild(makeCollapsibleCard("受害人-強制", vCList, vC.length, false));
             }
 
+            // ======= 頁籤:承保資料 =======
             function renderCoverage() {
                 const wrap = document.getElementById("policyCoverageWrap");
                 wrap.innerHTML = "";
@@ -1222,15 +1226,24 @@
                     const body = el("div", "t-body");
                     body.style.display = "none";
                     const grid = el("div", "kv kv-two kv-plain");
-                    if (it.kind === "JOURNAL") {
-                        [
-                            ["處理項目", it.title],
-                            ["處理人員", it.actor || "—"],
-                            ["內容", it.content || "—"],
-                        ].forEach(([k, v]) => {
-                            grid.appendChild(el("div", "k", k));
-                            grid.appendChild(el("div", "v", v == null ? "—" : String(v)));
-                        });
+					if (it.kind === "JOURNAL") {
+					  const j = it.raw || {}; // 原始日誌物件，欄位名跟你的 JSON 一致
+					  const pairs = [
+						["處理項目", it.title],
+						["處理項目代碼", j.handleItemCD || j.handleelItemCD],
+						["處理人員", it.actor || "—"],
+						["處理人員ID", it.actorId || j.handlerUsrID || j.inputUsrID],
+						["聯絡對象", it.contact || j.contactNm],
+						["建立人員", (j.inputUsrNm ? j.inputUsrNm + " " : "") + (j.inputUsrID || "")],
+						["內容", it.content || j.contentMatters],
+						// 需要別的，就照這格式繼續加：
+						// ["你要的欄位名", j.你的JSON欄位],
+					  ].filter(([, v]) => v != null && String(v).trim() !== "");
+
+					  pairs.forEach(([k, v]) => {
+						grid.appendChild(el("div", "k", k));
+						grid.appendChild(el("div", "v", String(v)));
+					  });
                     } else {
                         const t = it.raw || {};
                         [
@@ -1250,9 +1263,9 @@
                     }
                     body.appendChild(grid);
                     btn.addEventListener("click", () => {
-                        const open = body.style.display === "none";
-                        body.style.display = open ? "" : "";
-                        btn.textContent = open ? "收合" : "詳細";
+						const open = body.style.display === "none";
+						body.style.display = open ? "" : "none";
+						btn.textContent = open ? "收合" : "詳細";
                     });
                     card.appendChild(body);
                     row.appendChild(card);
