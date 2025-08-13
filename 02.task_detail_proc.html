@@ -241,9 +241,9 @@
                 <div class="info-grid">
                     <label>處理人員</label>
                     <input class="readonly" readonly="" type="text" value="張三" />
-                    <label>排定日期</label>
+                    <label>任務日期</label>
                     <input class="readonly" readonly="" type="date" value="2025-04-15" />
-                    <label>排定時間</label>
+                    <label>任務時間</label>
                     <div class="double-time">
                         <input class="readonly" readonly="" type="time" value="09:00" />
                         <input class="readonly" readonly="" type="time" value="10:00" />
@@ -252,7 +252,7 @@
             </div>
             <div class="text-card">
                 <div class="text-row">
-                    <div class="text-label">地點名稱：</div>
+                    <div class="text-label">任務地點：</div>
                     <div class="text-value">國都天母廠</div>
                 </div>
                 <div class="text-row">
@@ -277,7 +277,7 @@
                 </div>
             </div>
             <div class="button-col">
-                <button class="btn-warning">修改排定時間</button>
+                <button class="btn-warning">修改任務時間</button>
                 <button class="btn-primary" onclick="location.href='02.task_log_upload.html'">日誌新增</button>
                 <button class="btn-primary" onclick="location.href='02.task_file_upload.html'">檔案上傳</button>
                 <button class="btn-view-log-pc">查看處理歷程</button>
@@ -397,20 +397,20 @@
             <div class="form-card">
                 <label>處理人員</label>
                 <input readonly="" type="text" value="張三" />
-                <label>排定日期</label>
+                <label>任務日期</label>
                 <input readonly="" type="date" value="2025-04-15" />
-                <label>排定時間起</label>
+                <label>任務時間起</label>
                 <div class="time-row">
                     <input readonly="" type="time" value="09:00" />
                 </div>
-                <label>排定時間訖</label>
+                <label>任務時間訖</label>
                 <div class="time-row">
                     <input readonly="" type="time" value="10:00" />
                 </div>
-                <button class="btn-warning">修改排定時間</button>
+                <button class="btn-warning">修改任務時間</button>
             </div>
             <div class="info-card">
-                <div class="info-row"><span class="info-label">地點名稱：</span><span class="info-content">國都天母廠</span></div>
+                <div class="info-row"><span class="info-label">任務地點：</span><span class="info-content">國都天母廠</span></div>
                 <div class="info-row"><span class="info-label">任務地址：</span><span class="info-content"><a href="https://www.google.com/maps?q=臺北市士林區德行西路15號" target="_blank">臺北市士林區德行西路15號</a></span></div>
                 <div class="info-row"><span class="info-label">處理事項：</span><span class="info-content">勘車</span></div>
                 <div class="info-row"><span class="info-label">賠案號碼：</span><span class="info-content"><a href="04.賠案查詢_賠案明細.html">10000001</a></span></div>
@@ -489,10 +489,10 @@
 				};
 			
 			
-                // 修改排定時間
+                // 修改任務時間
                 editBtns.forEach((editBtn) => {
                     editBtn?.addEventListener("click", () => {
-                        if (!confirm("是否調整排定時間？")) return;
+                        if (!confirm("是否調整任務時間？")) return;
 
                         const dateFields = document.querySelectorAll('input[type="date"]');
                         const timeFields = document.querySelectorAll('input[type="time"]');
