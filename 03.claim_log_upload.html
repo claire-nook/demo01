@@ -1,346 +1,659 @@
+	
 <!DOCTYPE html>
 <html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>行動任務處理 - 資料補傳 - 賠案明細 - 日誌新增</title>
-    <style>
-      body {
-        font-family: Arial, sans-serif;
-        padding: 10px;
-      }
-      h2 {
-        margin-bottom: 1em;
-      }
-      .back-button {
-        background: #666;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        padding: 6px 12px;
-        font-size: 14px;
-        cursor: pointer;
-        margin-bottom: 10px;
-        margin-right: 10px;
-      }
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>行動任務處理 - 資料補傳 - 賠案明細 - 日誌新增</title>
 
-      /* PC版：橫式表單 */
-      .pc-form-wrapper {
-        max-width: 900px;
-        margin: 0 auto;
-        background: white;
-        padding: 20px;
-        border-radius: 10px;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-      }
-      .form-row {
-        display: flex;
-        align-items: center;
-        margin-bottom: 14px;
-      }
-      .form-row label {
-        min-width: 120px;
-        font-weight: bold;
-        margin-right: 10px;
-        text-align: right;
-      }
-      .form-row input,
-      .form-row select,
-      .form-row textarea {
-        flex: 1;
-        padding: 8px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        font-size: 1rem;
-        box-sizing: border-box;
-      }
-      .form-row textarea {
-        height: 80px;
-      }
+        <style>
+            /* ===== 基礎 ===== */
+            body {
+                font-family: Arial, sans-serif;
+                padding: 10px;
+                background: #f8f8f8;
+            }
+            h2 {
+                margin-bottom: 1em;
+            }
+            .back-button {
+                background: #666;
+                color: #fff;
+                border: 0;
+                border-radius: 4px;
+                padding: 6px 12px;
+                font-size: 14px;
+                cursor: pointer;
+                margin: 0 10px 10px 0;
+            }
 
-      /* 行動版卡片 */
-      .mobile-card {
-        background: white;
-        border-radius: 10px;
-        padding: 20px;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-        margin: 0 auto;
-      }
-      .mobile-card label {
-        font-weight: bold;
-        margin-top: 10px;
-        display: block;
-      }
-      .mobile-card input,
-      .mobile-card select,
-      .mobile-card textarea {
-        width: 100%;
-        padding: 8px;
-        margin-top: 4px;
-        box-sizing: border-box;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-      }
-      .mobile-card textarea {
-        height: 80px;
-      }
+            /* ===== PC 橫式表單 ===== */
+            .pc-form-wrapper {
+                max-width: 900px;
+                margin: 0 auto;
+                background: #fff;
+                padding: 20px;
+                border-radius: 10px;
+                box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            }
+            .form-row {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                margin-bottom: 14px;
+            }
+            .form-row label {
+                min-width: 120px;
+                font-weight: bold;
+                text-align: right;
+            }
+            .form-row input,
+            .form-row select,
+            .form-row textarea {
+                flex: 1;
+                padding: 8px;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+                font-size: 1rem;
+                box-sizing: border-box;
+            }
+            .form-row textarea {
+                height: 80px;
+            }
 
-      .button-group {
-        display: flex;
-        justify-content: space-between;
-        margin-top: 20px;
-        gap: 10px;
-      }
-      .button {
-        flex: 1;
-        padding: 10px;
-        border: none;
-        color: white;
-        font-size: 16px;
-        border-radius: 4px;
-      }
-      .button.upload {
-        background-color: #fb8c00;
-      }
-      .button.cancel {
-        background-color: #555;
-      }
+            /* ===== Mobile 直式卡片 ===== */
+            .mobile-card {
+                background: #fff;
+                border-radius: 10px;
+                padding: 20px;
+                box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+                margin: 0 auto;
+            }
+            .mobile-card label {
+                font-weight: bold;
+                margin-top: 10px;
+                display: block;
+            }
+            .mobile-card input,
+            .mobile-card select,
+            .mobile-card textarea {
+                width: 100%;
+                padding: 8px;
+                margin-top: 4px;
+                box-sizing: border-box;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+            }
+            .mobile-card textarea {
+                height: 80px;
+            }
 
-      .pc {
-        display: block;
-      }
-      .mobile-only {
-        display: none;
-      }
+            .button-group {
+                display: flex;
+                justify-content: space-between;
+                margin-top: 20px;
+                gap: 10px;
+            }
+            .button {
+                flex: 1;
+                padding: 10px;
+                border: 0;
+                color: #fff;
+                font-size: 16px;
+                border-radius: 4px;
+            }
+            .button.upload {
+                background: #fb8c00;
+            }
+            .button.cancel {
+                background: #555;
+            }
 
-      /* === 行動版放大與易點擊修正（關鍵） === */
-      @media (max-width: 767px) {
-        .pc {
-          display: none;
-        }
-        .mobile-only {
-          display: block;
-        }
-        .back-button {
-          font-size: 16px;
-          padding: 10px;
-          width: 100%;
-          margin-top: 10px;
-        }
+            .pc {
+                display: block;
+            }
+            .mobile-only {
+                display: none;
+            }
 
-        /* 手機上把輸入元件拉高，字級 >=16px 避免 iOS 自動縮放 */
-        input,
-        select,
-        textarea,
-        button {
-          font-size: 16px !important;
-          height: 44px !important;
-          padding: 10px 12px !important;
-          box-sizing: border-box;
-        }
+            /* ===== 行動版可讀可點 ===== */
+            @media (max-width: 767px) {
+                .pc {
+                    display: none;
+                }
+                .mobile-only {
+                    display: block;
+                }
+                .back-button {
+                    font-size: 16px;
+                    padding: 10px;
+                    width: 100%;
+                    margin-top: 10px;
+                }
+                input,
+                select,
+                textarea,
+                button {
+                    font-size: 16px !important;
+                    height: 44px !important;
+                    padding: 10px 12px !important;
+                    box-sizing: border-box;
+                }
+                textarea {
+                    min-height: 120px !important;
+                    height: auto !important;
+                    line-height: 1.4;
+                }
+                label {
+                    font-size: 1rem;
+                }
+                .mobile-card {
+                    padding: 16px;
+                }
+                .button {
+                    height: 44px !important;
+                    font-size: 16px !important;
+                }
+                .mobile-card select,
+                .mobile-card input,
+                .mobile-card textarea {
+                    width: 100%;
+                    display: block;
+                }
+            }
 
-        /* 文字區域別再扁，至少 120px 高，內容多則自動長高 */
-        textarea {
-          min-height: 120px !important;
-          height: auto !important;
-          line-height: 1.4;
-        }
+            /* ===== 通知對象 chips 與按鈕 ===== */
+            .notify-wrap {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                flex: 1;
+            }
+            .chip-list {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 6px;
+            }
+            .chip {
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+                background: #eef2f7;
+                border: 1px solid #dbe2ea;
+                color: #244;
+                padding: 4px 8px;
+                border-radius: 999px;
+                font-size: 0.9rem;
+            }
+            .chip .rm {
+                cursor: pointer;
+                font-weight: bold;
+                line-height: 1;
+            }
+            .btn-sel {
+                padding: 8px 10px;
+                border: 1px solid #bbb;
+                background: #fff;
+                border-radius: 6px;
+                cursor: pointer;
+            }
 
-        /* Label 看起來別像備註 */
-        label {
-          font-size: 1rem;
-        }
+            /* ===== Modal：單一份最終樣式（PC/手機通用） ===== */
+            .modal-mask {
+                position: fixed;
+                inset: 0;
+                background: rgba(0, 0, 0, 0.45);
+                display: none;
+                z-index: 9999;
+            }
+            .modal-mask[aria-hidden="false"] {
+                display: block;
+            }
+            .modal-panel {
+                background: #fff;
+                width: min(900px, 92vw);
+                max-height: 84vh;
+                margin: 6vh auto;
+                border-radius: 12px;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+                display: flex;
+                flex-direction: column;
+                overflow: hidden;
+            }
+            .modal-head {
+                padding: 12px 16px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                border-bottom: 1px solid #eee;
+                font-weight: 700;
+            }
+            .modal-body {
+                flex: 1;
+                display: flex;
+                gap: 12px;
+                padding: 12px;
+                overflow: hidden;
+            }
+            .modal-foot {
+                position: sticky;
+                bottom: 0;
+                background: #fff;
+                border-top: 1px solid #eee;
+                padding: 10px 12px;
+                display: flex;
+                justify-content: flex-end;
+                gap: 8px;
+            }
 
-        /* 卡片間距微調，讓版面不擠 */
-        .mobile-card {
-          padding: 16px;
-        }
+            .col {
+                flex: 1;
+                border: 1px solid #eef0f3;
+                border-radius: 10px;
+                display: flex;
+                flex-direction: column;
+                min-width: 0;
+                overflow: hidden;
+            }
+            .col-head {
+                padding: 8px 10px;
+                background: #f8fafc;
+                border-bottom: 1px solid #eef0f3;
+                font-weight: 600;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+            .col-body {
+                padding: 6px 8px;
+                overflow: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+            .unit-item,
+            .user-item {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                padding: 8px 6px;
+                border-bottom: 1px dashed #f1f3f6;
+            }
+            .unit-item input[type="checkbox"],
+            .user-item input[type="checkbox"] {
+                width: 18px;
+                height: 18px;
+            }
+            .search {
+                width: 100%;
+                padding: 8px 10px;
+                border: 1px solid #e2e8f0;
+                border-radius: 8px;
+            }
 
-        /* 行動版按鈕一致高度與字級 */
-        .button {
-          height: 44px !important;
-          font-size: 16px !important;
-        }
+            @media (max-width: 767px) {
+                .modal-panel {
+                    width: 100vw;
+                    height: 100vh;
+                    margin: 0;
+                    border-radius: 0;
+                    max-height: none;
+                }
+                .modal-body {
+                    flex: 1;
+                    flex-direction: column;
+                    gap: 10px;
+                    padding: 10px;
+                }
+                .col-body {
+                    flex: 1;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <button class="back-button pc" onclick="goBack()">← 返回</button>
+        <div class="mobile-only"><button class="back-button" onclick="goBack()">← 返回</button></div>
 
-        /* 有些手機內建樣式會把 select 拉得很窄，保底全寬 */
-        .mobile-card select,
-        .mobile-card input,
-        .mobile-card textarea {
-          width: 100%;
-          display: block;
-        }
-      }
-    </style>
-  </head>
-  <body>
-    <button class="back-button pc" onclick="goBack()">← 返回</button>
-    <div class="mobile-only">
-      <button class="back-button" onclick="goBack()">← 返回</button>
-    </div>
+        <!-- PC 版表單 -->
+        <div class="pc-form-wrapper pc" id="log-pc">
+            <div class="form-row">
+                <label>賠案號碼：</label>
+                <div>10000001</div>
+            </div>
+            <div class="form-row">
+                <label>車牌號碼：</label>
+                <div>1234-BB</div>
+            </div>
 
+            <div class="form-row">
+                <label for="processItem">處理項目：</label>
+                <select id="processItem">
+                    <option>Notification 損失通知</option>
+                    <option>Coverage 承保範圍</option>
+                    <option>Initial Contact 初次聯絡</option>
+                    <option>Investigation 事故調查</option>
+                    <option>Case Strategy 賠案處理策略</option>
+                    <option>Vendor Mgmt 協力車商管理</option>
+                    <option>Evaluation 各項賠款估價</option>
+                    <option>Counter Fraud 反詐欺</option>
+                    <option>Reserving 預估損失金額</option>
+                    <option>Neg & Settlem 談判處理</option>
+                    <option>Litig. Mgmt 訴訟管理</option>
+                    <option>Recovery 追償</option>
+                    <option>File Mgmt 檔案管理</option>
+                    <option>Quality Assurance 賠案檢核</option>
+                    <option>Salvage 殘餘物作業</option>
+                    <option>客戶文件上傳/留言</option>
+                </select>
+            </div>
 
-    <!-- PC版：橫式表單 -->
-    <div class="pc-form-wrapper pc" id="log-pc">
-      <div class="form-row">
-        <label>賠案號碼：</label>
-        <div>10000001</div>
-      </div>
-      <div class="form-row">
-        <label>車牌號碼：</label>
-        <div>1234-BB</div>
-      </div>
+            <div class="form-row"><label for="contactPerson">被聯絡人：</label><input id="contactPerson" type="text" /></div>
 
-      <div class="form-row">
-        <label for="processItem">處理項目：</label>
-        <select id="processItem">
-          <option>Notification 損失通知</option>
-          <option>Coverage 承保範圍</option>
-          <option>Initial Contact 初次聯絡</option>
-          <option>Investigation 事故調查</option>
-          <option>Case Strategy 賠案處理策略</option>
-          <option>Vendor Mgmt 協力車商管理</option>
-          <option>Evaluation 各項賠款估價</option>
-          <option>Counter Fraud 反詐欺</option>
-          <option>Reserving 預估損失金額</option>
-          <option>Neg & Settlem 談判處理</option>
-          <option>Litig. Mgmt 訴訟管理</option>
-          <option>Recovery 追償</option>
-          <option>File Mgmt 檔案管理</option>
-          <option>Quality Assurance 賠案檢核</option>
-          <option>Salvage 殘餘物作業</option>
-          <option>客戶文件上傳/留言</option>
-        </select>
-      </div>
-      <div class="form-row">
-        <label for="contactPerson">被聯絡人：</label>
-        <input type="text" id="contactPerson" />
-      </div>
-      <div class="form-row">
-        <label for="contactType">聯絡事項：</label>
-        <select id="contactType">
-          <option>體傷初步</option>
-          <option>重大車財損初步</option>
-          <option>單強/死殘初步</option>
-          <option>其他通報</option>
-          <option>視訊勘車</option>
-          <option>視訊追加</option>
-          <option>重大現勘</option>
-        </select>
-      </div>
-      <div class="form-row">
-        <label for="suspicious">可疑指標：</label>
-        <input type="text" id="suspicious" />
-      </div>
-      <div class="form-row">
-        <label for="content">內容：</label>
-        <textarea id="content"></textarea>
-      </div>
-      <div class="form-row">
-        <label for="notifyUnit">通知單位：</label>
-        <select id="notifyUnit">
-          <option>北區理賠一室</option>
-          <option>北區理賠二室</option>
-          <option>中區理賠一室_桃園</option>
-        </select>
-      </div>
-      <div class="form-row">
-        <label for="notifyUser">通知人員：</label>
-        <select id="notifyUser">
-          <option>張三</option>
-          <option>李四</option>
-          <option>王五</option>
-          <option>陳六</option>
-        </select>
-      </div>
-      <div class="button-group">
-        <button class="button upload" onclick="submitLog()">送出</button>
-        <button class="button cancel" onclick="clearForm()">取消</button>
-      </div>
-    </div>
+            <div class="form-row">
+                <label for="contactType">聯絡事項：</label>
+                <select id="contactType">
+                    <option>體傷初步</option>
+                    <option>重大車財損初步</option>
+                    <option>單強/死殘初步</option>
+                    <option>其他通報</option>
+                    <option>視訊勘車</option>
+                    <option>視訊追加</option>
+                    <option>重大現勘</option>
+                </select>
+            </div>
 
-    <!-- Mobile版：直式卡片表單 -->
-    <div class="mobile-card mobile-only" id="log-mobile">
-      <div><strong>賠案號碼：</strong>10000001</div>
-      <div><strong>車牌號碼：</strong>1234-BB</div>
+            <div class="form-row"><label for="suspicious">可疑指標：</label><input id="suspicious" type="text" /></div>
+            <div class="form-row"><label for="content">內容：</label><textarea id="content"></textarea></div>
 
-      <label>處理項目：</label>
-      <select>
-        <option>Notification 損失通知</option>
-        <option>Coverage 承保範圍</option>
-        <option>Initial Contact 初次聯絡</option>
-        <option>Investigation 事故調查</option>
-        <option>Case Strategy 賠案處理策略</option>
-        <option>Vendor Mgmt 協力車商管理</option>
-        <option>Evaluation 各項賠款估價</option>
-        <option>Counter Fraud 反詐欺</option>
-        <option>Reserving 預估損失金額</option>
-        <option>Neg & Settlem 談判處理</option>
-        <option>Litig. Mgmt 訴訟管理</option>
-        <option>Recovery 追償</option>
-        <option>File Mgmt 檔案管理</option>
-        <option>Quality Assurance 賠案檢核</option>
-        <option>Salvage 殘餘物作業</option>
-        <option>客戶文件上傳/留言</option>
-      </select>
+            <div class="form-row">
+                <label>通知對象：</label>
+                <div class="notify-wrap">
+                    <div id="notifyChips" class="chip-list"></div>
+                    <button type="button" class="btn-sel" onclick="openNotifyModal()">選擇</button>
+                    <input type="hidden" id="notifyUserIds" name="notifyUserIds" value="" />
+                </div>
+            </div>
 
-      <label>被聯絡人：</label>
-      <input type="text" />
+            <div class="button-group">
+                <button class="button upload" onclick="submitLog()">送出</button>
+                <button class="button cancel" onclick="clearForm()">取消</button>
+            </div>
+        </div>
 
-      <label>聯絡事項：</label>
-      <select>
-        <option>體傷初步</option>
-        <option>重大車財損初步</option>
-        <option>單強/死殘初步</option>
-        <option>其他通報</option>
-        <option>視訊勘車</option>
-        <option>視訊追加</option>
-        <option>重大現勘</option>
-      </select>
+        <!-- Mobile 版表單 -->
+        <div class="mobile-card mobile-only" id="log-mobile">
+            <div><strong>賠案號碼：</strong>10000001</div>
+            <div><strong>車牌號碼：</strong>1234-BB</div>
 
-      <label>可疑指標：</label>
-      <input type="text" />
+            <label>處理項目：</label>
+            <select>
+                <option>Notification 損失通知</option>
+                <option>Coverage 承保範圍</option>
+                <option>Initial Contact 初次聯絡</option>
+                <option>Investigation 事故調查</option>
+                <option>Case Strategy 賠案處理策略</option>
+                <option>Vendor Mgmt 協力車商管理</option>
+                <option>Evaluation 各項賠款估價</option>
+                <option>Counter Fraud 反詐欺</option>
+                <option>Reserving 預估損失金額</option>
+                <option>Neg & Settlem 談判處理</option>
+                <option>Litig. Mgmt 訴訟管理</option>
+                <option>Recovery 追償</option>
+                <option>File Mgmt 檔案管理</option>
+                <option>Quality Assurance 賠案檢核</option>
+                <option>Salvage 殘餘物作業</option>
+                <option>客戶文件上傳/留言</option>
+            </select>
 
-      <label>內容：</label>
-      <textarea></textarea>
+            <label>被聯絡人：</label>
+            <input type="text" />
 
-      <label>通知單位：</label>
-      <select>
-        <option>北區理賠一室</option>
-        <option>北區理賠二室</option>
-        <option>中區理賠一室_桃園</option>
-      </select>
+            <label>聯絡事項：</label>
+            <select>
+                <option>體傷初步</option>
+                <option>重大車財損初步</option>
+                <option>單強/死殘初步</option>
+                <option>其他通報</option>
+                <option>視訊勘車</option>
+                <option>視訊追加</option>
+                <option>重大現勘</option>
+            </select>
 
-      <label>通知人員：</label>
-      <select>
-        <option>張三</option>
-        <option>李四</option>
-        <option>王五</option>
-        <option>陳六</option>
-      </select>
+            <label>可疑指標：</label>
+            <input type="text" />
 
-      <div class="button-group">
-        <button class="button upload" onclick="submitLog()">送出</button>
-        <button class="button cancel" onclick="clearForm()">取消</button>
-      </div>
-    </div>
+            <label>內容：</label>
+            <textarea></textarea>
 
-    <script>
-      function goBack() {
-        location.href = "03.claim_detail.html";
-      }
+            <label>通知對象：</label>
+            <div class="notify-wrap" style="gap: 8px; flex-wrap: wrap;">
+                <div id="notifyChipsM" class="chip-list" style="width: 100%;"></div>
+                <button type="button" class="btn-sel" onclick="openNotifyModal()">選擇</button>
+                <input type="hidden" id="notifyUserIdsM" name="notifyUserIdsM" value="" />
+            </div>
 
-      function submitLog() {
-        if (confirm("請確認是否將日誌新增至賠案裡？")) {
-          alert("新增完成");
-          window.location.href = "03.claim_detail.html";
-        }
-      }
+            <div class="button-group">
+                <button class="button upload" onclick="submitLog()">送出</button>
+                <button class="button cancel" onclick="clearForm()">取消</button>
+            </div>
+        </div>
 
-      function clearForm() {
-        if (confirm("是否取消新增日誌，返回賠案明細頁？")) {
-          window.location.href = "03.claim_detail.html";
-        }
-      }
-    </script>
-  </body>
+        <!-- 選擇通知對象 MODAL -->
+        <div id="notifyModal" class="modal-mask" aria-hidden="true">
+            <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="notifyTitle">
+                <div class="modal-head">
+                    <div id="notifyTitle">選擇通知對象</div>
+                    <button class="btn-sel" onclick="closeNotifyModal()">✕</button>
+                </div>
+                <div class="modal-body">
+                    <section class="col">
+                        <div class="col-head"><span>單位</span></div>
+                        <div class="col-body" id="unitList"></div>
+                    </section>
+                    <section class="col">
+                        <div class="col-head" style="gap: 8px; align-items: center;">
+                            <span>人員</span>
+                            <input id="userSearch" class="search" placeholder="輸入姓名或帳號搜尋" />
+                        </div>
+                        <div class="col-body" id="userList"></div>
+                    </section>
+                </div>
+                <div class="modal-foot">
+                    <button class="btn-sel" onclick="clearNotifySelection()">清除</button>
+                    <button class="btn-sel" onclick="closeNotifyModal()">取消</button>
+                    <button class="button upload" onclick="applyNotifySelection()">加入</button>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            /* ===== 導航與表單 ===== */
+            function goBack() {
+                location.href = "03.claim_detail.html";
+            }
+            function clearForm() {
+                if (confirm("是否取消新增日誌，返回賠案明細頁？")) location.href = "03.claim_detail.html";
+            }
+            function submitLog() {
+                if (confirm("請確認是否將日誌新增至賠案裡？")) {
+                    alert("新增完成");
+                    location.href = "03.claim_detail.html";
+                }
+            }
+
+            /* ===== 假資料 ===== */
+            const MOCK = {
+                units: [
+                    { id: "U01", name: "北區理賠室" },
+                    { id: "U02", name: "中區理賠一室" },
+                    { id: "U03", name: "中區理賠二室" },
+                    { id: "U04", name: "中區理賠三室" },
+                    { id: "U05", name: "中區理賠四室" },
+                    { id: "U06", name: "南區理賠一室" },
+                    { id: "U07", name: "南區理賠二室" },
+                ],
+                usersByUnit: {
+                    U01: [
+                        { id: "emp001", name: "張三" },
+                        { id: "emp002", name: "李四" },
+                        { id: "emp003", name: "王五" },
+                    ],
+                    U02: [
+                        { id: "emp101", name: "陳六" },
+                        { id: "emp102", name: "趙七" },
+                    ],
+                    U03: [
+                        { id: "emp201", name: "林八" },
+                        { id: "emp202", name: "周九" },
+                    ],
+                    U04: [
+                        { id: "emp301", name: "林甜甜" },
+                        { id: "emp302", name: "黃閒閒" },
+                    ],
+                    U05: [
+                        { id: "emp401", name: "李花花" },
+                        { id: "emp402", name: "柳白白" },
+                    ],
+                    U06: [
+                        { id: "emp501", name: "任明明" },
+                        { id: "emp502", name: "張心心" },
+                    ],
+                    U07: [
+                        { id: "emp601", name: "田小花" },
+                        { id: "emp602", name: "塗小草" },
+                    ],
+                },
+            };
+
+            /* ===== 選人 Modal 狀態與行為（TO-only） ===== */
+            const state = { unitChecked: new Set(), userChecked: new Map(), search: "" };
+
+            function openNotifyModal() {
+                document.body.style.overflow = "hidden";
+                document.getElementById("notifyModal").setAttribute("aria-hidden", "false");
+                renderUnitList();
+                renderUserList(); // 初始空白
+                const inp = document.getElementById("userSearch");
+                if (inp) {
+                    inp.value = "";
+                    inp.oninput = () => {
+                        state.search = inp.value.trim();
+                        renderUserList();
+                    };
+                }
+            }
+            function closeNotifyModal() {
+                document.body.style.overflow = "";
+                document.getElementById("notifyModal").setAttribute("aria-hidden", "true");
+            }
+
+            function renderUnitList() {
+                const box = document.getElementById("unitList");
+                box.innerHTML = "";
+                (MOCK.units || []).forEach((u) => {
+                    const row = document.createElement("div");
+                    row.className = "unit-item";
+                    const ck = document.createElement("input");
+                    ck.type = "checkbox";
+                    ck.checked = state.unitChecked.has(u.id);
+                    ck.onchange = () => {
+                        ck.checked ? state.unitChecked.add(u.id) : state.unitChecked.delete(u.id);
+                        renderUserList();
+                    };
+                    const lab = document.createElement("label");
+                    lab.textContent = u.name;
+                    lab.style.cursor = "pointer";
+                    row.appendChild(ck);
+                    row.appendChild(lab);
+                    box.appendChild(row);
+                });
+            }
+
+            function renderUserList() {
+                const box = document.getElementById("userList");
+                box.innerHTML = "";
+                const selectedUnitIds = state.unitChecked.size ? Array.from(state.unitChecked) : [];
+                if (!selectedUnitIds.length && !state.search) {
+                    const tip = document.createElement("div");
+                    tip.style.color = "#888";
+                    tip.style.padding = "8px";
+                    tip.textContent = "請先勾選左側單位，或用上方搜尋";
+                    box.appendChild(tip);
+                    return;
+                }
+                const pool = [];
+                const pushUsers = (uid) => (MOCK.usersByUnit[uid] || []).forEach((p) => pool.push(p));
+                if (selectedUnitIds.length) selectedUnitIds.forEach(pushUsers);
+                else Object.keys(MOCK.usersByUnit).forEach(pushUsers);
+                const q = state.search;
+                const list = q ? pool.filter((p) => p.name.includes(q) || p.id.includes(q)) : pool;
+                list.forEach((p) => {
+                    const row = document.createElement("div");
+                    row.className = "user-item";
+                    const ck = document.createElement("input");
+                    ck.type = "checkbox";
+                    ck.checked = state.userChecked.has(p.id);
+                    ck.onchange = () => {
+                        ck.checked ? state.userChecked.set(p.id, { id: p.id, name: p.name }) : state.userChecked.delete(p.id);
+                    };
+                    const lab = document.createElement("label");
+                    lab.textContent = p.name;
+                    lab.style.cursor = "pointer";
+                    row.appendChild(ck);
+                    row.appendChild(lab);
+                    box.appendChild(row);
+                });
+                if (!list.length) {
+                    const empty = document.createElement("div");
+                    empty.style.color = "#888";
+                    empty.style.padding = "8px";
+                    empty.textContent = "沒有符合條件的人員";
+                    box.appendChild(empty);
+                }
+            }
+
+            function clearNotifySelection() {
+                state.userChecked.clear();
+                renderUserList();
+                applyNotifySelection(true);
+            }
+
+            function applyNotifySelection(keepOpen) {
+                const users = Array.from(state.userChecked.values());
+                fillChips("notifyChips", "notifyUserIds", users);
+                fillChips("notifyChipsM", "notifyUserIdsM", users);
+                if (!keepOpen) closeNotifyModal();
+            }
+
+            function fillChips(chipsId, hiddenId, users) {
+                const wrap = document.getElementById(chipsId);
+                if (wrap) {
+                    wrap.innerHTML = "";
+                    users.forEach((u) => {
+                        const chip = document.createElement("span");
+                        chip.className = "chip";
+                        chip.innerHTML = `${u.name}<span class="rm" title="移除">×</span>`;
+                        chip.querySelector(".rm").onclick = () => {
+                            state.userChecked.delete(u.id);
+                            chip.remove();
+                            setHiddenBoth(Array.from(state.userChecked.keys()));
+                            if (document.getElementById("notifyModal").getAttribute("aria-hidden") === "false") renderUserList();
+                        };
+                        wrap.appendChild(chip);
+                    });
+                }
+                const ids = users.map((u) => u.id).join(",");
+                const hid = document.getElementById(hiddenId);
+                if (hid) hid.value = ids;
+                setHiddenBoth(users.map((u) => u.id));
+            }
+
+            function setHiddenBoth(ids) {
+                const v = (ids || []).join(",");
+                const a = document.getElementById("notifyUserIds");
+                if (a) a.value = v;
+                const b = document.getElementById("notifyUserIdsM");
+                if (b) b.value = v;
+            }
+        </script>
+    </body>
 </html>
