@@ -130,7 +130,6 @@
                 #collapseBtn {
                     display: none;
                 }
-
             }
 
             .pc-only {
@@ -139,9 +138,37 @@
             .mobile-only {
                 display: none;
             }
-			.center-btn {
-			  text-align: center;
-			}			
+            .center-btn {
+                text-align: center;
+            }
+            @media screen and (max-width: 767px) {
+                body {
+                    font-size: 16px; /* 調整整體字體大小 */
+                }
+                input,
+                select,
+                textarea,
+                button {
+                    font-size: 16px !important; /* 避免 iOS 自動縮放或放大 */
+                }
+                h1,
+                h2,
+                h3,
+                h4,
+                h5,
+                h6 {
+                    font-size: 1.2em; /* 標題稍微大一點 */
+                }
+                nav,
+                menu,
+                li,
+                a,
+                p,
+                label,
+                span {
+                    font-size: 1rem;
+                }
+            }
         </style>
     </head>
     <body>
@@ -218,9 +245,8 @@
                             </ul>
                         </details>
                     </li>
-					
-					<li class="center-btn"><button onclick="logout()" id="logoutBtn">登出</button></li>
 
+                    <li class="center-btn"><button onclick="logout()" id="logoutBtn">登出</button></li>
                 </ul>
             </nav>
             <iframe id="mainFrame" src="" name="mainFrame"></iframe>
