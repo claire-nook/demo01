@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>請假新增</title>
+  <style>
+    body { font-family: sans-serif; margin: 0; padding: 1rem; }
+    h2 { margin-bottom: 1rem; }
+    .pc-wrapper { max-width: 1000px; margin: 0 auto; }
+    .form-card { background: #fff; padding: 1rem; border-radius: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
+    .row { display: grid; grid-template-columns: 160px 1fr; gap: .75rem 1rem; align-items: center; }
+    .row + .row { margin-top: .75rem; }
+    label { font-weight: 700; color: #444; }
+    input, select, textarea { width: 100%; padding: .6rem .7rem; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; }
+    textarea { min-height: 110px; resize: vertical; }
+    .inline-date { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .btn-area { display: flex; gap: .75rem; justify-content: center; margin-top: 1rem; flex-wrap: wrap; }
+    .btn { padding: .6rem 1.2rem; border: none; border-radius: 8px; cursor: pointer; font-weight: 700; }
+    .btn-gray { background: #ccc; color: #222; }
+    .btn-primary { background: #f90; color: #fff; }
+    .hint { color: #666; font-size: .9rem; margin-top: .25rem; }
+
+    /* PC vs Mobile */
+    .pc { display: block; }
+    .mobile { display: none; }
+
+    /* Mobile 調整 */
+    @media screen and (max-width: 767px) {
+      .pc { display: none; }
+      .mobile { display: block; }
+      .form-card { padding: 1rem; }
+      .row { display: block; }
+      label { display: block; margin: .6rem 0 .35rem; }
+      input, select, textarea, button { font-size: 16px !important; height: auto; }
+      .inline-date { display: grid; grid-template-columns: 1fr; gap: .75rem; }
+      .btn { width: 100%; padding: .8rem 1rem; }
+    }
+  </style>
+</head>
+<body>
+  <h2>請假新增</h2>
+
+  <!-- PC：主管角色，可選單位、人員、時間與說明 -->
+  <div class="pc-wrapper pc">
+    <div class="form-card">
+      <div class="row">
+        <label for="deptPc">所屬單位</label>
+        <select id="deptPc">
+          <option value="">請選擇</option>
+          <option>北區理賠一室</option>
+          <option>北區理賠二室</option>
+          <option>中區理賠一室</option>
+          <option>南區理賠室</option>
+        </select>
+      </div>
+      <div class="row">
+        <label for="staffPc">外勤人員</label>
+        <select id="staffPc">
+          <option value="">請選擇</option>
+          <option>張三</option>
+          <option>李四</option>
+          <option>王五</option>
+        </select>
+      </div>
+      <div class="row">
+        <label>請假區間</label>
+        <div class="inline-date">
+          <input id="fromPc" type="datetime-local" />
+          <input id="toPc" type="datetime-local" />
+        </div>
+      </div>
+      <div class="row">
+        <label for="notePc">請假說明</label>
+        <textarea id="notePc" placeholder="例如：家中有事、就醫、陪同出庭等"></textarea>
+      </div>
+      <div class="btn-area">
+        <button class="btn btn-primary" onclick="savePc()">儲存</button>
+        <button class="btn btn-gray" onclick="backToList()">取消</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile：外勤角色，單位與人員不可選，只能輸入時間與說明 -->
+  <div class="mobile">
+    <div class="form-card">
+      <label><strong>所屬單位：</strong><span id="deptMb">北區理賠一室</span></label>
+      <label>請假人員
+        <select id="staffMb" disabled>
+          <option selected>張三（本人）</option>
+        </select>
+      </label>
+      <label>請假開始時間</label>
+      <input id="fromMb" type="datetime-local" />
+      <label>請假結束時間</label>
+      <input id="toMb" type="datetime-local" />
+      <label>請假說明</label>
+      <textarea id="noteMb" placeholder="簡述請假原因"></textarea>
+      <div class="btn-area">
+        <button class="btn btn-primary" onclick="saveMb()">儲存</button>
+        <button class="btn btn-gray" onclick="backToList()">取消</button>
+      </div>
+      <div class="hint">提示：行動版雛型以非主管角色示意，僅能新增「本人」請假，單位與人員由系統帶入。</div>
+    </div>
+  </div>
+
+  <script>
+    function backToList(){
+      // Prototype：返回查詢頁
+      location.href = '05.leave_query.html';
+    }
+
+    function fmt(t){
+      // 將 datetime-local 轉成 yyyy/mm/dd hh:mi
+      if(!t) return '';
+      const d = new Date(t);
+      if(Number.isNaN(d.getTime())) return '';
+      const y = d.getFullYear();
+      const m = String(d.getMonth()+1).padStart(2,'0');
+      const day = String(d.getDate()).padStart(2,'0');
+      const hh = String(d.getHours()).padStart(2,'0');
+      const mm = String(d.getMinutes()).padStart(2,'0');
+      return `${y}/${m}/${day} ${hh}:${mm}`;
+    }
+
+    function validateRange(from, to){
+      if(!from || !to) return '請輸入完整的請假起訖時間';
+      const f = new Date(from), t = new Date(to);
+      if(t <= f) return '結束時間需晚於開始時間';
+      return '';
+    }
+
+    function savePc(){
+      const dept = document.getElementById('deptPc').value.trim();
+      const staff = document.getElementById('staffPc').value.trim();
+      const from = document.getElementById('fromPc').value;
+      const to = document.getElementById('toPc').value;
+      const note = document.getElementById('notePc').value.trim();
+
+      if(!dept) return alert('請選擇所屬單位');
+      if(!staff) return alert('請選擇外勤人員');
+      const vr = validateRange(from, to); if(vr) return alert(vr);
+      if(!note) return alert('請輸入請假說明');
+
+      // Prototype：僅示意
+      alert(`已新增請假：\n人員：${staff}\n起：${fmt(from)}\n訖：${fmt(to)}\n說明：${note}`);
+      backToList();
+    }
+
+    function saveMb(){
+      const from = document.getElementById('fromMb').value;
+      const to = document.getElementById('toMb').value;
+      const note = document.getElementById('noteMb').value.trim();
+
+      const vr = validateRange(from, to); if(vr) return alert(vr);
+      if(!note) return alert('請輸入請假說明');
+
+      // Prototype：僅示意
+      alert(`已新增請假（本人）：\n起：${fmt(from)}\n訖：${fmt(to)}\n說明：${note}`);
+      backToList();
+    }
+  </script>
+</body>
+</html>

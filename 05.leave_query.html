@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>人員請假管理 - 請假資料查詢</title>
+        <style>
+            body {
+                font-family: sans-serif;
+                margin: 0;
+                padding: 1rem;
+            }
+            h2 {
+                margin-bottom: 1rem;
+            }
+
+            /* 容器與共用樣式 */
+            .pc-wrapper {
+                max-width: 1000px;
+                margin: 0 auto;
+            }
+            .query-form {
+                background: #fff;
+                padding: 1rem;
+                margin-bottom: 1rem;
+                border-radius: 12px;
+                box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            }
+            .query-form label {
+                display: block;
+                margin: 0.5rem 0 0.25rem;
+            }
+            .query-form input,
+            .query-form select {
+                width: 100%;
+                padding: 0.5rem;
+                border-radius: 6px;
+                border: 1px solid #ccc;
+                box-sizing: border-box;
+            }
+            .inline-date {
+                display: flex;
+                gap: 1rem;
+            }
+            .inline-date input {
+                flex: 1;
+            }
+
+            .btn-area {
+                margin-top: 1rem;
+                display: flex;
+                gap: 1rem;
+                justify-content: center;
+            }
+            .btn {
+                padding: 0.6rem 1.2rem;
+                border: none;
+                border-radius: 6px;
+                cursor: pointer;
+                font-weight: bold;
+            }
+            .btn-clear {
+                background: #ccc;
+                color: #000;
+            }
+            .btn-search {
+                background: #2f855a;
+                color: #fff;
+            }
+            .btn-add {
+                background: #007bff;
+                color: #fff;
+            }
+
+            /* PC 與 Mobile 顯示切換 */
+            .pc {
+                display: block;
+            }
+            .mobile {
+                display: none;
+            }
+
+            /* 表格樣式 */
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                background: #fff;
+                box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+                border-radius: 8px;
+                overflow: hidden;
+            }
+            th,
+            td {
+                padding: 0.75rem;
+                border-bottom: 1px solid #ddd;
+                text-align: left;
+            }
+            th {
+                background-color: #f5f5f5;
+            }
+            a {
+                color: #007bff;
+                text-decoration: underline;
+                font-size: 0.95rem;
+            }
+
+            /* 卡片樣式 (Mobile) */
+            .card {
+                background: #fff;
+                border-radius: 12px;
+                padding: 1rem;
+                margin-bottom: 1rem;
+                box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            }
+            .card div {
+                margin-bottom: 0.35rem;
+            }
+
+            /* Mobile 響應式 */
+            @media screen and (max-width: 767px) {
+                .pc {
+                    display: none;
+                }
+                .mobile {
+                    display: block;
+                }
+                input,
+                select,
+                textarea,
+                button {
+                    font-size: 16px !important;
+                    height: 40px !important;
+                    padding: 8px 10px !important;
+                    box-sizing: border-box;
+                }
+                label {
+                    font-size: 1rem;
+                }
+                .btn {
+                    font-size: 1rem;
+                    padding: 0.6rem 1.2rem;
+                }
+                .card div {
+                    font-size: 1rem;
+                }
+                .query-form input[type="date"] {
+                    font-size: 16px !important;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <h2>請假資料維護</h2>
+        <div class="pc-wrapper">
+            <!-- PC: 主管雛型，可跨單位與人員查詢 -->
+            <div class="query-form pc">
+                <label>
+                    所屬單位
+                    <select id="deptPc">
+                        <option>北區理賠一室</option>
+                        <option>北區理賠二室</option>
+                        <option>中區理賠一室</option>
+                        <option>南區理賠室</option>
+                    </select>
+                </label>
+                <label>
+                    外勤人員
+                    <select id="staffPc">
+                        <option>全部</option>
+                        <option>張三</option>
+                        <option>李四</option>
+                        <option>王五</option>
+                    </select>
+                </label>
+                <label>請假區間</label>
+                <div class="inline-date">
+                    <input id="leaveFromPc" type="datetime-local" value="2025-04-15T00:00" />
+                    <input id="leaveToPc" type="datetime-local" value="2025-04-30T23:59" />
+                </div>
+                <div class="btn-area">
+                    <button class="btn btn-add" onclick="goNew()">新增</button>
+                    <button class="btn btn-search">查詢</button>
+                    <button class="btn btn-clear">清除</button>
+                </div>
+            </div>
+
+            <!-- PC 結果 Table -->
+            <div class="pc">
+                <table id="pcTable">
+                    <thead>
+                        <tr>
+                            <th>請假編號</th>
+                            <th>請假人員</th>
+                            <th>請假開始時間</th>
+                            <th>請假結束時間</th>
+                            <th>請假說明</th>
+                            <th>假單狀態</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><a href="05.leave_detail.html">LV20250415001</a></td>
+                            <td>張三</td>
+                            <td>2025/04/15 09:00</td>
+                            <td>2025/04/15 12:00</td>
+                            <td>處理家事</td>
+                            <td>生效</td>
+                        </tr>
+                        <tr>
+                            <td><a href="05.leave_detail.html">LV20250420003</a></td>
+                            <td>李四</td>
+                            <td>2025/04/20 09:00</td>
+                            <td>2025/04/28 17:30</td>
+                            <td>出國</td>
+                            <td>作廢</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Mobile: 外勤人員雛型，僅可查自己，單位固定顯示、外勤人員鎖定為登入者 -->
+        <div class="mobile">
+            <div class="query-form">
+                <label><strong>所屬單位：</strong><span id="deptMobileText">北區理賠一室</span></label>
+                <label>
+                    外勤人員
+                    <select id="staffMobile" disabled>
+                        <option selected>張三（本人）</option>
+                    </select>
+                </label>
+                <label>請假區間起</label>
+                <div class="inline-date">
+                    <input id="leaveFromMb" type="date" value="2025-04-15" />
+                </div>
+                <label>請假區間訖</label>
+                <div class="inline-date">
+                    <input id="leaveToMb" type="date" value="2025-04-30" />
+                </div>
+                <div class="btn-area">
+                    <button class="btn btn-add" onclick="goNew()">新增</button>
+                    <button class="btn btn-search">查詢</button>
+                    <button class="btn btn-clear">清除</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <div><strong>請假編號：</strong><a href="05.leave_detail.html">LV20250415001</a></div>
+                <div>請假人員：張三</div>
+                <div>開始：2025/04/15 09:00</div>
+                <div>結束：2025/04/15 12:00</div>
+                <div>請假說明：處理家事</div>
+                <div>狀態：生效</div>
+            </div>
+
+            <div class="card">
+                <div><strong>請假編號：</strong><a href="05.leave_detail.html">LV20250420003</a></div>
+                <div>請假人員：張三</div>
+                <div>開始：2025/04/20 09:00</div>
+                <div>結束：2025/04/28 17:30</div>
+                <div>請假說明：出國</div>
+                <div>狀態：作廢</div>
+            </div>
+        </div>
+
+        <script>
+            function goNew() {
+                location.href = "05.leave_new.html";
+            }
+			
+            // 角色控管雛型：PC 視作主管可跨人員查詢；Mobile 視作外勤人員僅查本人
+            const isSupervisor = window.innerWidth > 767; // 簡化：PC 視為主管
+
+            function clearForm(mode) {
+                if (mode === "pc") {
+                    document.getElementById("deptPc").selectedIndex = 0;
+                    document.getElementById("staffPc").selectedIndex = 0;
+                    document.getElementById("leaveFromPc").value = "2025-04-15T00:00";
+                    document.getElementById("leaveToPc").value = "2025-04-30T23:59";
+                } else {
+                    document.getElementById("leaveFromMb").value = "2025-04-15";
+                    document.getElementById("leaveToMb").value = "2025-04-30";
+                }
+            }
+
+        </script>
+    </body>
+</html>

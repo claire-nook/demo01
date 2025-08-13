@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>請假明細</title>
+        <style>
+            body {
+                font-family: sans-serif;
+                margin: 0;
+                padding: 1rem;
+            }
+            h2 {
+                margin-bottom: 1rem;
+            }
+            .pc-wrapper {
+                max-width: 1000px;
+                margin: 0 auto;
+            }
+            .card {
+                background: #fff;
+                padding: 1rem;
+                border-radius: 12px;
+                box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            }
+            .row {
+                display: grid;
+                grid-template-columns: 160px 1fr;
+                gap: 0.75rem 1rem;
+                align-items: center;
+            }
+            .row + .row {
+                margin-top: 0.75rem;
+            }
+            label {
+                font-weight: 700;
+                color: #444;
+            }
+            input,
+            select,
+            textarea {
+                width: 100%;
+                padding: 0.6rem 0.7rem;
+                border: 1px solid #ccc;
+                border-radius: 8px;
+                box-sizing: border-box;
+            }
+            input[readonly],
+            select[disabled],
+            textarea[readonly] {
+                background: #f6f6f6;
+                color: #666;
+            }
+            textarea {
+                min-height: 110px;
+                resize: vertical;
+            }
+            .inline-date {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 1rem;
+            }
+            .btn-area {
+                display: flex;
+                gap: 0.75rem;
+                justify-content: center;
+                margin-top: 1rem;
+                flex-wrap: wrap;
+            }
+            .btn {
+                padding: 0.6rem 1.2rem;
+                border: none;
+                border-radius: 8px;
+                cursor: pointer;
+                font-weight: 700;
+            }
+            .btn-gray {
+                background: #ccc;
+                color: #222;
+            }
+            .btn-primary {
+                background: #f90;
+                color: #fff;
+            }
+            .btn-danger {
+                background: #c62828;
+                color: #fff;
+            }
+            .status {
+                display: inline-block;
+                padding: 0.25rem 0.6rem;
+                border-radius: 999px;
+                font-size: 0.85rem;
+                margin-left: 0.5rem;
+            }
+            .status-active {
+                background: #e8f5e9;
+                color: #2e7d32;
+            }
+            .status-void {
+                background: #ffebee;
+                color: #c62828;
+            }
+            .meta {
+                color: #666;
+                font-size: 0.9rem;
+            }
+
+            /* PC vs Mobile */
+            .pc {
+                display: block;
+            }
+            .mobile {
+                display: none;
+            }
+
+            /* Mobile */
+            @media screen and (max-width: 767px) {
+                .pc {
+                    display: none;
+                }
+                .mobile {
+                    display: block;
+                }
+                .card {
+                    padding: 1rem;
+                }
+                .row {
+                    display: block;
+                }
+                label {
+                    display: block;
+                    margin: 0.6rem 0 0.35rem;
+                }
+                input,
+                select,
+                textarea,
+                button {
+                    font-size: 16px !important;
+                    height: auto;
+                }
+                .inline-date {
+                    grid-template-columns: 1fr;
+                    gap: 0.75rem;
+                }
+                .btn {
+                    width: 100%;
+                    padding: 0.8rem 1rem;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <h2>請假明細 <span class="status status-active" id="statusBadge">生效</span></h2>
+
+        <!-- PC 區塊：主管視角可檢視，但本雛型僅允許修改時間與說明 -->
+        <div class="pc-wrapper pc">
+            <div class="card">
+                <div class="row">
+                    <label for="lvNo">請假編號</label>
+                    <input id="lvNo" type="text" value="LV20250415001" readonly />
+                </div>
+                <div class="row">
+                    <label for="deptPc">所屬單位</label>
+                    <input id="deptPc" type="text" value="北區理賠一室" readonly />
+                </div>
+                <div class="row">
+                    <label for="staffPc">請假人員</label>
+                    <input id="staffPc" type="text" value="張三" readonly />
+                </div>
+                <div class="row">
+                    <label>請假區間</label>
+                    <div class="inline-date">
+                        <input id="fromPc" type="datetime-local" value="2025-04-15T09:00" />
+                        <input id="toPc" type="datetime-local" value="2025-04-15T12:00" />
+                    </div>
+                </div>
+                <div class="row">
+                    <label for="notePc">請假說明</label>
+                    <textarea id="notePc">處理家事</textarea>
+                </div>
+                <div class="row">
+                    <label>建立/異動</label>
+                    <div class="meta" id="auditPc">建立：2025/04/10 08:21（李四） ・ 最後異動：2025/04/12 14:03（王五）</div>
+                </div>
+                <div class="btn-area">
+                    <button class="btn btn-primary" onclick="saveDetail('pc')">儲存</button>
+                    <button class="btn btn-gray" onclick="goBack()">取消</button>
+                    <button class="btn btn-danger" onclick="voidLeave()">作廢</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile 區塊：外勤視角（僅可改時間與說明） -->
+        <div class="mobile">
+            <div class="card">
+                <label><strong>請假編號：</strong><span id="lvNoMb">LV20250415001</span></label>
+                <label><strong>所屬單位：</strong><span id="deptMb">北區理賠一室</span></label>
+                <label>
+                    請假人員
+                    <input id="staffMb" type="text" value="張三（本人）" readonly />
+                </label>
+                <label>請假開始時間</label>
+                <input id="fromMb" type="datetime-local" value="2025-04-15T09:00" />
+                <label>請假結束時間</label>
+                <input id="toMb" type="datetime-local" value="2025-04-15T12:00" />
+                <label>請假說明</label>
+                <textarea id="noteMb">處理家事</textarea>
+                <div class="meta" id="auditMb">建立：2025/04/10 08:21（李四） ・ 最後異動：2025/04/12 14:03（王五）</div>
+                <div class="btn-area">
+                    <button class="btn btn-primary" onclick="saveDetail('mb')">儲存</button>
+                    <button class="btn btn-gray" onclick="goBack()">取消</button>
+                    <button class="btn btn-danger" onclick="voidLeave()">作廢</button>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            function goBack() {
+                // Prototype：返回列表
+                location.href = "05.leave_query.html";
+            }
+
+            function fmt(t) {
+                if (!t) return "";
+                const d = new Date(t);
+                if (Number.isNaN(d.getTime())) return "";
+                const y = d.getFullYear();
+                const m = String(d.getMonth() + 1).padStart(2, "0");
+                const day = String(d.getDate()).padStart(2, "0");
+                const hh = String(d.getHours()).padStart(2, "0");
+                const mm = String(d.getMinutes()).padStart(2, "0");
+                return `${y}/${m}/${day} ${hh}:${mm}`;
+            }
+
+            function validateRange(from, to) {
+                if (!from || !to) return "請輸入完整的請假起訖時間";
+                const f = new Date(from),
+                    t = new Date(to);
+                if (t <= f) return "結束時間需晚於開始時間";
+                return "";
+            }
+
+            function saveDetail(mode) {
+                const from = document.getElementById(mode === "pc" ? "fromPc" : "fromMb").value;
+                const to = document.getElementById(mode === "pc" ? "toPc" : "toMb").value;
+                const note = document.getElementById(mode === "pc" ? "notePc" : "noteMb").value.trim();
+                const vr = validateRange(from, to);
+                if (vr) return alert(vr);
+                if (!note) return alert("請輸入請假說明");
+                alert(`已儲存請假變更：\n起：${fmt(from)}\n訖：${fmt(to)}\n說明：${note}`);
+                goBack();
+            }
+
+            function voidLeave() {
+                const reason = prompt("作廢這張請假單。\n請填寫作廢原因：");
+                if (reason === null) return; // 取消
+                const trimmed = String(reason).trim();
+                if (!trimmed) return alert("未輸入原因，已取消作廢。");
+                // 模擬作廢成功
+                document.getElementById("statusBadge").textContent = "作廢";
+                document.getElementById("statusBadge").className = "status status-void";
+                // 鎖定所有可編輯欄位
+                ["fromPc", "toPc", "notePc", "fromMb", "toMb", "noteMb"].forEach((id) => {
+                    const el = document.getElementById(id);
+                    if (el) {
+                        el.setAttribute("readonly", "readonly");
+                        el.setAttribute("disabled", "disabled");
+                    }
+                });
+                alert("已作廢，原因：\n" + trimmed);
+                goBack();
+            }
+        </script>
+    </body>
+</html>
