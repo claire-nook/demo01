@@ -560,6 +560,55 @@
                     grid-template-columns: 1fr;
                 }
             }
+			.btn-view-log-pc {
+				padding: 10px 16px;
+				border: none;
+				border-radius: 8px;
+				font-size: var(--fs-md);
+				color: #fff;
+				cursor: pointer;
+				background-color: #78909c; /* 你原本設定的顏色 */
+				transition: background-color 0.2s ease;
+			}
+
+			/* 查看補資料歷程 */
+			.btn-view-log-pc {
+				padding: 10px 16px;
+				border: none;
+				border-radius: 8px;
+				font-size: var(--fs-md);
+				color: #fff;
+				cursor: pointer;
+				background-color: #78909c; /* 你原本設定的顏色 */
+				transition: background-color 0.2s ease;
+			}
+
+			.btn-view-log-pc:hover {
+				background-color: #60757f; /* 滑過時的顏色 */
+			}
+			
+            #log-section .log-header {
+                font-weight: bold;
+                margin-bottom: 10px;
+            }
+            #log-section .log-entry {
+                display: flex;
+                justify-content: space-between;
+                border-bottom: 1px solid #e0e0e0;
+                padding: 8px 0;
+            }
+            #log-section .log-entry:last-child {
+                border-bottom: none;
+            }
+            #log-section .log-status-ok {
+                color: green;
+            }
+            #log-section .log-status-fail {
+                color: red;
+            }
+            #log-section .log-status-process {
+                color: blue;
+            }			
         </style>
     </head>
     <body>
@@ -568,6 +617,7 @@
         <div class="btn-row">
             <button class="btn btn-primary" onclick="location.href='03.claim_log_upload.html'">日誌新增</button>
             <button class="btn btn-primary" onclick="location.href='03.claim_file_upload.html'">檔案上傳</button>
+            <button class="btn btn-view-log-pc">查看補資料歷程</button>
         </div>
         <div class="card tab-card">
             <div class="tab-nav">
@@ -592,8 +642,55 @@
                 </section>
             </div>
         </div>
+		
+        <!-- Modal for PC -->
+        <div class="modal" id="logModal" style="display: none; position: fixed; z-index: 999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.4);">
+            <div class="modal-content" style="background: #fff; margin: 10% auto; padding: 20px; border-radius: 8px; width: 400px;">
+                <span class="close" style="float: right; font-size: 24px; cursor: pointer;">×</span>
+                <h3>處理歷程</h3>
+                <div class="log-entry">2025-04-15 09:48　日誌新增 <span style="color: green;">成功</span></div>
+                <div class="log-entry">2025-04-15 09:50　檔案上傳 <span style="color: red;">失敗</span></div>
+                <div class="log-entry">2025-04-15 09:55　檔案上傳 <span style="color: blue;">處理中</span></div>
+            </div>
+        </div>
+        <div class="log-card mobile-only info-card" id="log-section" style="display: none;">
+            <div class="log-header">處理歷程</div>
+            <div class="log-entry">
+                <div>2025-04-15 09:48</div>
+                <div>日誌新增 <span class="log-status-ok">成功</span></div>
+            </div>
+            <div class="log-entry">
+                <div>2025-04-15 09:50</div>
+                <div>檔案上傳 <span class="log-status-fail">失敗</span></div>
+            </div>
+            <div class="log-entry">
+                <div>2025-04-15 09:55</div>
+                <div>檔案上傳 <span class="log-status-process">處理中</span></div>
+            </div>
+        </div>
 
         <script>
+			//查看處理歷程
+            document.querySelectorAll(".btn-view-log-pc").forEach((btn) => {
+                btn.addEventListener("click", () => {
+                    const modal = document.getElementById("logModal");
+                    modal.style.display = "block";
+                    const closeBtn = modal.querySelector(".close");
+                    closeBtn.onclick = () => (modal.style.display = "none");
+                    window.onclick = (event) => {
+                        if (event.target == modal) modal.style.display = "none";
+                    };
+                });
+            });
+            document.querySelectorAll(".btn-view-log-mobile").forEach((btn) => {
+                btn.addEventListener("click", () => {
+                    const logSection = document.getElementById("log-section");
+                    if (logSection) {
+                        logSection.style.display = logSection.style.display === "none" || logSection.style.display === "" ? "block" : "none";
+                    }
+                });
+            });
+		
             // ===== sample data =====
             const sample = {
                 procSerial: "1",
