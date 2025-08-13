@@ -475,16 +475,6 @@
                 if (confirm("是否取消新增日誌，返回任務明細頁？")) location.href = "02.task_detail_proc.html";
             }
             function submitLog() {
-                const ids = (document.getElementById("notifyUserIds")?.value || document.getElementById("notifyUserIdsM")?.value || "").trim();
-                const contact = (document.getElementById("contactPerson")?.value || "").trim();
-                if (!contact) {
-                    alert("「被聯絡人」必填");
-                    return;
-                }
-                if (!ids) {
-                    alert("請選擇至少一位通知對象");
-                    return;
-                }
                 if (confirm("請確認是否將日誌新增至賠案裡？")) {
                     alert("新增完成");
                     location.href = "02.task_detail_proc.html";
