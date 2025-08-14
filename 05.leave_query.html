@@ -147,6 +147,41 @@
                     font-size: 16px !important;
                 }
             }
+			/* 行動版：把 iOS 的灰底拉回來 */
+			@media screen and (max-width: 767px) {
+			  /* 日期/時間類：不要拿掉 appearance，否則可能失去原生選擇器 */
+			  input[type="date"],
+			  input[type="time"],
+			  input[type="datetime-local"] {
+				background-color: #fff !important;
+				color: #222;
+				-webkit-text-fill-color: #222; /* iOS 內層字色 */
+				border: 1px solid #ccc;
+			  }
+			  /* select 建議拿掉原生樣式，自己畫箭頭，避免「系統灰」感 */
+			  select {
+				-webkit-appearance: none; appearance: none;
+				background-color: #fff !important;
+				color: #222;
+				border: 1px solid #ccc;
+				padding-right: 2rem; /* 給箭頭空間 */
+				background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="%23666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>');
+				background-repeat: no-repeat;
+				background-position: right .6rem center;
+				background-size: 1rem;
+			  }
+
+			  /* 真正的唯讀/停用請明確標示，避免和上面混淆 */
+			  input[readonly],
+			  textarea[readonly],
+			  select[disabled],
+			  input[disabled] {
+				background-color: #f2f2f2 !important;
+				color: #888 !important;
+				border-color: #ddd !important;
+			  }
+			}
+						
         </style>
     </head>
     <body>
