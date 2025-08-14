@@ -1,24 +1,25 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
     <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>行動任務處理 - 我的任務 - 任務明細 - 日誌新增</title>
-
+        <meta charset="utf-8" />
+        <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+        <title>
+            行動任務處理 - 我的任務 - 任務明細 - 檔案上傳
+        </title>
         <style>
-            /* ===== 基礎 ===== */
             body {
                 font-family: Arial, sans-serif;
                 padding: 10px;
-                background: #f8f8f8;
+                background-color: #f8f8f8;
             }
             h2 {
                 margin-bottom: 1em;
             }
+
             .back-button {
                 background: #666;
-                color: #fff;
-                border: 0;
+                color: white;
+                border: none;
                 border-radius: 4px;
                 padding: 6px 12px;
                 font-size: 14px;
@@ -26,7 +27,7 @@
                 margin: 0 10px 10px 0;
             }
 
-            /* ===== PC 橫式表單 ===== */
+            /* PC版表單 */
             .pc-form-wrapper {
                 max-width: 900px;
                 margin: 0 auto;
@@ -38,8 +39,8 @@
             .form-row {
                 display: flex;
                 align-items: center;
-                gap: 10px;
                 margin-bottom: 14px;
+                gap: 10px;
             }
             .form-row label {
                 min-width: 120px;
@@ -56,11 +57,8 @@
                 font-size: 1rem;
                 box-sizing: border-box;
             }
-            .form-row textarea {
-                height: 80px;
-            }
 
-            /* ===== Mobile 直式卡片 ===== */
+            /* Mobile 卡片 */
             .mobile-card {
                 background: #fff;
                 border-radius: 10px;
@@ -74,17 +72,13 @@
                 display: block;
             }
             .mobile-card input,
-            .mobile-card select,
-            .mobile-card textarea {
+            .mobile-card select {
                 width: 100%;
                 padding: 8px;
                 margin-top: 4px;
                 box-sizing: border-box;
                 border: 1px solid #ccc;
                 border-radius: 4px;
-            }
-            .mobile-card textarea {
-                height: 80px;
             }
 
             .button-group {
@@ -96,16 +90,16 @@
             .button {
                 flex: 1;
                 padding: 10px;
-                border: 0;
+                border: none;
                 color: #fff;
                 font-size: 16px;
                 border-radius: 4px;
             }
             .button.upload {
-                background: #fb8c00;
+                background-color: #fb8c00;
             }
             .button.cancel {
-                background: #555;
+                background-color: #555;
             }
 
             .pc {
@@ -115,7 +109,76 @@
                 display: none;
             }
 
-            /* ===== 行動版可讀可點 ===== */
+            /* 預覽區（PC/Mobile 共用） */
+            #previewAreaPC,
+            #previewAreaMobile {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 10px;
+                margin-top: 10px;
+                padding: 8px;
+                border: 1px dashed #ccc;
+                border-radius: 6px;
+                background: #fefefe;
+                max-height: 200px; /* 固定高度，可調整 */
+                overflow-y: auto; /* 多圖時可捲動 */
+            }
+
+            #previewAreaPC img,
+            #previewAreaMobile img {
+                height: 100px;
+                border: 1px solid #aaa;
+                border-radius: 4px;
+                cursor: zoom-in;
+            }
+
+            .remove-btn {
+                position: absolute;
+                top: -6px;
+                right: -6px;
+                background: #e53935;
+                color: #fff;
+                border-radius: 50%;
+                width: 20px;
+                height: 20px;
+                font-size: 14px;
+                line-height: 20px;
+                text-align: center;
+                cursor: pointer;
+                box-shadow: 0 0 2px rgba(0, 0, 0, 0.3);
+            }
+
+            /* 圖片放大 Modal */
+            #imageModal {
+                display: none;
+                position: fixed;
+                z-index: 999;
+                inset: 0;
+                background: rgba(0, 0, 0, 0.6);
+                justify-content: center;
+                align-items: center;
+            }
+            #imageModalContent {
+                max-width: 90%;
+                max-height: 90%;
+                border-radius: 8px;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+            }
+            #imageModal img {
+                width: 100%;
+                height: auto;
+                border-radius: 8px;
+            }
+            #imageModal .close {
+                position: absolute;
+                top: 20px;
+                right: 30px;
+                font-size: 30px;
+                color: #fff;
+                cursor: pointer;
+            }
+
+            /* === 行動版關鍵修正：可點擊高度 & 字級 === */
             @media (max-width: 767px) {
                 .pc {
                     display: none;
@@ -129,6 +192,8 @@
                     width: 100%;
                     margin-top: 10px;
                 }
+
+                /* 元件別再扁：iOS 避免縮放，安卓也舒服 */
                 input,
                 select,
                 textarea,
@@ -138,6 +203,7 @@
                     padding: 10px 12px !important;
                     box-sizing: border-box;
                 }
+                /* 文字區域保底高度 */
                 textarea {
                     min-height: 120px !important;
                     height: auto !important;
@@ -153,557 +219,373 @@
                     height: 44px !important;
                     font-size: 16px !important;
                 }
-                .mobile-card select,
-                .mobile-card input,
-                .mobile-card textarea {
-                    width: 100%;
-                    display: block;
+                /* 預覽縮圖行動裝置更好滑 */
+                #previewAreaMobile img {
+                    height: 96px;
                 }
             }
-
-            /* ===== 通知對象 chips 與按鈕 ===== */
-            .notify-wrap {
-                display: flex;
-                align-items: center;
-                gap: 8px;
-                flex: 1;
+            #summaryPC span,
+            #summaryMobile span {
+                margin-right: 16px;
             }
-            .chip-list {
+
+            /* 統一預覽卡片風格 */
+
+            .preview-item img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover; /* 自動裁切保比例 */
+                border-radius: 6px;
+            }
+
+            .preview-item .info-box {
+                font-size: 12px;
+                color: #444;
+                background: #f9f9f9;
+                padding: 2px 4px;
+                border-radius: 4px;
+                text-align: center;
+                white-space: pre-wrap;
+                width: 100%;
+                box-sizing: border-box;
+                border: 1px dashed #ccc;
+            }
+
+            #previewAreaPC,
+            #previewAreaMobile {
                 display: flex;
                 flex-wrap: wrap;
-                gap: 6px;
-            }
-            .chip {
-                display: inline-flex;
-                align-items: center;
-                gap: 6px;
-                background: #eef2f7;
-                border: 1px solid #dbe2ea;
-                color: #244;
-                padding: 4px 8px;
-                border-radius: 999px;
-                font-size: 0.9rem;
-            }
-            .chip .rm {
-                cursor: pointer;
-                font-weight: bold;
-                line-height: 1;
-            }
-            .btn-sel {
-                padding: 8px 10px;
-                border: 1px solid #bbb;
+                gap: 10px;
+                padding: 10px;
+                border: 1px dashed #ccc;
                 background: #fff;
                 border-radius: 6px;
-                cursor: pointer;
+                overflow-y: auto;
+                max-height: 250px;
             }
-
-            /* ===== Modal：單一份最終樣式（PC/手機通用） ===== */
-            .modal-mask {
-                position: fixed;
-                inset: 0;
-                background: rgba(0, 0, 0, 0.45);
-                display: none;
-                z-index: 9999;
-            }
-            .modal-mask[aria-hidden="false"] {
-                display: block;
-            }
-            .modal-panel {
+            .preview-item {
                 background: #fff;
-                width: min(900px, 92vw);
-                max-height: 84vh;
-                margin: 6vh auto;
-                border-radius: 12px;
-                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-                display: flex;
-                flex-direction: column;
-                overflow: hidden;
-            }
-            .modal-head {
-                padding: 12px 16px;
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                border-bottom: 1px solid #eee;
-                font-weight: 700;
-            }
-            .modal-body {
-                flex: 1;
-                display: flex;
-                gap: 12px;
-                padding: 12px;
-                overflow: hidden;
-            }
-            .modal-foot {
-                position: sticky;
-                bottom: 0;
-                background: #fff;
-                border-top: 1px solid #eee;
-                padding: 10px 12px;
-                display: flex;
-                justify-content: flex-end;
-                gap: 8px;
-            }
-
-            .col {
-                flex: 1;
-                border: 1px solid #eef0f3;
                 border-radius: 10px;
+                padding: 8px;
+                box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
                 display: flex;
                 flex-direction: column;
-                min-width: 0;
-                overflow: hidden;
-            }
-            .col-head {
-                padding: 8px 10px;
-                background: #f8fafc;
-                border-bottom: 1px solid #eef0f3;
-                font-weight: 600;
-                display: flex;
                 align-items: center;
-                gap: 8px;
+                justify-content: flex-start;
+                gap: 6px;
+                width: 120px;
+                height: 100px;
+                position: relative;
             }
-            .col-body {
-                padding: 6px 8px;
-                overflow: auto;
-                -webkit-overflow-scrolling: touch;
-            }
-            .unit-item,
-            .user-item {
-                display: flex;
-                align-items: center;
-                gap: 8px;
-                padding: 8px 6px;
-                border-bottom: 1px dashed #f1f3f6;
-            }
-            .unit-item input[type="checkbox"],
-            .user-item input[type="checkbox"] {
-                width: 18px;
-                height: 18px;
-            }
-            .search {
-                width: 100%;
-                padding: 8px 10px;
-                border: 1px solid #e2e8f0;
-                border-radius: 8px;
-            }
-
-            @media (max-width: 767px) {
-                .modal-panel {
-                    width: 100vw;
-                    height: 100vh;
-                    margin: 0;
-                    border-radius: 0;
-                    max-height: none;
+            /* iOS 表單正常化：修掉灰底與不一致高度，但保留原生挑選器 */
+            @media screen and (max-width: 767px) {
+                /* 統一外觀：日期/時間欄位 */
+                input[type="date"],
+                input[type="time"],
+                input[type="datetime-local"] {
+                    background-color: #fff !important;
+                    color: #222;
+                    -webkit-text-fill-color: #222; /* iOS 內層字色 */
+                    border: 1px solid #ccc;
+                    border-radius: 8px;
+                    width: 100%;
+                    box-sizing: border-box;
+                    /* 跟 select 對齊的尺寸 */
+                    min-height: 44px; /* 手指友善高度 */
+                    padding: 10px 12px; /* 與 select 同步 */
+                    line-height: 1.2;
                 }
-                .modal-body {
-                    flex: 1;
-                    flex-direction: column;
-                    gap: 10px;
-                    padding: 10px;
+
+                /* select 建議自訂外觀，避免系統灰感與高度不一致 */
+                select {
+                    -webkit-appearance: none;
+                    appearance: none;
+                    background-color: #fff !important;
+                    color: #222;
+                    border: 1px solid #ccc;
+                    border-radius: 8px;
+                    width: 100%;
+                    box-sizing: border-box;
+                    min-height: 44px;
+                    padding: 10px 36px 10px 12px; /* 右側留給箭頭 */
+                    line-height: 1.2;
+                    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="%23666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>');
+                    background-repeat: no-repeat;
+                    background-position: right 0.6rem center;
+                    background-size: 1rem;
                 }
-                .col-body {
-                    flex: 1;
+
+                /* 真正唯讀/停用才灰底，語意明確 */
+                input[readonly],
+                textarea[readonly],
+                input[disabled],
+                select[disabled] {
+                    background-color: #f2f2f2 !important;
+                    color: #888 !important;
+                    border-color: #ddd !important;
+                }
+
+                /*  query 頁有並排的日期欄，避免 iOS 內建寬度撐爆 */
+                .inline-date input {
+                    min-width: 0;
                 }
             }
-			/* iOS 表單正常化：修掉灰底與不一致高度，但保留原生挑選器 */
-			@media screen and (max-width: 767px) {
-			  /* 統一外觀：日期/時間欄位 */
-			  input[type="date"],
-			  input[type="time"],
-			  input[type="datetime-local"] {
-				background-color: #fff !important;
-				color: #222;
-				-webkit-text-fill-color: #222;        /* iOS 內層字色 */
-				border: 1px solid #ccc;
-				border-radius: 8px;
-				width: 100%;
-				box-sizing: border-box;
-				/* 跟 select 對齊的尺寸 */
-				min-height: 44px;                     /* 手指友善高度 */
-				padding: 10px 12px;                   /* 與 select 同步 */
-				line-height: 1.2;
-			  }
-
-			  /* select 建議自訂外觀，避免系統灰感與高度不一致 */
-			  select {
-				-webkit-appearance: none; appearance: none;
-				background-color: #fff !important;
-				color: #222;
-				border: 1px solid #ccc;
-				border-radius: 8px;
-				width: 100%;
-				box-sizing: border-box;
-				min-height: 44px;
-				padding: 10px 36px 10px 12px;         /* 右側留給箭頭 */
-				line-height: 1.2;
-				background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="%23666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>');
-				background-repeat: no-repeat;
-				background-position: right .6rem center;
-				background-size: 1rem;
-			  }
-
-			  /* 真正唯讀/停用才灰底，語意明確 */
-			  input[readonly],
-			  textarea[readonly],
-			  input[disabled],
-			  select[disabled] {
-				background-color: #f2f2f2 !important;
-				color: #888 !important;
-				border-color: #ddd !important;
-			  }
-
-			  /*  query 頁有並排的日期欄，避免 iOS 內建寬度撐爆 */
-			  .inline-date input { min-width: 0; }
-			}            
         </style>
     </head>
     <body>
         <button class="back-button pc" onclick="goBack()">← 返回</button>
-        <div class="mobile-only"><button class="back-button" onclick="goBack()">← 返回</button></div>
-
-        <h2>任務編號 <strong>123456</strong></h2>
-
-        <!-- PC 版表單 -->
-        <div class="pc-form-wrapper pc" id="log-pc">
+        <div class="mobile-only">
+            <button class="back-button" onclick="goBack()">← 返回</button>
+        </div>
+        <h2>任務編號<strong>123456</strong></h2>
+        <!-- PC版 -->
+        <div class="pc-form-wrapper pc">
+            <div class="form-row"><label>賠案號碼：</label><div>10000001</div></div>
+            <div class="form-row"><label>車牌號碼：</label><div>1234-BB</div></div>
             <div class="form-row">
-                <label>賠案號碼：</label>
-                <div>10000001</div>
-            </div>
-            <div class="form-row">
-                <label>車牌號碼：</label>
-                <div>1234-BB</div>
-            </div>
-
-            <div class="form-row">
-                <label for="processItem">處理項目：</label>
-                <select id="processItem">
-                    <option>Notification 損失通知</option>
-                    <option>Coverage 承保範圍</option>
-                    <option>Initial Contact 初次聯絡</option>
-                    <option>Investigation 事故調查</option>
-                    <option>Case Strategy 賠案處理策略</option>
-                    <option>Vendor Mgmt 協力車商管理</option>
-                    <option>Evaluation 各項賠款估價</option>
-                    <option>Counter Fraud 反詐欺</option>
-                    <option>Reserving 預估損失金額</option>
-                    <option>Neg & Settlem 談判處理</option>
-                    <option>Litig. Mgmt 訴訟管理</option>
-                    <option>Recovery 追償</option>
-                    <option>File Mgmt 檔案管理</option>
-                    <option>Quality Assurance 賠案檢核</option>
-                    <option>Salvage 殘餘物作業</option>
-                    <option>客戶文件上傳/留言</option>
+                <label for="uploadMode">上傳方式：</label>
+                <select id="uploadMode">
+                    <option value="individual">逐張圖片/逐個檔案上傳</option>
+                    <option value="merge">多張圖片合併為PDF上傳</option>
                 </select>
             </div>
-
-            <div class="form-row"><label for="contactPerson">被聯絡人：</label><input id="contactPerson" type="text" /></div>
-
             <div class="form-row">
-                <label for="contactType">聯絡事項：</label>
-                <select id="contactType">
-                    <option>體傷初步</option>
-                    <option>重大車財損初步</option>
-                    <option>單強/死殘初步</option>
-                    <option>其他通報</option>
-                    <option>視訊勘車</option>
-                    <option>視訊追加</option>
-                    <option>重大現勘</option>
+                <label>類別：</label>
+                <select>
+                    <option>保戶</option>
+                    <option>對造1</option>
+                    <option>對造2</option>
+                    <option>全鋒現場照</option>
+                    <option>查證資料</option>
+                    <option>訴訟、追償</option>
+                    <option>死亡查證</option>
+                    <option>客戶上傳</option>
+                    <option>其他</option>
                 </select>
             </div>
-
-            <div class="form-row"><label for="suspicious">可疑指標：</label><input id="suspicious" type="text" /></div>
-            <div class="form-row"><label for="content">內容：</label><textarea id="content"></textarea></div>
-
             <div class="form-row">
-                <label>通知對象：</label>
-                <div class="notify-wrap">
-                    <div id="notifyChips" class="chip-list"></div>
-                    <button type="button" class="btn-sel" onclick="openNotifyModal()">選擇</button>
-                    <input type="hidden" id="notifyUserIds" name="notifyUserIds" value="" />
-                </div>
+                <label>檔案說明：</label>
+                <input type="text" />
             </div>
-
+            <div class="form-row">
+                <label for="fileInput">選擇檔案：</label>
+                <input accept="image/*,application/pdf" id="fileInput" multiple="" type="file" />
+            </div>
+            <div class="form-row">
+                <label>預覽圖：</label>
+                <div id="previewAreaPC"></div>
+            </div>
+            <div class="form-row">
+                <label>壓縮資訊：</label>
+                <div id="summaryPC" style="white-space: pre-wrap; font-size: 0.9rem; line-height: 1.6;"></div>
+            </div>
             <div class="button-group">
-                <button class="button upload" onclick="submitLog()">送出</button>
-                <button class="button cancel" onclick="clearForm()">取消</button>
+                <button class="button upload" onclick="submitUpload()">上傳</button>
+                <button class="button cancel" onclick="goBack()">取消</button>
             </div>
         </div>
-
-        <!-- Mobile 版表單 -->
-        <div class="mobile-card mobile-only" id="log-mobile">
+        <!-- Mobile版 -->
+        <div class="mobile-card mobile-only">
             <div><strong>賠案號碼：</strong>10000001</div>
             <div><strong>車牌號碼：</strong>1234-BB</div>
-
-            <label>處理項目：</label>
-            <select>
-                <option>Notification 損失通知</option>
-                <option>Coverage 承保範圍</option>
-                <option>Initial Contact 初次聯絡</option>
-                <option>Investigation 事故調查</option>
-                <option>Case Strategy 賠案處理策略</option>
-                <option>Vendor Mgmt 協力車商管理</option>
-                <option>Evaluation 各項賠款估價</option>
-                <option>Counter Fraud 反詐欺</option>
-                <option>Reserving 預估損失金額</option>
-                <option>Neg & Settlem 談判處理</option>
-                <option>Litig. Mgmt 訴訟管理</option>
-                <option>Recovery 追償</option>
-                <option>File Mgmt 檔案管理</option>
-                <option>Quality Assurance 賠案檢核</option>
-                <option>Salvage 殘餘物作業</option>
-                <option>客戶文件上傳/留言</option>
+            <label>上傳方式：</label>
+            <select id="uploadModeMobile">
+                <option value="individual">逐張圖片/逐個檔案上傳</option>
+                <option value="merge">多張圖片合併為PDF上傳</option>
             </select>
-
-            <label>被聯絡人：</label>
-            <input type="text" />
-
-            <label>聯絡事項：</label>
+            <label>類別：</label>
             <select>
-                <option>體傷初步</option>
-                <option>重大車財損初步</option>
-                <option>單強/死殘初步</option>
-                <option>其他通報</option>
-                <option>視訊勘車</option>
-                <option>視訊追加</option>
-                <option>重大現勘</option>
+                <option>保戶</option>
+                <option>對造1</option>
+                <option>對造2</option>
+                <option>全鋒現場照</option>
+                <option>查證資料</option>
+                <option>訴訟、追償</option>
+                <option>死亡查證</option>
+                <option>客戶上傳</option>
+                <option>其他</option>
             </select>
-
-            <label>可疑指標：</label>
+            <label>檔案說明：</label>
             <input type="text" />
-
-            <label>內容：</label>
-            <textarea></textarea>
-
-            <label>通知對象：</label>
-            <div class="notify-wrap" style="gap: 8px; flex-wrap: wrap;">
-                <div id="notifyChipsM" class="chip-list" style="width: 100%;"></div>
-                <button type="button" class="btn-sel" onclick="openNotifyModal()">選擇</button>
-                <input type="hidden" id="notifyUserIdsM" name="notifyUserIdsM" value="" />
-            </div>
-
+            <label>選擇檔案：</label>
+            <input accept="image/*,application/pdf" id="fileInputMobile" multiple="" type="file" />
+            <label>預覽圖：</label>
+            <div id="previewAreaMobile"></div>
+            <label>壓縮資訊：</label>
+            <div id="summaryMobile" style="white-space: pre-wrap; font-size: 0.95rem; line-height: 1.6;"></div>
             <div class="button-group">
-                <button class="button upload" onclick="submitLog()">送出</button>
-                <button class="button cancel" onclick="clearForm()">取消</button>
+                <button class="button upload" onclick="submitUpload()">上傳</button>
+                <button class="button cancel" onclick="goBack()">取消</button>
             </div>
         </div>
-
-        <!-- 選擇通知對象 MODAL -->
-        <div id="notifyModal" class="modal-mask" aria-hidden="true">
-            <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="notifyTitle">
-                <div class="modal-head">
-                    <div id="notifyTitle">選擇通知對象</div>
-                    <button class="btn-sel" onclick="closeNotifyModal()">✕</button>
-                </div>
-                <div class="modal-body">
-                    <section class="col">
-                        <div class="col-head"><span>單位</span></div>
-                        <div class="col-body" id="unitList"></div>
-                    </section>
-                    <section class="col">
-                        <div class="col-head" style="gap: 8px; align-items: center;">
-                            <span>人員</span>
-                            <input id="userSearch" class="search" placeholder="輸入姓名或帳號搜尋" />
-                        </div>
-                        <div class="col-body" id="userList"></div>
-                    </section>
-                </div>
-                <div class="modal-foot">
-                    <button class="btn-sel" onclick="clearNotifySelection()">清除</button>
-                    <button class="btn-sel" onclick="closeNotifyModal()">取消</button>
-                    <button class="button upload" onclick="applyNotifySelection()">加入</button>
-                </div>
-            </div>
+        <!-- 圖片放大 Modal -->
+        <div id="imageModal">
+            <span class="close">×</span>
+            <div id="imageModalContent"><img alt="預覽圖" src="" /></div>
         </div>
-
         <script>
-            /* ===== 導航與表單 ===== */
             function goBack() {
                 location.href = "02.task_detail_proc.html";
             }
-            function clearForm() {
-                if (confirm("是否取消新增日誌，返回任務明細頁？")) location.href = "02.task_detail_proc.html";
-            }
-            function submitLog() {
-                if (confirm("請確認是否將日誌新增至賠案裡？")) {
-                    alert("新增完成");
+
+            function submitUpload() {
+                if (confirm("是否確認上傳這些檔案？")) {
+                    alert("上傳成功！");
                     location.href = "02.task_detail_proc.html";
                 }
             }
 
-            /* ===== 假資料 ===== */
-            const MOCK = {
-                units: [
-                    { id: "U01", name: "北區理賠室" },
-                    { id: "U02", name: "中區理賠一室" },
-                    { id: "U03", name: "中區理賠二室" },
-                    { id: "U04", name: "中區理賠三室" },
-                    { id: "U05", name: "中區理賠四室" },
-                    { id: "U06", name: "南區理賠一室" },
-                    { id: "U07", name: "南區理賠二室" },
-                ],
-                usersByUnit: {
-                    U01: [
-                        { id: "emp001", name: "張三" },
-                        { id: "emp002", name: "李四" },
-                        { id: "emp003", name: "王五" },
-                    ],
-                    U02: [
-                        { id: "emp101", name: "陳六" },
-                        { id: "emp102", name: "趙七" },
-                    ],
-                    U03: [
-                        { id: "emp201", name: "林八" },
-                        { id: "emp202", name: "周九" },
-                    ],
-                    U04: [
-                        { id: "emp301", name: "林甜甜" },
-                        { id: "emp302", name: "黃閒閒" },
-                    ],
-                    U05: [
-                        { id: "emp401", name: "李花花" },
-                        { id: "emp402", name: "柳白白" },
-                    ],
-                    U06: [
-                        { id: "emp501", name: "任明明" },
-                        { id: "emp502", name: "張心心" },
-                    ],
-                    U07: [
-                        { id: "emp601", name: "田小花" },
-                        { id: "emp602", name: "塗小草" },
-                    ],
-                },
-            };
+            // 綁定檔案選擇事件
+            document.getElementById("fileInput")?.addEventListener("change", (e) => handlePreview(e, "PC"));
+            document.getElementById("fileInputMobile")?.addEventListener("change", (e) => handlePreview(e, "Mobile"));
 
-            /* ===== 選人 Modal 狀態與行為（TO-only） ===== */
-            const state = { unitChecked: new Set(), userChecked: new Map(), search: "" };
+            function handlePreview(event, mode) {
+                const previewArea = document.getElementById("previewArea" + mode);
+                if (!previewArea) return;
+                previewArea.innerHTML = "";
 
-            function openNotifyModal() {
-                document.body.style.overflow = "hidden";
-                document.getElementById("notifyModal").setAttribute("aria-hidden", "false");
-                renderUnitList();
-                renderUserList(); // 初始空白
-                const inp = document.getElementById("userSearch");
-                if (inp) {
-                    inp.value = "";
-                    inp.oninput = () => {
-                        state.search = inp.value.trim();
-                        renderUserList();
+                const files = Array.from(event.target.files);
+                files.forEach((file) => {
+                    // 只預覽圖片；PDF 不預覽縮圖
+                    if (!file.type.startsWith("image/")) return;
+
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        const container = document.createElement("div");
+                        container.className = "preview-item";
+
+                        const img = document.createElement("img");
+                        img.src = e.target.result;
+
+                        // 點縮圖放大
+                        img.addEventListener("click", () => openModal(img.src));
+
+                        const removeBtn = document.createElement("span");
+                        removeBtn.className = "remove-btn";
+                        removeBtn.innerHTML = "&times;";
+                        removeBtn.onclick = () => container.remove(); // 僅移除畫面預覽
+
+                        container.appendChild(img);
+                        container.appendChild(removeBtn);
+                        previewArea.appendChild(container);
                     };
-                }
-            }
-            function closeNotifyModal() {
-                document.body.style.overflow = "";
-                document.getElementById("notifyModal").setAttribute("aria-hidden", "true");
-            }
-
-            function renderUnitList() {
-                const box = document.getElementById("unitList");
-                box.innerHTML = "";
-                (MOCK.units || []).forEach((u) => {
-                    const row = document.createElement("div");
-                    row.className = "unit-item";
-                    const ck = document.createElement("input");
-                    ck.type = "checkbox";
-                    ck.checked = state.unitChecked.has(u.id);
-                    ck.onchange = () => {
-                        ck.checked ? state.unitChecked.add(u.id) : state.unitChecked.delete(u.id);
-                        renderUserList();
-                    };
-                    const lab = document.createElement("label");
-                    lab.textContent = u.name;
-                    lab.style.cursor = "pointer";
-                    row.appendChild(ck);
-                    row.appendChild(lab);
-                    box.appendChild(row);
+                    reader.readAsDataURL(file);
                 });
             }
 
-            function renderUserList() {
-                const box = document.getElementById("userList");
-                box.innerHTML = "";
-                const selectedUnitIds = state.unitChecked.size ? Array.from(state.unitChecked) : [];
-                if (!selectedUnitIds.length && !state.search) {
-                    const tip = document.createElement("div");
-                    tip.style.color = "#888";
-                    tip.style.padding = "8px";
-                    tip.textContent = "請先勾選左側單位，或用上方搜尋";
-                    box.appendChild(tip);
+            // Modal 邏輯
+            function openModal(src) {
+                const modal = document.getElementById("imageModal");
+                modal.querySelector("img").src = src;
+                modal.style.display = "flex";
+            }
+            document.querySelector("#imageModal .close").onclick = () => (document.getElementById("imageModal").style.display = "none");
+            window.addEventListener("click", (evt) => {
+                const modal = document.getElementById("imageModal");
+                if (evt.target === modal) modal.style.display = "none";
+            });
+        </script>
+        <script>
+            async function compressImage(file, quality = 0.7) {
+                return new Promise((resolve) => {
+                    const img = new Image();
+                    const reader = new FileReader();
+                    reader.onload = () => {
+                        img.src = reader.result;
+                    };
+                    img.onload = () => {
+                        const canvas = document.createElement("canvas");
+                        const maxSize = 1280;
+                        let { width, height } = img;
+
+                        if (width > height) {
+                            if (width > maxSize) {
+                                height *= maxSize / width;
+                                width = maxSize;
+                            }
+                        } else {
+                            if (height > maxSize) {
+                                width *= maxSize / height;
+                                height = maxSize;
+                            }
+                        }
+
+                        canvas.width = Math.floor(width);
+                        canvas.height = Math.floor(height);
+                        const ctx = canvas.getContext("2d");
+                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                        resolve(canvas.toDataURL("image/jpeg", quality));
+                    };
+                    reader.readAsDataURL(file);
+                });
+            }
+
+            async function handlePreview(event, mode) {
+                const previewArea = document.getElementById("previewArea" + mode);
+                const summaryBox = document.getElementById("summary" + mode);
+                if (!previewArea || !summaryBox) return;
+
+                previewArea.innerHTML = "";
+                summaryBox.innerText = "正在壓縮中…請稍候";
+
+                const files = Array.from(event.target.files);
+                if (!files.length) {
+                    summaryBox.innerText = "尚未選取檔案";
                     return;
                 }
-                const pool = [];
-                const pushUsers = (uid) => (MOCK.usersByUnit[uid] || []).forEach((p) => pool.push(p));
-                if (selectedUnitIds.length) selectedUnitIds.forEach(pushUsers);
-                else Object.keys(MOCK.usersByUnit).forEach(pushUsers);
-                const q = state.search;
-                const list = q ? pool.filter((p) => p.name.includes(q) || p.id.includes(q)) : pool;
-                list.forEach((p) => {
-                    const row = document.createElement("div");
-                    row.className = "user-item";
-                    const ck = document.createElement("input");
-                    ck.type = "checkbox";
-                    ck.checked = state.userChecked.has(p.id);
-                    ck.onchange = () => {
-                        ck.checked ? state.userChecked.set(p.id, { id: p.id, name: p.name }) : state.userChecked.delete(p.id);
-                    };
-                    const lab = document.createElement("label");
-                    lab.textContent = p.name;
-                    lab.style.cursor = "pointer";
-                    row.appendChild(ck);
-                    row.appendChild(lab);
-                    box.appendChild(row);
-                });
-                if (!list.length) {
-                    const empty = document.createElement("div");
-                    empty.style.color = "#888";
-                    empty.style.padding = "8px";
-                    empty.textContent = "沒有符合條件的人員";
-                    box.appendChild(empty);
+
+                let totalOriginal = 0;
+                let totalCompressed = 0;
+                let totalTime = 0;
+
+                for (const file of files) {
+                    if (!file.type.startsWith("image/")) continue;
+
+                    const originalSizeKB = file.size / 1024;
+                    totalOriginal += originalSizeKB;
+
+                    const start = performance.now();
+                    const compressedDataUrl = await compressImage(file, 0.7);
+                    const end = performance.now();
+                    const duration = end - start;
+                    totalTime += duration;
+
+                    const compressedSizeKB = Math.round((compressedDataUrl.length * 3) / 4 / 1024);
+                    totalCompressed += compressedSizeKB;
+
+                    const container = document.createElement("div");
+                    container.className = "preview-item";
+
+                    const img = document.createElement("img");
+                    img.src = compressedDataUrl;
+                    img.addEventListener("click", () => openModal(img.src));
+
+                    const removeBtn = document.createElement("span");
+                    removeBtn.className = "remove-btn";
+                    removeBtn.innerHTML = "&times;";
+                    removeBtn.onclick = () => container.remove();
+
+                    /*
+                    const infoBox = document.createElement("div");
+                    infoBox.className = "info-box";
+                    infoBox.style = "font-size: 12px; color: #333; white-space: pre-wrap; margin-top: 4px;";
+                    infoBox.innerText = `原：${originalSizeKB.toFixed(1)} KB\n壓：${compressedSizeKB} KB\n耗時：${duration.toFixed(1)} ms`;
+*/
+                    container.appendChild(img);
+                    container.appendChild(removeBtn);
+                    //                  container.appendChild(infoBox);
+                    previewArea.appendChild(container);
                 }
-            }
 
-            function clearNotifySelection() {
-                state.userChecked.clear();
-                renderUserList();
-                applyNotifySelection(true);
-            }
-
-            function applyNotifySelection(keepOpen) {
-                const users = Array.from(state.userChecked.values());
-                fillChips("notifyChips", "notifyUserIds", users);
-                fillChips("notifyChipsM", "notifyUserIdsM", users);
-                if (!keepOpen) closeNotifyModal();
-            }
-
-            function fillChips(chipsId, hiddenId, users) {
-                const wrap = document.getElementById(chipsId);
-                if (wrap) {
-                    wrap.innerHTML = "";
-                    users.forEach((u) => {
-                        const chip = document.createElement("span");
-                        chip.className = "chip";
-                        chip.innerHTML = `${u.name}<span class="rm" title="移除">×</span>`;
-                        chip.querySelector(".rm").onclick = () => {
-                            state.userChecked.delete(u.id);
-                            chip.remove();
-                            setHiddenBoth(Array.from(state.userChecked.keys()));
-                            if (document.getElementById("notifyModal").getAttribute("aria-hidden") === "false") renderUserList();
-                        };
-                        wrap.appendChild(chip);
-                    });
-                }
-                const ids = users.map((u) => u.id).join(",");
-                const hid = document.getElementById(hiddenId);
-                if (hid) hid.value = ids;
-                setHiddenBoth(users.map((u) => u.id));
-            }
-
-            function setHiddenBoth(ids) {
-                const v = (ids || []).join(",");
-                const a = document.getElementById("notifyUserIds");
-                if (a) a.value = v;
-                const b = document.getElementById("notifyUserIdsM");
-                if (b) b.value = v;
+                const count = files.length;
+                const ratio = totalCompressed / totalOriginal;
+                summaryBox.innerHTML = `
+    <span>📸 圖片總數：${count} 張</span>
+    <span>📦 原始總大小：${(totalOriginal / 1024).toFixed(2)} MB</span>
+    <span>🗜️ 壓縮後總大小：${(totalCompressed / 1024).toFixed(2)} MB</span>
+    <span>📉 壓縮比率：${(ratio * 100).toFixed(1)}%</span>
+    <span>⏱️ 總壓縮耗時：${(totalTime / 1000).toFixed(1)} 秒</span>
+  `;
             }
         </script>
     </body>
