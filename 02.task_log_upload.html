@@ -306,56 +306,136 @@
                     flex: 1;
                 }
             }
-			/* iOS 表單正常化：修掉灰底與不一致高度，但保留原生挑選器 */
-			@media screen and (max-width: 767px) {
-			  /* 統一外觀：日期/時間欄位 */
-			  input[type="date"],
-			  input[type="time"],
-			  input[type="datetime-local"] {
-				background-color: #fff !important;
-				color: #222;
-				-webkit-text-fill-color: #222;        /* iOS 內層字色 */
-				border: 1px solid #ccc;
-				border-radius: 8px;
-				width: 100%;
-				box-sizing: border-box;
-				/* 跟 select 對齊的尺寸 */
-				min-height: 44px;                     /* 手指友善高度 */
-				padding: 10px 12px;                   /* 與 select 同步 */
-				line-height: 1.2;
-			  }
 
-			  /* select 建議自訂外觀，避免系統灰感與高度不一致 */
-			  select {
-				-webkit-appearance: none; appearance: none;
-				background-color: #fff !important;
-				color: #222;
-				border: 1px solid #ccc;
-				border-radius: 8px;
-				width: 100%;
-				box-sizing: border-box;
-				min-height: 44px;
-				padding: 10px 36px 10px 12px;         /* 右側留給箭頭 */
-				line-height: 1.2;
-				background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="%23666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>');
-				background-repeat: no-repeat;
-				background-position: right .6rem center;
-				background-size: 1rem;
-			  }
+            /* ===== Split Button（沿用 99 原功能但視覺契合 02） ===== */
+            .split {
+                display: inline-flex;
+                position: relative;
+                vertical-align: middle;
+                border-radius: 6px;
+                overflow: visible;
+                border: 1px solid #bbb;
+                background: #fff;
+            }
+            .split > button {
+                border: 0;
+                padding: 8px 12px;
+                font-size: 14px;
+                cursor: pointer;
+                background: #fff;
+            }
+            .split > button:first-child {
+                background: #fb8c00;
+                color: #fff;
+            }
+            .split > button:last-child {
+                width: 36px;
+                border-left: 1px solid rgba(255, 255, 255, 0.35);
+                background: #fb8c00;
+                color: #fff;
+            }
+            .split[aria-disabled="true"] {
+                opacity: 0.6;
+                pointer-events: none;
+            }
 
-			  /* 真正唯讀/停用才灰底，語意明確 */
-			  input[readonly],
-			  textarea[readonly],
-			  input[disabled],
-			  select[disabled] {
-				background-color: #f2f2f2 !important;
-				color: #888 !important;
-				border-color: #ddd !important;
-			  }
+            .menu {
+                position: absolute;
+                top: calc(100% + 6px);
+                left: 0;
+                min-width: 260px;
+                background: #fff;
+                border: 1px solid #ddd;
+                border-radius: 10px;
+                box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+                padding: 6px;
+                display: none;
+                z-index: 30;
+            }
+            .menu.open {
+                display: block;
+            }
+            .menu .search {
+                padding: 6px;
+                border-bottom: 1px solid #eee;
+            }
+            .menu .search input {
+                width: 100%;
+                padding: 8px 10px;
+                border: 1px solid #ddd;
+                border-radius: 6px;
+                font-size: 14px;
+            }
+            .menu .item {
+                width: 100%;
+                text-align: left;
+                border: 0;
+                background: #fff;
+                padding: 9px 10px;
+                border-radius: 6px;
+                cursor: pointer;
+                font-size: 14px;
+            }
+            .menu .item:hover {
+                background: #f5f5f5;
+            }
+            .menu {
+                z-index: 1000;
+            }
 
-			  /*  query 頁有並排的日期欄，避免 iOS 內建寬度撐爆 */
-			  .inline-date input { min-width: 0; }
-			}			
+            /* iOS 表單正常化：修掉灰底與不一致高度，但保留原生挑選器 */
+            @media screen and (max-width: 767px) {
+                /* 統一外觀：日期/時間欄位 */
+                input[type="date"],
+                input[type="time"],
+                input[type="datetime-local"] {
+                    background-color: #fff !important;
+                    color: #222;
+                    -webkit-text-fill-color: #222; /* iOS 內層字色 */
+                    border: 1px solid #ccc;
+                    border-radius: 8px;
+                    width: 100%;
+                    box-sizing: border-box;
+                    /* 跟 select 對齊的尺寸 */
+                    min-height: 44px; /* 手指友善高度 */
+                    padding: 10px 12px; /* 與 select 同步 */
+                    line-height: 1.2;
+                }
+
+                /* select 建議自訂外觀，避免系統灰感與高度不一致 */
+                select {
+                    -webkit-appearance: none;
+                    appearance: none;
+                    background-color: #fff !important;
+                    color: #222;
+                    border: 1px solid #ccc;
+                    border-radius: 8px;
+                    width: 100%;
+                    box-sizing: border-box;
+                    min-height: 44px;
+                    padding: 10px 36px 10px 12px; /* 右側留給箭頭 */
+                    line-height: 1.2;
+                    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="%23666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>');
+                    background-repeat: no-repeat;
+                    background-position: right 0.6rem center;
+                    background-size: 1rem;
+                }
+
+                /* 真正唯讀/停用才灰底，語意明確 */
+                input[readonly],
+                textarea[readonly],
+                input[disabled],
+                select[disabled] {
+                    background-color: #f2f2f2 !important;
+                    color: #888 !important;
+                    border-color: #ddd !important;
+                }
+
+                /*  query 頁有並排的日期欄，避免 iOS 內建寬度撐爆 */
+                .inline-date input {
+                    min-width: 0;
+                }
+            }
         </style>
     </head>
     <body>
@@ -400,19 +480,17 @@
             <div class="form-row"><label for="contactPerson">被聯絡人：</label><input id="contactPerson" type="text" /></div>
 
             <div class="form-row">
-                <label for="contactType">聯絡事項：</label>
-                <select id="contactType">
-                    <option>體傷初步</option>
-                    <option>重大車財損初步</option>
-                    <option>單強/死殘初步</option>
-                    <option>其他通報</option>
-                    <option>視訊勘車</option>
-                    <option>視訊追加</option>
-                    <option>重大現勘</option>
-                </select>
+                <label>內容範本：</label>
+                <div class="split" id="tplSplit" aria-disabled="false">
+                    <button id="tplMain">套用範本</button>
+                    <button id="tplToggle" aria-expanded="false" aria-haspopup="true">▾</button>
+                    <div class="menu" id="tplMenu" role="menu" aria-hidden="true">
+                        <div class="search"><input id="tplSearch" type="search" placeholder="搜尋範本關鍵字" /></div>
+                        <!-- 範本列表以 JS 動態產生（包含「不套用範本」在第一項） -->
+                    </div>
+                </div>
             </div>
 
-            <div class="form-row"><label for="suspicious">可疑指標：</label><input id="suspicious" type="text" /></div>
             <div class="form-row"><label for="content">內容：</label><textarea id="content"></textarea></div>
 
             <div class="form-row">
@@ -456,24 +534,19 @@
             </select>
 
             <label>被聯絡人：</label>
-            <input type="text" />
+            <input id="contactPersonM" type="text" />
 
-            <label>聯絡事項：</label>
-            <select>
-                <option>體傷初步</option>
-                <option>重大車財損初步</option>
-                <option>單強/死殘初步</option>
-                <option>其他通報</option>
-                <option>視訊勘車</option>
-                <option>視訊追加</option>
-                <option>重大現勘</option>
-            </select>
-
-            <label>可疑指標：</label>
-            <input type="text" />
+            <label>內容範本：</label>
+            <div class="split" id="tplSplitM" aria-disabled="false">
+                <button id="tplMainM">套用範本</button>
+                <button id="tplToggleM" aria-expanded="false" aria-haspopup="true">▾</button>
+                <div class="menu" id="tplMenuM" role="menu" aria-hidden="true">
+                    <div class="search"><input id="tplSearchM" type="search" placeholder="搜尋範本關鍵字" /></div>
+                </div>
+            </div>
 
             <label>內容：</label>
-            <textarea></textarea>
+            <textarea id="contentM"></textarea>
 
             <label>通知對象：</label>
             <div class="notify-wrap" style="gap: 8px; flex-wrap: wrap;">
@@ -512,6 +585,22 @@
                     <button class="btn-sel" onclick="clearNotifySelection()">清除</button>
                     <button class="btn-sel" onclick="closeNotifyModal()">取消</button>
                     <button class="button upload" onclick="applyNotifySelection()">加入</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 套用模式 Modal（與 02 一致的視覺） -->
+        <div id="modeModal" class="modal-mask" aria-hidden="true">
+            <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="modeTitle">
+                <div class="modal-head" id="modeTitle">目前內容非空，請選擇套用方式</div>
+                <div class="modal-body">
+                    <label style="display: block; margin-bottom: 8px;"><input type="radio" name="applyMode" value="replace" checked /> 取代目前內容</label>
+                    <label style="display: block; margin-bottom: 8px;"><input type="radio" name="applyMode" value="append" /> 追加到末尾</label>
+                    <label style="display: block; margin-bottom: 8px;"><input type="radio" name="applyMode" value="insert" /> 插入游標處</label>
+                </div>
+                <div class="modal-foot">
+                    <button class="btn-sel" id="modeCancel">取消</button>
+                    <button class="btn-primary" id="modeOk">套用</button>
                 </div>
             </div>
         </div>
@@ -576,7 +665,8 @@
             };
 
             /* ===== 選人 Modal 狀態與行為（TO-only） ===== */
-            const state = { unitChecked: new Set(), userChecked: new Map(), search: "" };
+            //const state = { unitChecked: new Set(), userChecked: new Map(), search: "" };
+            const notifyState = { unitChecked: new Set(), userChecked: new Map(), search: "" };
 
             function openNotifyModal() {
                 document.body.style.overflow = "hidden";
@@ -587,7 +677,7 @@
                 if (inp) {
                     inp.value = "";
                     inp.oninput = () => {
-                        state.search = inp.value.trim();
+                        notifyState.search = inp.value.trim();
                         renderUserList();
                     };
                 }
@@ -605,9 +695,9 @@
                     row.className = "unit-item";
                     const ck = document.createElement("input");
                     ck.type = "checkbox";
-                    ck.checked = state.unitChecked.has(u.id);
+                    ck.checked = notifyState.unitChecked.has(u.id);
                     ck.onchange = () => {
-                        ck.checked ? state.unitChecked.add(u.id) : state.unitChecked.delete(u.id);
+                        ck.checked ? notifyState.unitChecked.add(u.id) : notifyState.unitChecked.delete(u.id);
                         renderUserList();
                     };
                     const lab = document.createElement("label");
@@ -622,8 +712,8 @@
             function renderUserList() {
                 const box = document.getElementById("userList");
                 box.innerHTML = "";
-                const selectedUnitIds = state.unitChecked.size ? Array.from(state.unitChecked) : [];
-                if (!selectedUnitIds.length && !state.search) {
+                const selectedUnitIds = notifyState.unitChecked.size ? Array.from(notifyState.unitChecked) : [];
+                if (!selectedUnitIds.length && !notifyState.search) {
                     const tip = document.createElement("div");
                     tip.style.color = "#888";
                     tip.style.padding = "8px";
@@ -635,16 +725,16 @@
                 const pushUsers = (uid) => (MOCK.usersByUnit[uid] || []).forEach((p) => pool.push(p));
                 if (selectedUnitIds.length) selectedUnitIds.forEach(pushUsers);
                 else Object.keys(MOCK.usersByUnit).forEach(pushUsers);
-                const q = state.search;
+                const q = notifyState.search;
                 const list = q ? pool.filter((p) => p.name.includes(q) || p.id.includes(q)) : pool;
                 list.forEach((p) => {
                     const row = document.createElement("div");
                     row.className = "user-item";
                     const ck = document.createElement("input");
                     ck.type = "checkbox";
-                    ck.checked = state.userChecked.has(p.id);
+                    ck.checked = notifyState.userChecked.has(p.id);
                     ck.onchange = () => {
-                        ck.checked ? state.userChecked.set(p.id, { id: p.id, name: p.name }) : state.userChecked.delete(p.id);
+                        ck.checked ? notifyState.userChecked.set(p.id, { id: p.id, name: p.name }) : notifyState.userChecked.delete(p.id);
                     };
                     const lab = document.createElement("label");
                     lab.textContent = p.name;
@@ -663,13 +753,13 @@
             }
 
             function clearNotifySelection() {
-                state.userChecked.clear();
+                notifyState.userChecked.clear();
                 renderUserList();
                 applyNotifySelection(true);
             }
 
             function applyNotifySelection(keepOpen) {
-                const users = Array.from(state.userChecked.values());
+                const users = Array.from(notifyState.userChecked.values());
                 fillChips("notifyChips", "notifyUserIds", users);
                 fillChips("notifyChipsM", "notifyUserIdsM", users);
                 if (!keepOpen) closeNotifyModal();
@@ -684,9 +774,9 @@
                         chip.className = "chip";
                         chip.innerHTML = `${u.name}<span class="rm" title="移除">×</span>`;
                         chip.querySelector(".rm").onclick = () => {
-                            state.userChecked.delete(u.id);
+                            notifyState.userChecked.delete(u.id);
                             chip.remove();
-                            setHiddenBoth(Array.from(state.userChecked.keys()));
+                            setHiddenBoth(Array.from(notifyState.userChecked.keys()));
                             if (document.getElementById("notifyModal").getAttribute("aria-hidden") === "false") renderUserList();
                         };
                         wrap.appendChild(chip);
@@ -704,6 +794,163 @@
                 if (a) a.value = v;
                 const b = document.getElementById("notifyUserIdsM");
                 if (b) b.value = v;
+            }
+
+            /* ===== 內嵌 JSON：由 SAMPLE.md 轉換而來（沿用 99 的資料） ===== */
+            const TEMPLATES = [
+                { id: "01", name: "體傷初步", body: "一、事故摘要：\n二、責任研判：\n三、傷者性別、年齡：\n四、傷者職業、收入：\n五、傷者傷情摘要：\n六、傷者請求項目：\n七、傷者要求總金額：\n八、賠案處理策略：\n九、建議準備金提列金額：" },
+                {
+                    id: "02",
+                    name: "重大車財損初步",
+                    body: "一、事故摘要：\n二、責任初判：\n三、保車駕照狀態：\n四、投保險種/保額：\n五、本 / 財車修車車\n六、本 / 財車初估金額：\n七、是否需申請技術人員：\n八、賠案處理策略：\n九、建議準備金提列金額：",
+                },
+                { id: "03", name: "單強/死殘初步", body: "一、事故摘要：\n二、傷情摘要：\n三、符合殘廢等級-項目說明：\n四、建議準備金提列金額：\n五、其他：" },
+                { id: "04", name: "其他通報", body: "一、事故摘要：\n二、損失情形：\n三、通報事項：\n四、建議準備金提列金額：" },
+                { id: "05", name: "視訊勘車", body: "視訊勘車 保車/財車\n1、車號：\n2、車廠︰\n3、專員、電話：\n4、核批總金額：\n5、備註：" },
+                { id: "06", name: "視訊追加", body: "視訊追加 保車/財車\n1、車號：\n2、核批總金額：\n3、備註：" },
+                { id: "07", name: "重大現勘", body: "視訊重大現勘 保車/財車\n1、車號：\n2、車廠︰\n3、專員、電話：\n4、估價金額：\n視訊未核批，安排現勘" },
+            ];
+
+            //const state = { templates: TEMPLATES, selectedTemplate: null, pendingText: '' };
+            const tplState = { templates: TEMPLATES, selectedTemplate: null, pendingText: "" };
+
+            document.addEventListener("DOMContentLoaded", () => {
+                buildMenu("tplMenu", "tplSearch", false);
+                bindSplitButton("tplSplit", "tplMain", "tplToggle", "tplMenu", "content");
+                buildMenu("tplMenuM", "tplSearchM", true);
+                bindSplitButton("tplSplitM", "tplMainM", "tplToggleM", "tplMenuM", "contentM");
+            });
+
+            /* ===== 建立 Split Button 下拉選單 ===== */
+            function buildMenu(menuId, searchId, isMobile) {
+                const menu = document.getElementById(menuId);
+                // 清舊項
+                menu.querySelectorAll(".item").forEach((el) => el.remove());
+                // 第一項：不套用範本
+                const noneBtn = document.createElement("button");
+                noneBtn.className = "item";
+                noneBtn.textContent = "不套用範本";
+                noneBtn.onclick = () => closeMenu(menuId, isMobile ? "tplToggleM" : "tplToggle");
+                menu.appendChild(noneBtn);
+                // 其餘範本
+                for (const t of tplState.templates) {
+                    const btn = document.createElement("button");
+                    btn.className = "item";
+                    btn.textContent = t.name;
+                    btn.onclick = () => onTemplatePicked(t, isMobile);
+                    menu.appendChild(btn);
+                }
+                // 搜尋
+                const search = document.getElementById(searchId);
+                if (search) {
+                    search.addEventListener("input", () => {
+                        const q = search.value.trim();
+                        Array.from(menu.querySelectorAll(".item")).forEach((btn, idx) => {
+                            if (idx === 0) return; // 保留「不套用範本」
+                            btn.style.display = !q || btn.textContent.includes(q) ? "" : "none";
+                        });
+                    });
+                }
+            }
+
+            function bindSplitButton(splitId, mainId, toggleId, menuId, textareaId) {
+                const main = document.getElementById(mainId);
+                const toggle = document.getElementById(toggleId);
+                const menu = document.getElementById(menuId);
+                const split = document.getElementById(splitId);
+
+                const open = () => {
+                    menu.classList.add("open");
+                    toggle.setAttribute("aria-expanded", "true");
+                };
+                const close = () => {
+                    menu.classList.remove("open");
+                    toggle.setAttribute("aria-expanded", "false");
+                };
+
+                main.addEventListener("click", open);
+                toggle.addEventListener("click", () => (menu.classList.contains("open") ? close() : open()));
+                document.addEventListener("click", (e) => {
+                    if (!split.contains(e.target)) close();
+                });
+                // 將關聯的 textarea 存在元素 dataset 中
+                split.dataset.textarea = textareaId;
+            }
+
+            function closeMenu(menuId, toggleId) {
+                const menu = document.getElementById(menuId);
+                const toggle = document.getElementById(toggleId);
+                if (menu) menu.classList.remove("open");
+                if (toggle) toggle.setAttribute("aria-expanded", "false");
+            }
+
+            function collectVars() {
+                const getTxt = (id) => document.getElementById(id)?.textContent?.trim() || "";
+                const getVal = (id) => document.getElementById(id)?.value?.trim() || "";
+                return {
+                    CLAIM_NO: getTxt("claimNo") || getTxt("claimNoM"),
+                    PLATE_NO: getTxt("plateNo") || getTxt("plateNoM"),
+                    CONTACT_NAME: getVal("contactPerson") || getVal("contactPersonM"),
+                    DATE: new Date().toISOString().slice(0, 10),
+                };
+            }
+
+            function onTemplatePicked(tpl, isMobile) {
+                const rep = collectVars();
+                let text = tpl.body.replace(/\{\{(\w+)\}\}/g, (_, k) => rep[k] ?? `{{${k}}}`);
+                tplState.selectedTemplate = tpl;
+                tplState.pendingText = text;
+                const ta = document.getElementById(isMobile ? "contentM" : "content");
+                if (!ta.value.trim()) {
+                    applyToTextarea(ta, "replace");
+                } else {
+                    openModeModal(ta);
+                }
+            }
+
+            /* ===== Modal 開關與套用 ===== */
+            function openModeModal(targetTextarea) {
+                const mask = document.getElementById("modeModal");
+                mask.setAttribute("aria-hidden", "false");
+                const okBtn = document.getElementById("modeOk");
+                const cancelBtn = document.getElementById("modeCancel");
+                // 移除既有 listener 避免多次綁定
+                const okClone = okBtn.cloneNode(true);
+                const cancelClone = cancelBtn.cloneNode(true);
+                okBtn.parentNode.replaceChild(okClone, okBtn);
+                cancelBtn.parentNode.replaceChild(cancelClone, cancelBtn);
+                okClone.addEventListener("click", () => {
+                    const mode = document.querySelector('input[name="applyMode"]:checked').value;
+                    applyToTextarea(targetTextarea, mode);
+                    closeModeModal();
+                });
+                cancelClone.addEventListener("click", closeModeModal);
+            }
+
+            function closeModeModal() {
+                document.getElementById("modeModal").setAttribute("aria-hidden", "true");
+            }
+
+            function applyToTextarea(ta, mode) {
+                const txt = tplState.pendingText || "";
+                if (mode === "replace") {
+                    ta.value = txt;
+                    ta.selectionStart = ta.selectionEnd = 0;
+                } else if (mode === "append") {
+                    ta.value = (ta.value ? ta.value + "\n" : "") + txt;
+                    ta.selectionStart = ta.selectionEnd = 0;
+                } else if (mode === "insert") {
+                    const start = ta.selectionStart ?? ta.value.length;
+                    const end = ta.selectionEnd ?? ta.value.length;
+                    ta.value = ta.value.slice(0, start) + txt + ta.value.slice(end);
+                    const caret = start + txt.length;
+                    requestAnimationFrame(() => {
+                        ta.selectionStart = ta.selectionEnd = caret;
+                        ta.focus();
+                    });
+                    return;
+                }
+                ta.focus();
             }
         </script>
     </body>
