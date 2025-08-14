@@ -436,6 +436,14 @@
                     min-width: 0;
                 }
             }
+			@media screen and (max-width: 767px) {
+			  /* 指定行動版的內容欄位更高，權重比元素選擇器高 */
+			  #contentM {
+				min-height: 200px !important; /* 想多高就改這裡 */
+				height: auto !important;      /* 保留自動增高行為 */
+				line-height: 1.4;
+			  }
+			}            
         </style>
     </head>
     <body>
