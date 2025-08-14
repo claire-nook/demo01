@@ -131,7 +131,7 @@
                 border-radius: 4px;
                 cursor: zoom-in;
             }
-            
+
             .remove-btn {
                 position: absolute;
                 top: -6px;
@@ -230,14 +230,13 @@
             }
 
             /* 統一預覽卡片風格 */
-            
 
-			.preview-item img {
-				width: 100%;
-				height: 100%;
-				object-fit: cover; /* 自動裁切保比例 */
-				border-radius: 6px;
-			}
+            .preview-item img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover; /* 自動裁切保比例 */
+                border-radius: 6px;
+            }
 
             .preview-item .info-box {
                 font-size: 12px;
@@ -264,7 +263,7 @@
                 overflow-y: auto;
                 max-height: 250px;
             }
-        .preview-item {
+            .preview-item {
                 background: #fff;
                 border-radius: 10px;
                 padding: 8px;
@@ -278,201 +277,151 @@
                 height: 100px;
                 position: relative;
             }
-</style>
+            /* iOS 表單正常化：修掉灰底與不一致高度，但保留原生挑選器 */
+            @media screen and (max-width: 767px) {
+                /* 統一外觀：日期/時間欄位 */
+                input[type="date"],
+                input[type="time"],
+                input[type="datetime-local"] {
+                    background-color: #fff !important;
+                    color: #222;
+                    -webkit-text-fill-color: #222; /* iOS 內層字色 */
+                    border: 1px solid #ccc;
+                    border-radius: 8px;
+                    width: 100%;
+                    box-sizing: border-box;
+                    /* 跟 select 對齊的尺寸 */
+                    min-height: 44px; /* 手指友善高度 */
+                    padding: 10px 12px; /* 與 select 同步 */
+                    line-height: 1.2;
+                }
+
+                /* select 建議自訂外觀，避免系統灰感與高度不一致 */
+                select {
+                    -webkit-appearance: none;
+                    appearance: none;
+                    background-color: #fff !important;
+                    color: #222;
+                    border: 1px solid #ccc;
+                    border-radius: 8px;
+                    width: 100%;
+                    box-sizing: border-box;
+                    min-height: 44px;
+                    padding: 10px 36px 10px 12px; /* 右側留給箭頭 */
+                    line-height: 1.2;
+                    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="%23666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>');
+                    background-repeat: no-repeat;
+                    background-position: right 0.6rem center;
+                    background-size: 1rem;
+                }
+
+                /* 真正唯讀/停用才灰底，語意明確 */
+                input[readonly],
+                textarea[readonly],
+                input[disabled],
+                select[disabled] {
+                    background-color: #f2f2f2 !important;
+                    color: #888 !important;
+                    border-color: #ddd !important;
+                }
+
+                /*  query 頁有並排的日期欄，避免 iOS 內建寬度撐爆 */
+                .inline-date input {
+                    min-width: 0;
+                }
+            }
+        </style>
     </head>
     <body>
-        <button class="back-button pc" onclick="goBack()">
-            ← 返回
-        </button>
+        <button class="back-button pc" onclick="goBack()">← 返回</button>
         <div class="mobile-only">
-            <button class="back-button" onclick="goBack()">
-                ← 返回
-            </button>
+            <button class="back-button" onclick="goBack()">← 返回</button>
         </div>
-        <h2>
-            任務編號
-            <strong>
-                123456
-            </strong>
-        </h2>
+        <h2>任務編號<strong>123456</strong></h2>
         <!-- PC版 -->
         <div class="pc-form-wrapper pc">
+            <div class="form-row"><label>賠案號碼：</label><div>10000001</div></div>
+            <div class="form-row"><label>車牌號碼：</label><div>1234-BB</div></div>
             <div class="form-row">
-                <label>
-                    賠案號碼：
-                </label>
-                <div>
-                    10000001
-                </div>
-            </div>
-            <div class="form-row">
-                <label>
-                    車牌號碼：
-                </label>
-                <div>
-                    1234-BB
-                </div>
-            </div>
-            <div class="form-row">
-                <label for="uploadMode">
-                    上傳方式：
-                </label>
+                <label for="uploadMode">上傳方式：</label>
                 <select id="uploadMode">
-                    <option value="individual">
-                        逐張圖片/逐個檔案上傳
-                    </option>
-                    <option value="merge">
-                        多張圖片合併為PDF上傳
-                    </option>
+                    <option value="individual">逐張圖片/逐個檔案上傳</option>
+                    <option value="merge">多張圖片合併為PDF上傳</option>
                 </select>
             </div>
             <div class="form-row">
-                <label>
-                    類別：
-                </label>
+                <label>類別：</label>
                 <select>
-                    <option>
-                        保戶
-                    </option>
-                    <option>
-                        對造1
-                    </option>
-                    <option>
-                        對造2
-                    </option>
-                    <option>
-                        全鋒現場照
-                    </option>
-                    <option>
-                        查證資料
-                    </option>
-                    <option>
-                        訴訟、追償
-                    </option>
-                    <option>
-                        死亡查證
-                    </option>
-                    <option>
-                        客戶上傳
-                    </option>
-                    <option>
-                        其他
-                    </option>
+                    <option>保戶</option>
+                    <option>對造1</option>
+                    <option>對造2</option>
+                    <option>全鋒現場照</option>
+                    <option>查證資料</option>
+                    <option>訴訟、追償</option>
+                    <option>死亡查證</option>
+                    <option>客戶上傳</option>
+                    <option>其他</option>
                 </select>
             </div>
             <div class="form-row">
-                <label>
-                    檔案說明：
-                </label>
+                <label>檔案說明：</label>
                 <input type="text" />
             </div>
             <div class="form-row">
-                <label for="fileInput">
-                    選擇檔案：
-                </label>
+                <label for="fileInput">選擇檔案：</label>
                 <input accept="image/*,application/pdf" id="fileInput" multiple="" type="file" />
             </div>
             <div class="form-row">
-                <label>
-                    預覽圖：
-                </label>
+                <label>預覽圖：</label>
                 <div id="previewAreaPC"></div>
             </div>
             <div class="form-row">
-                <label>
-                    壓縮資訊：
-                </label>
+                <label>壓縮資訊：</label>
                 <div id="summaryPC" style="white-space: pre-wrap; font-size: 0.9rem; line-height: 1.6;"></div>
             </div>
             <div class="button-group">
-                <button class="button upload" onclick="submitUpload()">
-                    上傳
-                </button>
-                <button class="button cancel" onclick="goBack()">
-                    取消
-                </button>
+                <button class="button upload" onclick="submitUpload()">上傳</button>
+                <button class="button cancel" onclick="goBack()">取消</button>
             </div>
         </div>
         <!-- Mobile版 -->
         <div class="mobile-card mobile-only">
             <div><strong>賠案號碼：</strong>10000001</div>
             <div><strong>車牌號碼：</strong>1234-BB</div>
-            <label>
-                上傳方式：
-            </label>
+            <label>上傳方式：</label>
             <select id="uploadModeMobile">
-                <option value="individual">
-                    逐張圖片/逐個檔案上傳
-                </option>
-                <option value="merge">
-                    多張圖片合併為PDF上傳
-                </option>
+                <option value="individual">逐張圖片/逐個檔案上傳</option>
+                <option value="merge">多張圖片合併為PDF上傳</option>
             </select>
-            <label>
-                類別：
-            </label>
+            <label>類別：</label>
             <select>
-                <option>
-                    保戶
-                </option>
-                <option>
-                    對造1
-                </option>
-                <option>
-                    對造2
-                </option>
-                <option>
-                    全鋒現場照
-                </option>
-                <option>
-                    查證資料
-                </option>
-                <option>
-                    訴訟、追償
-                </option>
-                <option>
-                    死亡查證
-                </option>
-                <option>
-                    客戶上傳
-                </option>
-                <option>
-                    其他
-                </option>
+                <option>保戶</option>
+                <option>對造1</option>
+                <option>對造2</option>
+                <option>全鋒現場照</option>
+                <option>查證資料</option>
+                <option>訴訟、追償</option>
+                <option>死亡查證</option>
+                <option>客戶上傳</option>
+                <option>其他</option>
             </select>
-            <label>
-                檔案說明：
-            </label>
+            <label>檔案說明：</label>
             <input type="text" />
-            <label>
-                選擇檔案：
-            </label>
+            <label>選擇檔案：</label>
             <input accept="image/*,application/pdf" id="fileInputMobile" multiple="" type="file" />
-            <label>
-                預覽圖：
-            </label>
+            <label>預覽圖：</label>
             <div id="previewAreaMobile"></div>
-            <label>
-                壓縮資訊：
-            </label>
+            <label>壓縮資訊：</label>
             <div id="summaryMobile" style="white-space: pre-wrap; font-size: 0.95rem; line-height: 1.6;"></div>
             <div class="button-group">
-                <button class="button upload" onclick="submitUpload()">
-                    上傳
-                </button>
-                <button class="button cancel" onclick="goBack()">
-                    取消
-                </button>
+                <button class="button upload" onclick="submitUpload()">上傳</button>
+                <button class="button cancel" onclick="goBack()">取消</button>
             </div>
         </div>
         <!-- 圖片放大 Modal -->
         <div id="imageModal">
-            <span class="close">
-                ×
-            </span>
-            <div id="imageModalContent">
-                <img alt="預覽圖" src="" />
-            </div>
+            <span class="close">×</span>
+            <div id="imageModalContent"><img alt="預覽圖" src="" /></div>
         </div>
         <script>
             function goBack() {
@@ -616,7 +565,7 @@
                     removeBtn.innerHTML = "&times;";
                     removeBtn.onclick = () => container.remove();
 
-/*
+                    /*
                     const infoBox = document.createElement("div");
                     infoBox.className = "info-box";
                     infoBox.style = "font-size: 12px; color: #333; white-space: pre-wrap; margin-top: 4px;";
@@ -624,7 +573,7 @@
 */
                     container.appendChild(img);
                     container.appendChild(removeBtn);
-  //                  container.appendChild(infoBox);
+                    //                  container.appendChild(infoBox);
                     previewArea.appendChild(container);
                 }
 
