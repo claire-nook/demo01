@@ -323,7 +323,7 @@
                 </div>
                 <div class="text-row">
                     <div class="text-label">備註事項：</div>
-                    <div class="text-value">備註文字內容</div>
+                    <div class="text-value">這是一個很長很長很長很長很長很長很長很長很長很長很長很長很長很長很長很長很長很長的備註文字。為了測試多行顯示狀態。</div>
                 </div>
             </div>
             <div class="button-col">
@@ -465,7 +465,7 @@
                 <div class="info-row"><span class="info-label">處理事項：</span><span class="info-content">勘車</span></div>
                 <div class="info-row"><span class="info-label">賠案號碼：</span><span class="info-content"><a href="04.賠案查詢_賠案明細.html">10000001</a></span></div>
                 <div class="info-row"><span class="info-label">車牌號碼：</span><span class="info-content">AA-1234</span></div>
-                <div class="info-row"><span class="info-label">備註事項：</span><span class="info-content">備註文字內容</span></div>
+                <div class="info-row"><span class="info-label">備註事項：</span><span class="info-content">這是一個很長很長很長很長很長很長很長很長很長很長很長很長很長很長很長很長很長很長的備註文字。為了測試多行顯示狀態。</span></div>
             </div>
             <div class="button-group">
                 <div class="button-pair">
@@ -590,14 +590,6 @@
                         newDiv.style.marginLeft = "auto";
                         newDiv.style.marginRight = "auto";
 
-                        const saveBtn = document.createElement("button");
-                        saveBtn.className = "btn-orange";
-                        saveBtn.innerText = "儲存";
-                        saveBtn.onclick = () => {
-                            alert("儲存完成");
-                            location.reload();
-                        };
-
                         const cancelEditBtn = document.createElement("button");
                         cancelEditBtn.className = "btn-gray";
                         cancelEditBtn.innerText = "取消";
@@ -606,6 +598,15 @@
                                 location.reload();
                             }
                         };
+
+                        const saveBtn = document.createElement("button");
+                        saveBtn.className = "btn-orange";
+                        saveBtn.innerText = "儲存";
+                        saveBtn.onclick = () => {
+                            alert("儲存完成");
+                            location.reload();
+                        };
+
 
                         newDiv.appendChild(saveBtn);
                         newDiv.appendChild(cancelEditBtn);
