@@ -5,6 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>行動任務處理 - 任務查詢</title>
         <style>
+            /* ===== 保留原檔樣式 ===== */
             body {
                 font-family: sans-serif;
                 margin: 0;
@@ -42,6 +43,7 @@
             }
             .inline-date input {
                 flex: 1;
+                min-width: 0;
             }
             .btn-area {
                 margin-top: 1rem;
@@ -131,20 +133,16 @@
                     padding: 8px 10px !important;
                     box-sizing: border-box;
                 }
-
                 label {
                     font-size: 1rem;
                 }
-
                 .btn {
                     font-size: 1rem;
                     padding: 0.6rem 1.2rem;
                 }
-
                 .card div {
                     font-size: 1rem;
                 }
-
                 .query-form input[type="date"] {
                     font-size: 16px !important;
                 }
@@ -155,71 +153,191 @@
                     margin-top: 1rem;
                 }
             }
-			/* iOS 表單正常化：修掉灰底與不一致高度，但保留原生挑選器 */
-			@media screen and (max-width: 767px) {
-			  /* 統一外觀：日期/時間欄位 */
-			  input[type="date"],
-			  input[type="time"],
-			  input[type="datetime-local"] {
-				background-color: #fff !important;
-				color: #222;
-				-webkit-text-fill-color: #222;        /* iOS 內層字色 */
-				border: 1px solid #ccc;
-				border-radius: 8px;
-				width: 100%;
-				box-sizing: border-box;
-				/* 跟 select 對齊的尺寸 */
-				min-height: 44px;                     /* 手指友善高度 */
-				padding: 10px 12px;                   /* 與 select 同步 */
-				line-height: 1.2;
-			  }
+            @media screen and (max-width: 767px) {
+                input[type="date"],
+                input[type="time"],
+                input[type="datetime-local"] {
+                    background-color: #fff !important;
+                    color: #222;
+                    -webkit-text-fill-color: #222;
+                    border: 1px solid #ccc;
+                    border-radius: 8px;
+                    width: 100%;
+                    box-sizing: border-box;
+                    min-height: 44px;
+                    padding: 10px 12px;
+                    line-height: 1.2;
+                }
+                select {
+                    -webkit-appearance: none;
+                    appearance: none;
+                    background-color: #fff !important;
+                    color: #222;
+                    border: 1px solid #ccc;
+                    border-radius: 8px;
+                    width: 100%;
+                    box-sizing: border-box;
+                    min-height: 44px;
+                    padding: 10px 36px 10px 12px;
+                    line-height: 1.2;
+                    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="%23666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>');
+                    background-repeat: no-repeat;
+                    background-position: right 0.6rem center;
+                    background-size: 1rem;
+                }
+                input[readonly],
+                textarea[readonly],
+                input[disabled],
+                select[disabled] {
+                    background-color: #f2f2f2 !important;
+                    color: #888 !important;
+                    border-color: #ddd !important;
+                }
+            }
 
-			  /* select 建議自訂外觀，避免系統灰感與高度不一致 */
-			  select {
-				-webkit-appearance: none; appearance: none;
-				background-color: #fff !important;
-				color: #222;
-				border: 1px solid #ccc;
-				border-radius: 8px;
-				width: 100%;
-				box-sizing: border-box;
-				min-height: 44px;
-				padding: 10px 36px 10px 12px;         /* 右側留給箭頭 */
-				line-height: 1.2;
-				background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="%23666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>');
-				background-repeat: no-repeat;
-				background-position: right .6rem center;
-				background-size: 1rem;
-			  }
+            /* ===== 請假摘要條 ===== */
+            .leave-banner {
+                display: none;
+                background: #f3f4f6;
+                color: #374151;
+                border: 1px solid #e5e7eb;
+                border-radius: 8px;
+                padding: 0.45rem 0.6rem;
+                margin-bottom: 0.5rem;
+                box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+            }
+            .leave-banner .leave-title {
+                font-weight: 700;
+                margin-right: 0.5rem;
+                font-size: 0.95rem;
+            }
+            .leave-banner .leave-text {
+                display: inline;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                max-width: 70%;
+                vertical-align: bottom;
+            }
+            .leave-banner .leave-actions {
+                float: right;
+                display: flex;
+                gap: 0.4rem;
+            }
+            .leave-toggle {
+                background: transparent;
+                color: #2563eb;
+                border: 0;
+                padding: 0.15rem 0.3rem;
+                cursor: pointer;
+                text-decoration: underline;
+                font-size: 0.9rem;
+            }
+            .leave-muted {
+                opacity: 0.85;
+            }
 
-			  /* 真正唯讀/停用才灰底，語意明確 */
-			  input[readonly],
-			  textarea[readonly],
-			  input[disabled],
-			  select[disabled] {
-				background-color: #f2f2f2 !important;
-				color: #888 !important;
-				border-color: #ddd !important;
-			  }
-
-			  /* 你 query 頁有並排的日期欄，避免 iOS 內建寬度撐爆 */
-			  .inline-date input { min-width: 0; }
-			}			
+            /* modal */
+            .leave-modal-backdrop {
+                display: none;
+                position: fixed;
+				box-sizing:border-box;
+                inset: 0;
+                background: rgba(0, 0, 0, 0.4);
+            }
+            .leave-modal {
+                position: fixed;
+                inset: 10% auto auto 50%;
+                transform: translateX(-50%);
+                width: min(680px, 92vw);
+                background: #fff;
+                color: #222;
+                border-radius: 12px;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+                padding: 1rem;
+            }
+            .leave-modal h3 {
+                margin: 0.2rem 0 0.6rem;
+            }
+            .leave-modal .leave-list {
+                max-height: 55vh;
+                overflow: auto;
+            }
+            .leave-row {
+                display: grid;
+                grid-template-columns: 1fr auto;
+                gap: 0.4rem 0.8rem;
+                padding: 0.5rem 0.2rem;
+                border-bottom: 1px solid #eee;
+            }
+            .leave-row .who {
+                font-weight: 600;
+            }
+            .leave-row .when {
+                color: #555;
+                font-size: 0.95rem;
+            }
+            .leave-row .reason {
+                color: #666;
+                font-size: 0.9rem;
+            }
+			.leave-close{
+			  position:absolute;           /* 固定在 modal 右上 */
+			  top:.6rem;
+			  right:.6rem;
+			  width:2rem;                  /* 至少 44px 可點區域，這裡 ~32px 已可；想更好按設 44px */
+			  height:2rem;
+			  line-height:2rem;
+			  padding:0;
+			  border:none;
+			  border-radius:50%;
+			  background:transparent;      /* 透明底 */
+			  color:#111;
+			  font-size:1.25rem;
+			  font-weight:700;
+			  cursor:pointer;
+			}
+			.leave-close:hover{ background:rgba(0,0,0,.06); }
+			.leave-close:focus-visible{
+			  outline:2px solid #2563eb;   /* 鍵盤可見焦點 */
+			  outline-offset:2px;
+			}
+            @media (max-width: 767px) {
+                .leave-banner {
+                    border-radius: 8px;
+                }
+                .leave-banner .leave-actions {
+                    float: none;
+                }
+                .leave-banner .leave-text {
+                    max-width: 55vw;
+                }
+            }
         </style>
     </head>
     <body>
         <h2>我的任務</h2>
+
         <div class="pc-wrapper">
+            <!-- 請假摘要條（PC） -->
+            <div id="leaveBanner" class="leave-banner pc" role="region" aria-label="請假摘要">
+                <span class="leave-title" id="leaveBannerTitle">今日不在</span>
+                <span class="leave-text" id="leaveBannerText" class="leave-muted">無請假</span>
+                <div class="leave-actions">
+                    <button id="btnLeaveModal" class="leave-toggle" title="查看請假清單">查看清單</button>
+                </div>
+            </div>
+
             <div class="query-form pc">
                 <label><strong>所屬單位：</strong>北區理賠一室</label>
                 <label>任務日期</label>
                 <div class="inline-date">
-                    <input type="date" value="2025-04-15" />
-                    <input type="date" value="2025-04-15" />
+                    <input id="qFrom" type="date" value="2025-04-15" />
+                    <input id="qTo" type="date" value="2025-04-15" />
                 </div>
                 <label>
                     處理人員
-                    <select>
+                    <select id="qStaff">
                         <option>全部</option>
                         <option>張三</option>
                         <option>李四</option>
@@ -228,17 +346,14 @@
                 </label>
                 <label>
                     任務狀態
-                    <select>
+                    <select id="qStatus">
                         <option>全部</option>
                         <option>處理中</option>
                         <option>完成</option>
                         <option>已取消</option>
                     </select>
                 </label>
-                <div class="toggle-advanced" onclick="document.getElementById('advanced').classList.toggle('visible')">
-                    展開進階條件 ▼
-                </div>
-
+                <div class="toggle-advanced" onclick="document.getElementById('advanced').classList.toggle('visible')">展開進階條件 ▼</div>
                 <div id="advanced" class="advanced">
                     <label>賠案號碼 <input type="text" value="10000001" /></label>
                     <label>車牌號碼 <input type="text" value="AA-1234" /></label>
@@ -251,15 +366,14 @@
                         <option>查責</option>
                     </select>
                 </div>
-
                 <div class="btn-area">
-                    <button class="btn btn-search">查詢</button>
+                    <button id="btnQueryPc" class="btn btn-search">查詢</button>
                     <button class="btn btn-clear">清除</button>
                 </div>
             </div>
 
             <div class="pc">
-                <table>
+                <table id="taskTable">
                     <thead>
                         <tr>
                             <th>任務編號</th>
@@ -307,16 +421,26 @@
                 </table>
             </div>
         </div>
+
+        <!-- Mobile -->
         <div class="mobile">
+            <div id="leaveBannerMb" class="leave-banner" role="region" aria-label="請假摘要">
+                <span class="leave-title" id="leaveBannerTitleMb">今日不在</span>
+                <span class="leave-text" id="leaveBannerTextMb">無請假</span>
+                <div class="leave-actions">
+                    <button id="btnLeaveModalMb" class="leave-toggle">查看清單</button>
+                </div>
+            </div>
+
             <div class="query-form">
                 <label><strong>所屬單位：</strong>北區理賠一室</label>
                 <label>任務日期起</label>
                 <div class="inline-date">
-                    <input type="date" value="2025-04-15" />
+                    <input id="mqFrom" type="date" value="2025-04-15" />
                 </div>
                 <label>任務日期訖</label>
                 <div class="inline-date">
-                    <input type="date" value="2025-04-15" />
+                    <input id="mqTo" type="date" value="2025-04-15" />
                 </div>
                 <label>
                     處理人員
@@ -336,10 +460,7 @@
                         <option>已取消</option>
                     </select>
                 </label>
-
-                <div class="toggle-advanced" onclick="document.getElementById('mAdvanced').classList.toggle('visible')">
-                    展開進階條件 ▼
-                </div>
+                <div class="toggle-advanced" onclick="document.getElementById('mAdvanced').classList.toggle('visible')">展開進階條件 ▼</div>
                 <div id="mAdvanced" class="advanced">
                     <label>賠案號碼 <input type="text" /></label>
                     <label>車牌號碼 <input type="text" /></label>
@@ -354,49 +475,188 @@
                 </div>
                 <div class="btn-area">
                     <button class="btn btn-clear">清除</button>
-                    <button class="btn btn-search">查詢</button>
+                    <button id="btnQueryMb" class="btn btn-search">查詢</button>
                 </div>
             </div>
 
-            <div class="card">
-                <div><strong>任務編號：</strong>123456</div>
-                <div>任務時間：2025-04-15 09:00 ~ 10:00</div>
-                <div>任務摘要：勘車-國都天母廠</div>
-                <div>賠案號碼：10000001</div>
-                <div>車牌號碼：AA-1234</div>
-                <div>任務現況：張三-處理中</div>
-                <a href="02.task_detail_proc.html">查看明細</a>
-            </div>
-
-            <div class="card">
-                <div><strong>任務編號：</strong>123458</div>
-                <div>任務時間：2025-04-15 09:00 ~ 11:00</div>
-                <div>任務摘要：法院出庭-內湖簡易庭民事大樓第一調解室</div>
-                <div>賠案號碼：10000003</div>
-                <div>車牌號碼：1234-CC</div>
-                <div>任務現況：李四-完成</div>
-                <a href="02.task_detail_done.html">查看明細</a>
-            </div>
-
-            <div class="card">
-                <div><strong>任務編號：</strong>123459</div>
-                <div>任務時間：2025-04-15 14:00 ~ 15:00</div>
-                <div>任務摘要：和解-土城調解委員會</div>
-                <div>賠案號碼：10000004</div>
-                <div>車牌號碼：1234-DD</div>
-                <div>任務現況：李四-取消</div>
-                <a href="02.task_detail_cancel.html">查看明細</a>
-            </div>
-
-            <div class="card">
-                <div><strong>任務編號：</strong>123457</div>
-                <div>任務時間：2025-04-15 10:30 ~ 11:30</div>
-                <div>任務摘要：查責-中壢交通隊</div>
-                <div>賠案號碼：10000002</div>
-                <div>車牌號碼：BB-5678</div>
-                <div>任務現況：李四-處理中</div>
-                <a href="#">查看明細</a>
+            <div id="mCards">
+                <div class="card">
+                    <div><strong>任務編號：</strong>123456</div>
+                    <div>任務時間：2025-04-15 09:00 ~ 10:00</div>
+                    <div>任務摘要：勘車-國都天母廠</div>
+                    <div>賠案號碼：10000001</div>
+                    <div>車牌號碼：AA-1234</div>
+                    <div class="who">任務現況：張三-處理中</div>
+                    <a href="02.task_detail_proc.html">查看明細</a>
+                </div>
+                <div class="card">
+                    <div><strong>任務編號：</strong>123458</div>
+                    <div>任務時間：2025-04-15 09:00 ~ 11:00</div>
+                    <div>任務摘要：法院出庭-內湖簡易庭民事大樓第一調解室</div>
+                    <div>賠案號碼：10000003</div>
+                    <div>車牌號碼：1234-CC</div>
+                    <div class="who">任務現況：李四-完成</div>
+                    <a href="02.task_detail_done.html">查看明細</a>
+                </div>
+                <div class="card">
+                    <div><strong>任務編號：</strong>123459</div>
+                    <div>任務時間：2025-04-15 14:00 ~ 15:00</div>
+                    <div>任務摘要：和解-土城調解委員會</div>
+                    <div>賠案號碼：10000004</div>
+                    <div>車牌號碼：1234-DD</div>
+                    <div class="who">任務現況：李四-取消</div>
+                    <a href="02.task_detail_cancel.html">查看明細</a>
+                </div>
+                <div class="card">
+                    <div><strong>任務編號：</strong>123457</div>
+                    <div>任務時間：2025-04-15 10:30 ~ 11:30</div>
+                    <div>任務摘要：查責-中壢交通隊</div>
+                    <div>賠案號碼：10000002</div>
+                    <div>車牌號碼：BB-5678</div>
+                    <div class="who">任務現況：李四-處理中</div>
+                    <a href="#">查看明細</a>
+                </div>
             </div>
         </div>
+
+        <!-- modal -->
+        <div id="leaveBackdrop" class="leave-modal-backdrop" aria-hidden="true"></div>
+        <div id="leaveModal" class="leave-modal" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="leaveModalTitle">
+            <button id="btnLeaveClose" class="leave-close" aria-label="關閉" title="關閉" type="button">×</button>
+
+            <h3 id="leaveModalTitle">請假清單</h3>
+            <div id="leaveList" class="leave-list"></div>
+        </div>
+
+        <script>
+            /* ===== mock API ===== */
+            async function fetchLeaveSummary({ dept, from, to }) {
+                const data = [
+                    { name: "張三", from: "2025-04-15 09:00", to: "2025-04-15 12:00", reason: "處理家事", status: "生效" },
+                    { name: "王五", from: "2025-04-15 00:00", to: "2025-04-15 23:59", reason: "特休", status: "生效" },
+                    { name: "李四", from: "2025-04-20 09:00", to: "2025-04-28 17:30", reason: "出國", status: "作廢" },
+                ];
+                const f = new Date(from + "T00:00:00");
+                const t = new Date(to + "T23:59:59");
+                return data
+                    .filter((x) => x.status === "生效")
+                    .filter((x) => {
+                        const sf = new Date(x.from.replace(" ", "T"));
+                        const st = new Date(x.to.replace(" ", "T"));
+                        return st >= f && sf <= t; // 有交集
+                    });
+            }
+
+            function fmtRange(from, to) {
+                const f = new Date(from.replace(" ", "T"));
+                const t = new Date(to.replace(" ", "T"));
+                const sameDay = f.toDateString() === t.toDateString();
+                const pad = (n) => (n < 10 ? "0" + n : "" + n);
+                const d = (dt) => `${dt.getMonth() + 1}/${dt.getDate()}`;
+                const hm = (dt) => `${pad(dt.getHours())}:${pad(dt.getMinutes())}`;
+                return sameDay ? `${d(f)} ${hm(f)}~${hm(t)}` : `${d(f)}~${d(t)}`;
+            }
+
+            function setBannerText(leaves, from, to, elTitle, elText) {
+                const sameDay = from === to;
+                const todayStr = new Date().toISOString().slice(0, 10);
+                const isToday = sameDay && from === todayStr;
+                if (leaves.length === 0) {
+                    elTitle.textContent = isToday ? "今日不在" : sameDay ? "當日請假" : "本區間請假";
+                    elText.textContent = "無請假";
+                    return;
+                }
+                if (sameDay) {
+                    elTitle.textContent = isToday ? "今日不在" : "當日請假";
+                    elText.textContent = leaves.map((x) => x.name).join("、");
+                } else {
+                    elTitle.textContent = "本區間請假";
+                    elText.textContent = leaves.map((x) => `${x.name}（${fmtRange(x.from, x.to)}）`).join("、");
+                }
+            }
+
+            function readQueryDates(prefix) {
+                const from = document.getElementById(prefix === "m" ? "mqFrom" : "qFrom").value;
+                const to = document.getElementById(prefix === "m" ? "mqTo" : "qTo").value;
+                return { from, to };
+            }
+
+            function openModal(list) {
+                const bd = document.getElementById("leaveBackdrop");
+                const md = document.getElementById("leaveModal");
+                const ul = document.getElementById("leaveList");
+                ul.innerHTML = "";
+                list.forEach((x) => {
+                    const row = document.createElement("div");
+                    row.className = "leave-row";
+                    row.innerHTML = `<div class="who">${x.name}</div>
+                           <div class="when">${fmtRange(x.from, x.to)}</div>
+                           <div class="reason">${x.reason || ""}</div>`;
+                    ul.appendChild(row);
+                });
+                bd.style.display = "block";
+                md.style.display = "block";
+                bd.onclick = closeModal;
+                document.getElementById("btnLeaveClose").onclick = closeModal;
+            }
+
+            function closeModal() {
+                document.getElementById("leaveBackdrop").style.display = "none";
+                document.getElementById("leaveModal").style.display = "none";
+            }
+
+            /* ===== 這裡開始是「雙顯修正」的核心邏輯 ===== */
+            function hideBothBanners() {
+                const pc = document.getElementById("leaveBanner");
+                const mb = document.getElementById("leaveBannerMb");
+                if (pc) pc.style.display = "none";
+                if (mb) mb.style.display = "none";
+            }
+            function isMobileViewport() {
+                return window.matchMedia("(max-width: 767px)").matches;
+            }
+
+            async function refreshLeaveUI(prefix) {
+                const { from, to } = readQueryDates(prefix);
+                const dept = "北區理賠一室";
+                const leaves = await fetchLeaveSummary({ dept, from, to });
+
+                const isMobile = prefix === "m";
+                const banner = document.getElementById(isMobile ? "leaveBannerMb" : "leaveBanner");
+                const titleEl = document.getElementById(isMobile ? "leaveBannerTitleMb" : "leaveBannerTitle");
+                const textEl = document.getElementById(isMobile ? "leaveBannerTextMb" : "leaveBannerText");
+                const btnModal = document.getElementById(isMobile ? "btnLeaveModalMb" : "btnLeaveModal");
+
+                // 先把兩個都關掉，清理任何殘留的 inline 樣式，避免雙顯
+                hideBothBanners();
+
+                // 只在符合當前 viewport 的那一個上顯示
+                const shouldShow = (isMobile && isMobileViewport()) || (!isMobile && !isMobileViewport());
+                if (!shouldShow || !leaves.length) return;
+
+                banner.style.display = "block";
+                setBannerText(leaves, from, to, titleEl, textEl);
+                btnModal.onclick = () => openModal(leaves);
+            }
+
+            function refreshForCurrentViewport() {
+                refreshLeaveUI(isMobileViewport() ? "m" : "pc");
+            }
+
+            // 綁定查詢按鈕：各自刷新對應版型，函式內會自動關掉另一個
+            document.getElementById("btnQueryPc").addEventListener("click", () => refreshLeaveUI("pc"));
+            document.getElementById("btnQueryMb").addEventListener("click", () => refreshLeaveUI("m"));
+
+            // 首次載入與 resize：只更新當前版型，且先滅火
+            hideBothBanners();
+            refreshForCurrentViewport();
+            window.addEventListener("resize", () => {
+                clearTimeout(window.__rb_t);
+                window.__rb_t = setTimeout(() => {
+                    hideBothBanners();
+                    refreshForCurrentViewport();
+                }, 120);
+            });
+        </script>
     </body>
 </html>
