@@ -1,150 +1,332 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>行動任務處理 - 通知</title>
-  <style>
-    body {
-      font-family: sans-serif;
-      margin: 0;
-      padding: 1rem;
-    }
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>行動任務處理 - 通知</title>
+        <style>
+            body {
+                font-family: sans-serif;
+                margin: 0;
+                padding: 1rem;
+            }
+            h2 {
+                margin-bottom: 1em;
+            }
+            /* ===== 儀錶板 ===== */
+            .dash {
+                display: grid;
+                gap: 12px;
+                margin-bottom: 16px;
+            }
+            .dash-card {
+                background: #fff;
+                border: 1px solid #e5e7eb;
+                border-radius: 12px;
+                padding: 12px;
+                box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+            }
+            .dash-title {
+                font-weight: 800;
+                color: #111827;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin: 2px 0 10px;
+            }
+            .dash-title small {
+                color: #6b7280;
+                font-weight: 600;
+            }
 
-	h2 {
-	  margin-bottom: 1em;
-	}
+            /* 指標卡片 */
+            .kpis-1col {
+                display: grid;
+                grid-template-columns: 1fr;
+                gap: 8px;
+                margin-bottom: 6px;
+            }
+            .kpis-3col {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 8px;
+            }
+            .kpi {
+                background: #f9fafb;
+                border: 1px solid #f3f4f6;
+                border-radius: 10px;
+                padding: 10px;
+                cursor: pointer;
+            }
+            .kpi h4 {
+                margin: 0 0 4px;
+                font-size: 0.9rem;
+                color: #4b5563;
+                font-weight: 700;
+            }
+            .kpi .num {
+                font-size: 1.35rem;
+                font-weight: 900;
+                color: #111827;
+            }
 
-    /* PC Table Style */
-    .pc-only table {
-      width: 100%;
-      border-collapse: collapse;
-    }
+            /* 分段進度條 */
+            .segbar {
+                height: 10px;
+                border-radius: 999px;
+                background: #f3f4f6;
+                overflow: hidden;
+                display: grid;
+                grid-template-columns: 0 0 0;
+                margin-top: 10px;
+                border: 1px solid #e5e7eb;
+            }
+            .seg-done {
+                background: #22c55e;
+            }
+            .seg-pending {
+                background: #9ca3af;
+            }
+            .seg-cancel {
+                background: #ef4444;
+            }
+            .legend {
+                display: flex;
+                gap: 12px;
+                margin-top: 6px;
+                color: #6b7280;
+                font-size: 0.85rem;
+            }
+            .lg-dot {
+                width: 10px;
+                height: 10px;
+                border-radius: 50%;
+                display: inline-block;
+                vertical-align: middle;
+                margin-right: 6px;
+            }
+            .lg-done {
+                background: #22c55e;
+            }
+            .lg-pending {
+                background: #9ca3af;
+            }
+            .lg-cancel {
+                background: #ef4444;
+            }
 
-    .pc-only th, .pc-only td {
-      border: 1px solid #ddd;
-      padding: 10px;
-      vertical-align: top;
-    }
+            /* ===== 新任務通知（原樣式微調沿用） ===== */
+            .pc-only table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+            .pc-only th,
+            .pc-only td {
+                border: 1px solid #ddd;
+                padding: 10px;
+                vertical-align: top;
+            }
+            .pc-only th {
+                background-color: #f2f2f2;
+                text-align: center;
+            }
+            .pc-only td {
+                text-align: left;
+            }
+            .mobile-only .card {
+                border: 1px solid #ccc;
+                border-radius: 6px;
+                padding: 1em;
+                margin-bottom: 1em;
+                background-color: #fdfdfd;
+            }
+            .mobile-only .card .time {
+                font-weight: bold;
+                margin-bottom: 0.5em;
+            }
+            .mobile-only .note {
+                font-size: 0.9em;
+                color: #666;
+            }
+            .mobile-only {
+                display: none;
+            }
+            .pc-only {
+                display: block;
+            }
+            .btn-view {
+                background-color: transparent;
+                color: #3182ce;
+                border: 1px solid #3182ce;
+                border-radius: 4px;
+                padding: 4px 8px;
+                font-size: 0.9rem;
+                margin-top: 0.5rem;
+                cursor: pointer;
+                display: inline-block;
+                transition: all 0.2s ease;
+            }
+            .btn-view:hover {
+                background-color: #3182ce;
+                color: white;
+            }
 
-    .pc-only th {
-      background-color: #f2f2f2;
-      text-align: center;
-    }
+            @media (max-width: 920px) {
+                .kpis-3col {
+                    grid-template-columns: repeat(3, 1fr);
+                }
+            }
+            @media (max-width: 520px) {
+                .kpis-3col {
+                    grid-template-columns: repeat(3, 1fr);
+                }
+            }
+            @media (max-width: 768px) {
+                .pc-only {
+                    display: none;
+                }
+                .mobile-only {
+                    display: block;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <!-- 任務摘要：本日 / 本月 -->
+        <h2>任務摘要</h2>
+        <section class="dash">
+            <div class="dash-card" id="dailyCard">
+                <div class="dash-title">本日摘要 - 總件數 <span id="dAll">0</span></div>
+                <div class="kpis-3col">
+                    <div class="kpi">
+                        <h4>未完成</h4>
+                        <div class="num" id="dPending">0</div>
+                    </div>
+                    <div class="kpi">
+                        <h4>已完成</h4>
+                        <div class="num" id="dDone">0</div>
+                    </div>
+                    <div class="kpi">
+                        <h4>已取消</h4>
+                        <div class="num" id="dCancel">0</div>
+                    </div>
+                </div>
+                <div class="segbar" id="dSeg">
+                    <div class="seg-done"></div>
+                    <div class="seg-pending"></div>
+                    <div class="seg-cancel"></div>
+                </div>
+            </div>
 
-    .pc-only td {
-      text-align: left;
-    }
+            <div class="dash-card" id="monthlyCard">
+                <div class="dash-title">本月摘要 - 總件數 <span id="mAll">0</span></div>
+                <div class="kpis-3col">
+                    <div class="kpi">
+                        <h4>未完成</h4>
+                        <div class="num" id="mPending">0</div>
+                    </div>
+                    <div class="kpi">
+                        <h4>已完成</h4>
+                        <div class="num" id="mDone">0</div>
+                    </div>
+                    <div class="kpi">
+                        <h4>已取消</h4>
+                        <div class="num" id="mCancel">0</div>
+                    </div>
+                </div>
+                <div class="segbar" id="mSeg">
+                    <div class="seg-done"></div>
+                    <div class="seg-pending"></div>
+                    <div class="seg-cancel"></div>
+                </div>
+            </div>
+        </section>
 
-    /* Mobile Card Style */
-    .mobile-only .card {
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      padding: 1em;
-      margin-bottom: 1em;
-      background-color: #fdfdfd;
-    }
+        <h2>新任務通知</h2>
 
-    .mobile-only .card .time {
-      font-weight: bold;
-      margin-bottom: 0.5em;
-    }
+        <!-- PC 版：沿用原雛型 -->
+        <div class="pc-only">
+            <table>
+                <thead>
+                    <tr>
+                        <th>任務時間</th>
+                        <th>內容</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td width="35%">2025-04-15 09:00 ~ 10:00</td>
+                        <td width="50%">勘車 - 北都LS南港廠</td>
+                        <td width="15%"><button class="btn-view" onclick="location.href='02.task_detail_proc.html'">查看任務</button></td>
+                    </tr>
+                    <tr>
+                        <td>2025-05-12 11:00 ~ 12:00</td>
+                        <td>法院出庭 - 內湖簡易庭民事大樓第一調解室</td>
+                        <td><button class="btn-view" onclick="location.href='02.task_detail_proc.html'">查看任務</button></td>
+                    </tr>
+                    <tr>
+                        <td>2025-06-05 14:00 ~ 15:30</td>
+                        <td>和解 - 士林簡易庭一樓調解室</td>
+                        <td><button class="btn-view" onclick="location.href='02.task_detail_proc.html'">查看任務</button></td>
+                    </tr>
+                </tbody>
+            </table>
+            <p class="note">說明：僅顯示昨日與今日建檔之任務。</p>
+        </div>
 
-    .mobile-only .note {
-      font-size: 0.9em;
-      color: #666;
-    }
+        <!-- Mobile 版：沿用原雛型 -->
+        <div class="mobile-only">
+            <div class="card">
+                <div class="time">2025-04-15 09:00 ~ 10:00</div>
+                <div>勘車 - 北都LS南港廠</div>
+                <button class="btn-view" onclick="location.href='02.task_detail_proc.html'">查看任務</button>
+            </div>
+            <div class="card">
+                <div class="time">2025-05-12 11:00 ~ 12:00</div>
+                <div>法院出庭 - 內湖簡易庭民事大樓第一調解室</div>
+                <button class="btn-view" onclick="location.href='02.task_detail_proc.html'">查看任務</button>
+            </div>
+            <div class="card">
+                <div class="time">2025-06-05 14:00 ~ 15:30</div>
+                <div>和解 - 士林簡易庭一樓調解室</div>
+                <button class="btn-view" onclick="location.href='02.task_detail_proc.html'">查看任務</button>
+            </div>
+        </div>
 
-    .mobile-only {
-      display: none;
-    }
+        <script>
+            // 後端api回傳的資料
+            const DASHBOARD = {
+                // 本日
+                daily: { total: 7, pending: 1, done: 5, cancel: 1 },
 
-    .pc-only {
-      display: block;
-    }
+                // 本月（起算到今天）
+                monthly: { total: 53, pending: 21, done: 28, cancel: 4 },
+            };
 
-    @media (max-width: 768px) {
-      .pc-only {
-        display: none;
-      }
-      .mobile-only {
-        display: block;
-      }
-    }
+            // 分段進度條
+            function setSegbar(el, aggr) {
+                const total = Math.max(aggr.total || 0, 1); // 避免除以 0
+                const d = Math.round(((aggr.done || 0) / total) * 100);
+                const p = Math.round(((aggr.pending || 0) / total) * 100);
+                const c = Math.max(0, 100 - d - p); // 剩下給 cancel，避免 101% 的荒謬
+                el.style.gridTemplateColumns = `${d}% ${p}% ${c}%`;
+            }
 
-	.btn-view {
-	  background-color: transparent;
-	  color: #3182ce;
-	  border: 1px solid #3182ce;
-	  border-radius: 4px;
-	  padding: 4px 8px;
-	  font-size: 0.9rem;
-	  margin-top: 0.5rem;
-	  cursor: pointer;
-	  display: inline-block;
-	  transition: all 0.2s ease;
-	}
+            // 把某一塊（day/month）畫上去
+            function paint(scope, summary) {
+                const pref = scope === "day" ? "d" : "m";
+                document.getElementById(pref + "All").textContent = summary.total ?? 0;
+                document.getElementById(pref + "Pending").textContent = summary.pending ?? 0;
+                document.getElementById(pref + "Done").textContent = summary.done ?? 0;
+                document.getElementById(pref + "Cancel").textContent = summary.cancel ?? 0;
+                setSegbar(document.getElementById(pref + "Seg"), summary);
+            }
 
-	.btn-view:hover {
-	  background-color: #3182ce;
-	  color: white;
-	}
-
-	
-  </style>
-</head>
-<body>
-  <h2>新任務通知</h2>
-
-<!-- PC 版 -->
-<div class="pc-only">
-  <table>
-    <thead>
-      <tr>
-        <th>任務時間</th>
-        <th>內容</th>
-        <th>操作</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td width="35%">2025-04-15 09:00 ~ 10:00</td>
-        <td width="50%">勘車 - 北都LS南港廠</td>
-        <td width="15%"><button class="btn-view" onclick="location.href='02.task_detail_proc.html'">查看任務</button></td>
-      </tr>
-      <tr>
-        <td>2025-05-12 11:00 ~ 12:00</td>
-        <td>法院出庭 - 內湖簡易庭民事大樓第一調解室</td>
-        <td><button class="btn-view" onclick="location.href='02.task_detail_proc.html'">查看任務</button></td>
-      </tr>
-      <tr>
-        <td>2025-06-05 14:00 ~ 15:30</td>
-        <td>和解 - 士林簡易庭一樓調解室</td>
-        <td><button class="btn-view" onclick="location.href='02.task_detail_proc.html'">查看任務</button></td>
-      </tr>
-    </tbody>
-  </table>
-  <p class="note">說明：僅顯示昨日與今日建檔之任務。</p>
-</div>
-
-<!-- Mobile 版 -->
-<div class="mobile-only">
-  <div class="card">
-    <div class="time">2025-04-15 09:00 ~ 10:00</div>
-    <div>勘車 - 北都LS南港廠</div>
-	<button class="btn-view" onclick="location.href='02.task_detail_proc.html'">查看任務</button>
-  </div>
-  <div class="card">
-    <div class="time">2025-05-12 11:00 ~ 12:00</div>
-    <div>法院出庭 - 內湖簡易庭民事大樓第一調解室</div>
-	<button class="btn-view" onclick="location.href='02.task_detail_proc.html'">查看任務</button>
-  </div>
-  <div class="card">
-    <div class="time">2025-06-05 14:00 ~ 15:30</div>
-    <div>和解 - 士林簡易庭一樓調解室</div>
-	<button class="btn-view" onclick="location.href='02.task_detail_proc.html'">查看任務</button>
-  </div>
-</div>
-
-</body>
+            document.addEventListener("DOMContentLoaded", () => {
+                paint("day", DASHBOARD.daily);
+                paint("month", DASHBOARD.monthly);
+            });
+        </script>
+    </body>
 </html>
