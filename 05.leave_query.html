@@ -3,7 +3,7 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>人員請假管理 - 請假資料查詢</title>
+        <title>人員請假管理 - 請假資料維護 - 查詢</title>
         <style>
             body {
                 font-family: sans-serif;
@@ -147,6 +147,23 @@
                     font-size: 16px !important;
                 }
             }
+            .btn-view {
+                background-color: transparent;
+                color: #3182ce;
+                border: 1px solid #3182ce;
+                border-radius: 4px;
+                padding: 4px 8px;
+                font-size: 0.9rem;
+                margin-top: 0.5rem;
+                cursor: pointer;
+                display: inline-block;
+                transition: all 0.2s ease;
+            }
+            .btn-view:hover {
+                background-color: #3182ce;
+                color: white;
+            }
+
 			/* 行動版：把 iOS 的灰底拉回來 */
 			@media screen and (max-width: 767px) {
 			  /* 日期/時間類：不要拿掉 appearance，否則可能失去原生選擇器 */
@@ -181,7 +198,7 @@
 				border-color: #ddd !important;
 			  }
 			}
-						
+			
         </style>
     </head>
     <body>
@@ -280,21 +297,23 @@
             </div>
 
             <div class="card">
-                <div><strong>請假編號：</strong><a href="05.leave_detail.html">LV20250415001</a></div>
+                <div><strong>請假編號：</strong>LV20250415001</div>
                 <div>請假人員：張三</div>
                 <div>開始：2025/04/15 09:00</div>
                 <div>結束：2025/04/15 12:00</div>
                 <div>請假說明：處理家事</div>
                 <div>狀態：生效</div>
+                <button class="btn-view" onclick="location.href='05.leave_detail.html'">查看任務</button>
             </div>
 
             <div class="card">
-                <div><strong>請假編號：</strong><a href="05.leave_detail.html">LV20250420003</a></div>
+                <div><strong>請假編號：</strong>LV20250420003</div>
                 <div>請假人員：張三</div>
                 <div>開始：2025/04/20 09:00</div>
                 <div>結束：2025/04/28 17:30</div>
                 <div>請假說明：出國</div>
                 <div>狀態：作廢</div>
+                <button class="btn-view" onclick="location.href='05.leave_detail.html'">查看任務</button>
             </div>
         </div>
 
