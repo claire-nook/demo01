@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>任務派遣管理 - 理賠任務維護 - 查詢</title>
+        <style>
+            body {
+                font-family: sans-serif;
+                margin: 0;
+                padding: 1rem;
+            }
+            h2 {
+                margin-bottom: 1rem;
+            }
+            .pc-wrapper {
+                max-width: 1000px;
+                margin: 0 auto;
+            }
+            .query-form {
+                background: #fff;
+                padding: 1rem;
+                margin-bottom: 1rem;
+                border-radius: 12px;
+                box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            }
+            .form-row {
+                display: flex;
+                gap: 1rem;
+            }
+            .form-row .field {
+                flex: 1;
+            }
+            .form-row.full {
+                display: block;
+            }
+            .query-form label {
+                display: block;
+                margin: 0.5rem 0 0.25rem;
+            }
+            .query-form input,
+            .query-form select {
+                width: 100%;
+                padding: 0.5rem;
+                border-radius: 6px;
+                border: 1px solid #ccc;
+                box-sizing: border-box;
+            }
+            .inline-date {
+                display: flex;
+                gap: 1rem;
+            }
+            .inline-date input {
+                flex: 1;
+            }
+            .btn-area {
+                margin-top: 1rem;
+                display: flex;
+                gap: 1rem;
+                justify-content: center;
+            }
+            .btn {
+                padding: 0.6rem 1.2rem;
+                border: none;
+                border-radius: 6px;
+                cursor: pointer;
+                font-weight: bold;
+            }
+            .btn-clear {
+                background: #ccc;
+                color: #000;
+            }
+            .btn-search {
+                background: #2f855a;
+                color: #fff;
+            }
+            .btn-add {
+                background: #007bff;
+                color: #fff;
+            }
+            .btn-view {
+                background: #ffffff;
+                color: #1677ff;
+                border: 1px solid #1677ff;
+                padding: 0.4rem 0.9rem;
+                border-radius: 8px;
+            }
+            .pc {
+                display: block;
+            }
+            .mobile {
+                display: none;
+            }
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                background: #fff;
+                box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+                border-radius: 8px;
+                overflow: hidden;
+            }
+            th,
+            td {
+                padding: 0.75rem;
+                border-bottom: 1px solid #ddd;
+                text-align: left;
+            }
+            th {
+                background-color: #f5f5f5;
+            }
+            a {
+                color: #007bff;
+                text-decoration: underline;
+                font-size: 0.95rem;
+            }
+            .card {
+                background: #fff;
+                border-radius: 12px;
+                padding: 1rem;
+                margin-bottom: 1rem;
+                box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            }
+            .card div {
+                margin-bottom: 0.35rem;
+            }
+            .adv-toggle {
+                display: inline-block;
+                margin: 0.25rem 0 0.5rem;
+                color: #1677ff;
+                cursor: pointer;
+                user-select: none;
+            }
+            .adv-toggle .arrow {
+                margin-left: 0.25rem;
+            }
+            [hidden] {
+                display: none !important;
+            }
+
+            @media screen and (max-width: 767px) {
+                .pc {
+                    display: none;
+                }
+                .mobile {
+                    display: block;
+                }
+                input,
+                select,
+                button {
+                    font-size: 16px !important;
+                    height: 40px !important;
+                    padding: 8px 10px !important;
+                }
+                label {
+                    font-size: 1rem;
+                }
+                .btn {
+                    font-size: 1rem;
+                    padding: 0.6rem 1.2rem;
+                }
+                .card div {
+                    font-size: 1rem;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <h2>理賠任務維護</h2>
+        <div class="pc-wrapper">
+            <!-- PC 查詢表單：維持先前二欄排版與完整欄位 -->
+            <div class="query-form pc">
+                <div class="form-row">
+                    <div class="field">
+                        <label>賠案號碼</label>
+                        <input type="text" />
+                    </div>
+                    <div class="field">
+                        <label>車牌號碼</label>
+                        <input type="text" />
+                    </div>
+                </div>
+                <!-- 任務日期區間：保持一整列顯示，兩顆日期在同一行 -->
+                <div class="form-row full">
+                    <div class="field">
+                        <label>任務日期區間</label>
+                        <div class="inline-date">
+                            <input type="date" />
+                            <input type="date" />
+                        </div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="field">
+                        <label>處理人員單位</label>
+                        <select>
+                            <option>北區理賠一室</option>
+                            <option>中區理賠一室</option>
+                            <option>南區理賠室</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label>處理人員</label>
+                        <input type="text" placeholder="輸入人名關鍵字" />
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="field">
+                        <label>任務編號</label>
+                        <input type="text" />
+                    </div>
+                    <div class="field">
+                        <label>任務狀態</label>
+                        <select>
+                            <option>全部</option>
+                            <option>處理中</option>
+                            <option>完成</option>
+                            <option>取消</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- 任務完成日期區間：同上，保持一整列顯示 -->
+                <div class="form-row full">
+                    <div class="field">
+                        <label>任務完成日期區間</label>
+                        <div class="inline-date">
+                            <input type="date" />
+                            <input type="date" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="field">
+                        <label>任務地點</label>
+                        <input type="text" placeholder="輸入地點關鍵字" />
+                    </div>
+                    <div class="field">
+                        <label>建檔人員</label>
+                        <input type="text" placeholder="輸入人名關鍵字" />
+                    </div>
+                </div>
+
+                <div class="btn-area">
+                    <button class="btn btn-add" onclick="goNew()">新增</button>
+                    <button class="btn btn-search">查詢</button>
+                    <button class="btn btn-clear">清除</button>
+                </div>
+            </div>
+
+            <!-- PC 結果表格 -->
+            <div class="pc">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>任務編號</th>
+                            <th>任務時間</th>
+                            <th>任務地點</th>
+                            <th>處理事項</th>
+                            <th>賠案號碼</th>
+                            <th>車牌號碼</th>
+                            <th>處理人員</th>
+                            <th>任務狀態</th>
+                            <th>建檔人員</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><a href="06.clm_task_detail.html">1</a></td>
+                            <td>
+                                2025-04-15 <br />
+                                09:00 ~ 10:00
+                            </td>
+                            <td>國都天母廠</td>
+                            <td>勘車</td>
+                            <td>10000001</td>
+                            <td>AA-1234</td>
+                            <td>張三</td>
+                            <td>處理中</td>
+                            <td>陳客服</td>
+                        </tr>
+                        <tr>
+                            <td><a href="06.clm_task_detail.html">2</a></td>
+                            <td>
+                                2025-04-15 <br />
+                                09:00 ~ 11:00
+                            </td>
+                            <td>內湖簡易庭民事大樓第一調解室</td>
+                            <td>法院出庭</td>
+                            <td>10000003</td>
+                            <td>1234-CC</td>
+                            <td>李四</td>
+                            <td>完成</td>
+                            <td>李控案</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Mobile 卡片顯示 -->
+        <div class="mobile">
+            <div class="query-form">
+                <!-- 基本條件：保留在畫面上 -->
+                <label>任務日期區間起 <input type="date" /></label>
+                <label>任務日期區間訖 <input type="date" /></label>
+                <label>
+                    任務狀態
+                    <select>
+                        <option>全部</option>
+                        <option>處理中</option>
+                        <option>完成</option>
+                        <option>取消</option>
+                    </select>
+                </label>
+                <label>
+                    處理人員單位
+                    <select>
+                        <option>北區理賠一室</option>
+                        <option>中區理賠一室</option>
+                        <option>南區理賠室</option>
+                    </select>
+                </label>
+                <label>處理人員 <input type="text" placeholder="輸入人名關鍵字" /></label>
+
+                <!-- 進階條件：預設收合 -->
+                <span id="advToggle" class="adv-toggle">展開進階條件 <span class="arrow">▼</span></span>
+                <div id="advFilters" hidden>
+                    <label>賠案號碼 <input type="text" /></label>
+                    <label>車牌號碼 <input type="text" /></label>
+                    <label>任務編號 <input type="text" /></label>
+                    <label>任務完成日期區間起 <input type="date" /></label>
+                    <label>任務完成日期區間訖 <input type="date" /></label>
+                    <label>任務地點 <input type="text" placeholder="輸入地點關鍵字" /></label>
+                    <label>建檔人員 <input type="text" placeholder="輸入人名關鍵字" /></label>
+                </div>
+
+                <div class="btn-area">
+                    <button class="btn btn-add" onclick="goNew()">新增</button>
+                    <button class="btn btn-search">查詢</button>
+                    <button class="btn btn-clear">清除</button>
+                </div>
+            </div>
+
+            <!-- 卡片：以「查看任務」作為主要互動，而非任務編號連結 -->
+            <div class="card">
+                <div><strong>任務編號：</strong>1</div>
+                <div>任務時間：2025-04-15 09:00 ~ 10:00</div>
+                <div>任務地點：國都天母廠</div>
+                <div>處理事項：勘車</div>
+                <div>賠案號碼：10000001</div>
+                <div>車牌號碼：AA-1234</div>
+                <div>處理人員：張三</div>
+                <div>任務狀態：處理中</div>
+                <div>建檔人員：陳客服</div>
+                <button class="btn-view" onclick="location.href='06.clm_task_detail.html'">查看任務</button>
+            </div>
+            <div class="card">
+                <div><strong>任務編號：</strong>2</div>
+                <div>任務時間：2025-04-15 09:00 ~ 11:00</div>
+                <div>任務地點：內湖簡易庭民事大樓第一調解室</div>
+                <div>處理事項：法院出庭</div>
+                <div>賠案號碼：10000003</div>
+                <div>車牌號碼：1234-CC</div>
+                <div>處理人員：李四</div>
+                <div>任務狀態：完成</div>
+                <div>建檔人員：李控案</div>
+                <button class="btn-view" onclick="location.href='06.clm_task_detail.html'">查看任務</button>
+            </div>
+        </div>
+
+        <script>
+            function goNew() {
+                location.href = "06.clm_task_new.html";
+            }
+		
+            // 行動版：展開/收合 進階條件
+            const advToggle = document.getElementById("advToggle");
+            const advFilters = document.getElementById("advFilters");
+            if (advToggle) {
+                advToggle.addEventListener("click", () => {
+                    const willShow = advFilters.hasAttribute("hidden");
+                    if (willShow) {
+                        advFilters.removeAttribute("hidden");
+                        advToggle.innerHTML = '收合進階條件 <span class="arrow">▲</span>';
+                    } else {
+                        advFilters.setAttribute("hidden", "");
+                        advToggle.innerHTML = '展開進階條件 <span class="arrow">▼</span>';
+                    }
+                });
+            }
+
+            // 卡片「查看任務」事件
+            function openTask(taskId) {
+                location.href = '06.clm_task_detail.html'
+            }
+        </script>
+    </body>
+</html>

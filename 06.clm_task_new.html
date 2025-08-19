@@ -1,0 +1,1145 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>任務派遣管理 - 理賠任務維護 - 新增</title>
+        <style>
+            body {
+                font-family: sans-serif;
+                margin: 0;
+                padding: 1rem;
+                background: #f7f7f9;
+            }
+            h2 {
+                margin: 0 0 1rem;
+            }
+            .pc-wrapper {
+                max-width: 1000px;
+                margin: 0 auto;
+            }
+            .card {
+                background: #fff;
+                padding: 1rem;
+                border-radius: 12px;
+                box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            }
+            .row {
+                display: grid;
+                grid-template-columns: 160px 1fr;
+                gap: 0.75rem 1rem;
+                align-items: center;
+            }
+            .row + .row {
+                margin-top: 0.75rem;
+            }
+            label {
+                font-weight: 700;
+                color: #444;
+            }
+            input,
+            select,
+            textarea {
+                width: 100%;
+                padding: 0.6rem 0.7rem;
+                border: 1px solid #ccc;
+                border-radius: 8px;
+                box-sizing: border-box;
+            }
+            textarea {
+                min-height: 110px;
+                resize: vertical;
+            }
+            .inline-3 {
+                display: grid;
+                grid-template-columns: 1fr 1fr 2fr;
+                gap: 1rem;
+            }
+            .inline-date {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 1rem;
+            }
+            .inline-time {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 1rem;
+            }
+            .btn-area {
+                display: flex;
+                gap: 0.75rem;
+                justify-content: center;
+                margin-top: 1rem;
+                flex-wrap: wrap;
+            }
+            .btn {
+                padding: 0.6rem 1.2rem;
+                border: none;
+                border-radius: 8px;
+                cursor: pointer;
+                font-weight: 700;
+            }
+            .btn-gray {
+                background: #ccc;
+                color: #222;
+            }
+            .btn-primary {
+                background: #f90;
+                color: #fff;
+            }
+            .btn-danger {
+                background: #c62828;
+                color: #fff;
+            }
+            .meta {
+                color: #666;
+                font-size: 0.9rem;
+            }
+            .pc {
+                display: block;
+            }
+            .mobile {
+                display: none;
+            }
+
+            /* 地點欄位 */
+            .loc-field {
+                display: grid;
+                grid-template-columns: 1fr auto;
+                gap: 0.5rem;
+                align-items: center;
+            }
+
+            /* 指派模式 */
+            .assign-mode {
+                display: flex;
+                align-items: center;
+            }
+            .assign-mode .seg {
+                display: flex;
+                align-items: center;
+                gap: 2rem;
+                column-gap: 32px;
+            }
+            .assign-mode .seg label {
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                white-space: nowrap;
+                font-weight: 600;
+            }
+
+            /* 成對區塊：賠案號＋車牌 */
+            .pairs-head {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin: 0.25rem 0 0.75rem;
+            }
+            .pair-list {
+                display: grid;
+                gap: 0.75rem;
+            }
+            .pair-card {
+                display: grid;
+                grid-template-columns: 1fr auto;
+                gap: 0.75rem;
+                align-items: start;
+                padding: 0.75rem;
+                border: 1px solid #eee;
+                border-left: 4px solid #6a8caf;
+                border-radius: 10px;
+                background: #fafbff;
+            }
+            .pair-fields {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 0.75rem 1rem;
+                align-items: center;
+            }
+            .pair-fields label {
+                font-weight: 700;
+                color: #444;
+            }
+            .pair-tools {
+                display: flex;
+                gap: 0.5rem;
+            }
+            .req {
+                display: inline-block;
+                margin-left: 0.25rem;
+                color: #c62828;
+                font-weight: 800;
+            }
+            .dup {
+                border-color: #c62828;
+                background: #fff5f5;
+            }
+            .hint {
+                font-size: 0.85rem;
+                color: #666;
+                margin-top: 0.25rem;
+            }
+
+            .split {
+                border-top: 1px dashed #e6e6e6;
+                margin: 1rem 0;
+            }
+
+            @media screen and (max-width: 767px) {
+                .pc {
+                    display: none;
+                }
+                .mobile {
+                    display: block;
+                }
+                .card {
+                    padding: 1rem;
+                }
+                .row {
+                    display: block;
+                }
+                label {
+                    display: block;
+                    margin: 0.6rem 0 0.35rem;
+                }
+                input,
+                select,
+                textarea,
+                button {
+                    font-size: 16px !important;
+                    height: auto;
+                }
+                .inline-3 {
+                    grid-template-columns: 1fr;
+                    gap: 0.75rem;
+                }
+                .inline-date {
+                    grid-template-columns: 1fr;
+                    gap: 0.75rem;
+                }
+                .inline-time {
+                    grid-template-columns: 1fr;
+                    gap: 0.75rem;
+                }
+                .btn {
+                    width: 100%;
+                    padding: 0.8rem 1rem;
+                }
+                .pair-card {
+                    grid-template-columns: 1fr;
+                }
+                .pair-fields {
+                    grid-template-columns: 1fr;
+                }
+            }
+
+            /* Modal（沿用地點挑選）*/
+            .modal-mask {
+                position: fixed;
+                inset: 0;
+                background: rgba(0, 0, 0, 0.45);
+                display: none;
+                align-items: center;
+                justify-content: center;
+                padding: 1rem;
+                z-index: 1000;
+            }
+            .modal {
+                background: #fff;
+                width: min(1000px, 100%);
+                max-height: 90vh;
+                border-radius: 12px;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+                display: grid;
+                grid-template-rows: auto auto 1fr auto;
+                overflow: hidden;
+            }
+            .modal-hd {
+                padding: 0.9rem 1rem;
+                border-bottom: 1px solid #eee;
+                font-weight: 800;
+            }
+            .modal-body {
+                padding: 1rem;
+                overflow: auto;
+            }
+            .modal-ft {
+                padding: 0.9rem 1rem;
+                border-top: 1px solid #eee;
+                display: flex;
+                justify-content: flex-end;
+                gap: 0.5rem;
+            }
+            .modal-tools {
+                display: grid;
+                grid-template-columns: 1fr 1fr 1fr auto;
+                gap: 0.5rem;
+                align-items: center;
+                margin-bottom: 0.75rem;
+            }
+
+            /* iOS 表單正常化 */
+            @media screen and (max-width: 767px) {
+                input[type="date"],
+                input[type="time"],
+                input[type="datetime-local"] {
+                    background: #fff !important;
+                    color: #222;
+                    -webkit-text-fill-color: #222;
+                    border: 1px solid #ccc;
+                    border-radius: 8px;
+                    width: 100%;
+                    box-sizing: border-box;
+                    min-height: 44px;
+                    padding: 10px 12px;
+                    line-height: 1.2;
+                }
+                select {
+                    -webkit-appearance: none;
+                    appearance: none;
+                    background: #fff !important;
+                    color: #222;
+                    border: 1px solid #ccc;
+                    border-radius: 8px;
+                    width: 100%;
+                    box-sizing: border-box;
+                    min-height: 44px;
+                    padding: 10px 36px 10px 12px;
+                    line-height: 1.2;
+                    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="%23666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>');
+                    background-repeat: no-repeat;
+                    background-position: right 0.6rem center;
+                    background-size: 1rem;
+                }
+            }
+
+            /* ===== Modal: 任務地點（樣式優化：PC 與行動版）===== */
+            #locModalMask .modal {
+                width: min(1000px, 96vw);
+            }
+            #locModalMask .modal-hd {
+                font-weight: 800;
+            }
+            #locModalMask .modal-body {
+                padding: 1rem;
+            }
+            #locModalMask .modal-tools {
+                grid-template-columns: 160px 1fr 1fr 120px;
+                gap: 0.5rem;
+            }
+            #locModalMask .table {
+                width: 100%;
+                border-collapse: collapse;
+                table-layout: fixed;
+                font-size: 0.95rem;
+            }
+            #locModalMask thead th {
+                position: sticky;
+                top: 0;
+                background: #fafafa;
+                z-index: 1;
+                text-align: left;
+            }
+            #locModalMask th,
+            #locModalMask td {
+                padding: 12px 10px;
+                border-bottom: 1px solid #eee;
+                vertical-align: middle;
+            }
+            #locModalMask .col-type {
+                width: 7ch;
+            }
+            #locModalMask .col-code {
+                width: 10ch;
+            }
+            #locModalMask .col-city {
+                width: 8ch;
+            }
+            #locModalMask .col-dist {
+                width: 10ch;
+            }
+            #locModalMask .col-op {
+                width: 8ch;
+                text-align: center;
+            }
+            #locModalMask tbody tr:hover {
+                background: #fff9ef;
+            }
+
+            /* 行動版：濃縮欄位，避免擠在一起 */
+            @media (max-width: 767px) {
+                #locModalMask .modal {
+                    width: 96vw;
+                }
+                #locModalMask .modal-tools {
+                    grid-template-columns: 1fr 1fr;
+                    gap: 0.5rem;
+                }
+                #locModalMask .modal-tools button {
+                    grid-column: 1 / -1;
+                    height: 44px;
+                }
+                /* 隱藏不必要欄位（縣市/行政區/地址） */
+                #locModalMask th.col-city,
+                #locModalMask th.col-dist,
+                #locModalMask th.col-address,
+                #locModalMask td.col-city,
+                #locModalMask td.col-dist,
+                #locModalMask td.col-address {
+                    display: none;
+                }
+				/* 行動版：名稱欄不顯示聯絡人與電話，縮小選擇鈕，緊湊列高 */
+				#locModalMask .col-name .meta { display: none; }
+				#locModalMask th, 
+				#locModalMask td { padding: 10px 8px; }         /* 列更緊湊 */
+				#locModalMask .btn-choose {
+				  font-size: 0.8rem;
+				  padding: 0.15rem 0.5rem;
+				  border-radius: 9999px;                        /* 小膠囊 */
+				}
+				
+                /* 讓文字不被擠壓，名稱欄位可換行顯示副資訊 */
+                #locModalMask .table {
+                    table-layout: auto;
+                }
+                #locModalMask .col-name {
+                    white-space: normal;
+                }
+                #locModalMask .btn {
+                    padding: 0.5rem 0.8rem;
+                }
+            }
+
+            /* ===== Modal Mobile refinement: button under code column ===== */
+            #locModalMask .code-wrap {
+                display: flex;
+                flex-direction: column;
+                gap: 0.35rem;
+                align-items: flex-start;
+            }
+            #locModalMask .btn-choose {
+                display: none;
+            } /* hidden by default (desktop) */
+
+            /* Mobile behavior */
+            @media (max-width: 767px) {
+                #locModalMask th.col-op,
+                #locModalMask td.col-op {
+                    display: none;
+                }
+                #locModalMask .col-code {
+                    width: auto;
+                }
+            }
+			@media (max-width: 767px) {
+				#locModalMask .btn-choose {
+					display: inline-block;
+					width: auto !important;   /* 關鍵：避免被 .btn width:100% 吃掉 */
+					min-width: auto;
+					font-size: 0.75rem;       /* 再小一點字體 */
+					padding: 0.1rem 0.35rem;  /* 減少上下左右留白 */
+					border-radius: 9999px;    /* 保持膠囊造型 */
+				}
+			}
+			@media (max-width: 767px) {
+			  .pairs-head {
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+			  }
+			  .pairs-head .btn {
+				width: auto !important;   /* 不要吃到 .btn {width:100%} */
+				flex-shrink: 0;           /* 保持原始大小，不要擠壓 */
+				padding: 0.3rem 0.6rem;   /* 縮小一點比較緊湊 */
+				font-size: 0.85rem;
+			  }
+			}
+			
+        </style>
+    </head>
+    <body>
+        <h2>理賠任務新增（成對區塊）</h2>
+
+        <!-- PC -->
+        <div class="pc-wrapper pc">
+            <div class="card">
+                <div class="row">
+                    <label for="locNamePc">任務地點</label>
+                    <div class="loc-field">
+                        <input id="locNamePc" type="text" placeholder="請選擇地點" readonly />
+                        <button class="btn btn-gray" type="button" onclick="openLocPicker()">選擇地點</button>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <label>任務地址</label>
+                    <div class="inline-3">
+                        <select id="cityPc" onchange="onCityChanged('Pc')"></select>
+                        <select id="distPc" onchange="onDistChanged('Pc')"></select>
+                        <input id="addrPc" type="text" placeholder="路段、門牌…" />
+                    </div>
+                </div>
+
+                <div class="row">
+                    <label for="procPc">處理事項</label>
+                    <select id="procPc">
+                        <option value="inspect" selected>勘車</option>
+                        <option value="court">法院出庭</option>
+                        <option value="survey">查勘</option>
+                    </select>
+                </div>
+
+                <div class="row">
+                    <label>任務日期</label>
+                    <div class="inline-date">
+                        <input id="taskDatePc" type="date" />
+                        <div class="inline-time">
+                            <input id="timeSPc" type="time" />
+                            <input id="timeEPc" type="time" />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 指派模式與人員 -->
+                <div class="row">
+                    <label>指派模式</label>
+                    <div class="assign-mode">
+                        <div class="seg">
+                            <label><input type="radio" name="assignModePc" value="region" checked /> 依地區</label>
+                            <label><input type="radio" name="assignModePc" value="org" /> 依單位</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="row" id="modeRegionRowPc">
+                    <label for="staffByRegionPc">處理人員</label>
+                    <select id="staffByRegionPc" disabled>
+                        <option value="">請先選地點（縣市＋行政區）</option>
+                    </select>
+                </div>
+                <div class="row" id="modeOrgRowPc" style="display: none;">
+                    <label for="unitSelectPc">處理人員</label>
+                    <div class="inline-3" style="grid-template-columns: 1fr 1fr;">
+                        <select id="unitSelectPc">
+                            <option value="">請選擇單位</option>
+                        </select>
+                        <select id="staffByUnitPc" disabled>
+                            <option value="">請先選單位</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <label for="remarkPc">備註事項</label>
+                    <textarea id="remarkPc" placeholder="給外勤的任務指示、地標提示、停車注意…"></textarea>
+                </div>
+
+                <div class="split"></div>
+
+                <!-- 成對區塊：賠案號碼/車牌號碼 -->
+                <div class="pairs-head">
+                    <div class="section-title" style="font-weight: 800; color: #333;">案件清單</div>
+                    <button type="button" class="btn" onclick="addPair()">＋ 新增一組</button>
+                </div>
+                <div id="pairList" class="pair-list"></div>
+                <div class="hint" id="dupHint" style="display: none; color: #c62828;">偵測到重複賠案號碼，請檢查紅框欄位。</div>
+
+                <div class="btn-area">
+                    <button class="btn btn-primary" onclick="saveNew()">儲存</button>
+                    <button class="btn btn-gray" onclick="goBack()">取消</button>
+                </div>
+
+                <!-- 隱藏欄位：對應後端必要 OID -->
+                <input type="hidden" id="oidTaskLoc" />
+                <input type="hidden" id="oidTaskCity" />
+                <input type="hidden" id="oidTaskDist" />
+                <input type="hidden" id="assignmentMode" value="region" />
+                <input type="hidden" id="oidTaskStaff" />
+            </div>
+        </div>
+
+        <!-- Mobile（沿用邏輯，成對區塊同樣存在）-->
+        <div class="mobile">
+            <div class="card">
+                <label>
+                    任務地點
+                    <div class="loc-field">
+                        <input id="locNameMb" type="text" placeholder="請選擇地點" readonly />
+                        <button class="btn btn-gray" type="button" onclick="openLocPicker()">選擇地點</button>
+                    </div>
+                </label>
+                <label>
+                    任務地址
+                    <div class="inline-3">
+                        <select id="cityMb" onchange="onCityChanged('Mb')"></select>
+                        <select id="distMb" onchange="onDistChanged('Mb')"></select>
+                        <input id="addrMb" type="text" placeholder="路段、門牌…" />
+                    </div>
+                </label>
+                <label>
+                    處理事項
+                    <select id="procMb">
+                        <option value="inspect" selected>勘車</option>
+                        <option value="court">法院出庭</option>
+                        <option value="survey">查勘</option>
+                    </select>
+                </label>
+                <label>任務日期<input id="taskDateMb" type="date" /></label>
+                <label>開始時間<input id="timeSMb" type="time" /></label>
+                <label>結束時間<input id="timeEMb" type="time" /></label>
+                <label>
+                    指派模式
+                    <div class="assign-mode">
+                        <div class="seg">
+                            <label><input type="radio" name="assignModeMb" value="region" checked /> 依地區</label>
+                            <label><input type="radio" name="assignModeMb" value="org" /> 依單位</label>
+                        </div>
+                    </div>
+                </label>
+                <label id="modeRegionBoxMb">
+                    處理人員
+                    <select id="staffByRegionMb" disabled>
+                        <option value="">請先選地點（縣市＋行政區）</option>
+                    </select>
+                </label>
+                <div id="modeOrgBoxMb" style="display: none;">
+                    <label>
+                        處理人員
+                        <select id="unitSelectMb">
+                            <option value="">請選擇單位</option>
+                        </select>
+                    </label>
+                    <label>
+                        人員名單
+                        <select id="staffByUnitMb" disabled>
+                            <option value="">請先選單位</option>
+                        </select>
+                    </label>
+                </div>
+                <label>備註事項<textarea id="remarkMb" placeholder="給外勤的任務指示、地標提示、停車注意…"></textarea></label>
+
+                <div class="pairs-head" style="margin-top: 0.5rem;">
+                    <div class="section-title" style="font-weight: 800; color: #333;">案件清單</div>
+                    <button type="button" class="btn" onclick="addPair()">＋ 新增一組</button>
+                </div>
+                <div id="pairListMb" class="pair-list"></div>
+                <div class="hint" id="dupHintMb" style="display: none; color: #c62828;">偵測到重複賠案號碼，請檢查紅框欄位。</div>
+
+
+
+                <div class="btn-area">
+                    <button class="btn btn-primary" onclick="saveNew(true)">儲存</button>
+                    <button class="btn btn-gray" onclick="goBack()">取消</button>
+                </div>
+
+                <!-- hidden -->
+                <input type="hidden" id="oidTaskLocMb" />
+                <input type="hidden" id="oidTaskCityMb" />
+                <input type="hidden" id="oidTaskDistMb" />
+                <input type="hidden" id="assignmentModeMb" value="region" />
+                <input type="hidden" id="oidTaskStaffMb" />
+            </div>
+        </div>
+
+        <!-- 地點挑選 Modal（共用，資料以 mock 示意） -->
+        <div id="locModalMask" class="modal-mask" role="dialog" aria-modal="true" aria-labelledby="locModalTitle">
+            <div class="modal" role="document">
+                <div class="modal-hd" id="locModalTitle">選擇任務地點</div>
+                <div class="modal-body">
+                    <div class="modal-tools">
+                        <select id="filterType"></select>
+                        <input id="filterCode" type="text" placeholder="代碼精準查詢（LOC_CODE）" />
+                        <input id="filterKeyword" type="text" placeholder="名稱或地址關鍵字（模糊）" />
+                        <button class="btn btn-primary" type="button" onclick="applyLocFilter()">搜尋</button>
+                    </div>
+                    <div style="overflow: auto; max-height: 60vh;">
+                        <table class="table" id="locTable">
+                            <thead>
+                                <tr>
+                                    <th class="col-type" style="width: 8ch;">類別</th>
+                                    <th class="col-code" style="width: 12ch;">代碼</th>
+                                    <th class="col-name">名稱</th>
+                                    <th class="col-city" style="width: 10ch;">縣市</th>
+                                    <th class="col-dist" style="width: 12ch;">鄉鎮市區</th>
+                                    <th class="col-address">地址</th>
+                                    <th class="col-op" style="width: 8ch;">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-ft">
+                    <button class="btn btn-gray" type="button" onclick="closeLocPicker()">關閉</button>
+                    <button class="btn" type="button" onclick="clearLocFilters()">清除條件</button>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            // ===== Mock 基礎資料（之後改由 API 帶入） =====
+            const CITIES = [
+                { oid: 1, name: "臺北市" },
+                { oid: 2, name: "新北市" },
+                { oid: 3, name: "桃園市" },
+            ];
+            const DISTRICTS = [
+                { oid: 101, cityOid: 1, name: "中正區" },
+                { oid: 102, cityOid: 1, name: "大同區" },
+                { oid: 103, cityOid: 1, name: "中山區" },
+                { oid: 201, cityOid: 2, name: "板橋區" },
+                { oid: 202, cityOid: 2, name: "新莊區" },
+                { oid: 301, cityOid: 3, name: "桃園區" },
+            ];
+            const LOCS = [
+                { oid: 9001, locCode: "GAR001", locName: "國都濱江廠", locType: "修理廠", oidCity: 1, oidDistrict: 103, address: "濱江街100號", tel: "02-1234-5678", contact: "李先生" },
+                { oid: 9002, locCode: "CRT101", locName: "臺北地方法院", locType: "法院", oidCity: 1, oidDistrict: 101, address: "博愛路120號", tel: "02-2345-6789", contact: "書記官室" },
+                { oid: 9003, locCode: "POL502", locName: "新莊分局", locType: "警局", oidCity: 2, oidDistrict: 202, address: "中正路88號", tel: "02-3456-7890", contact: "值班台" },
+            ];
+
+            const UNITS = [
+                { oid: 10, name: "北區理賠一室" },
+                { oid: 20, name: "中區理賠一室" },
+                { oid: 30, name: "南區理賠室" },
+            ];
+            const STAFFS = [
+                { oid: 501, name: "張三", unitOid: 10, isActive: 1 },
+                { oid: 502, name: "李四", unitOid: 10, isActive: 1 },
+                { oid: 503, name: "趙六", unitOid: 10, isActive: 0 },
+                { oid: 601, name: "王五", unitOid: 20, isActive: 1 },
+                { oid: 701, name: "陳七", unitOid: 30, isActive: 1 },
+            ];
+            const REGION_AREAS = [
+                { regionOid: 901, districtOid: 103, isActive: 1 },
+                { regionOid: 902, districtOid: 103, isActive: 1 },
+                { regionOid: 903, districtOid: 201, isActive: 1 },
+            ];
+            const REGION_STAFFS = [
+                { regionOid: 901, staffOid: 501, isActive: 1 },
+                { regionOid: 901, staffOid: 601, isActive: 1 },
+                { regionOid: 902, staffOid: 502, isActive: 1 },
+                { regionOid: 903, staffOid: 701, isActive: 1 },
+            ];
+
+            const getCityName = (oid) => CITIES.find((c) => c.oid === Number(oid))?.name || "";
+            const getDistName = (oid) => DISTRICTS.find((d) => d.oid === Number(oid))?.name || "";
+
+            function fillCitySelect(id) {
+                const sel = document.getElementById(id);
+                sel.innerHTML = '<option value="">選擇縣市</option>' + CITIES.map((c) => `<option value="${c.oid}">${c.name}</option>`).join("");
+            }
+            function fillDistSelect(id, cityOid) {
+                const sel = document.getElementById(id);
+                const list = DISTRICTS.filter((d) => Number(d.cityOid) === Number(cityOid));
+                sel.innerHTML = '<option value="">選擇鄉鎮市區</option>' + list.map((d) => `<option value="${d.oid}">${d.name}</option>`).join("");
+            }
+
+            // 指派模式狀態
+            const state = { mode: "region", unitOid: null, staffOid: null };
+            const cache = { byRegion: new Map(), byUnit: new Map() };
+
+            function onCityChanged(sfx) {
+                const citySel = document.getElementById("city" + sfx);
+                fillDistSelect("dist" + sfx, citySel.value);
+                document.getElementById("locName" + sfx).value = "";
+                sfx === "Pc" ? setHiddenOids("", citySel.value, "") : setHiddenOidsMb("", citySel.value, "");
+                if (state.mode === "region") {
+                    clearStaffSelection();
+                    refreshCandidates();
+                }
+            }
+            function onDistChanged(sfx) {
+                const citySel = document.getElementById("city" + sfx);
+                const distSel = document.getElementById("dist" + sfx);
+                sfx === "Pc" ? setHiddenOids("", citySel.value, distSel.value) : setHiddenOidsMb("", citySel.value, distSel.value);
+                document.getElementById("locName" + sfx).value = "";
+                if (state.mode === "region") {
+                    clearStaffSelection();
+                    refreshCandidates();
+                }
+            }
+
+            function setHiddenOids(locOid, cityOid, distOid) {
+                if (locOid !== undefined) document.getElementById("oidTaskLoc").value = locOid || "";
+                if (cityOid !== undefined) document.getElementById("oidTaskCity").value = cityOid || "";
+                if (distOid !== undefined) document.getElementById("oidTaskDist").value = distOid || "";
+            }
+            function setHiddenOidsMb(locOid, cityOid, distOid) {
+                if (locOid !== undefined) document.getElementById("oidTaskLocMb").value = locOid || "";
+                if (cityOid !== undefined) document.getElementById("oidTaskCityMb").value = cityOid || "";
+                if (distOid !== undefined) document.getElementById("oidTaskDistMb").value = distOid || "";
+            }
+
+            function getCurrentDistrictOid() {
+                return document.getElementById("oidTaskDist")?.value || document.getElementById("oidTaskDistMb")?.value || "";
+            }
+
+            // 地點挑選（共用）
+            const mask = document.getElementById("locModalMask");
+            const tbody = () => document.querySelector("#locTable tbody");
+            function openLocPicker() {
+                initTypeFilter();
+                renderLocRows(LOCS);
+                mask.style.display = "flex";
+                requestAnimationFrame(() => document.getElementById("filterKeyword").focus());
+            }
+            function closeLocPicker() {
+                mask.style.display = "none";
+            }
+            function initTypeFilter() {
+                const set = Array.from(new Set(LOCS.map((l) => l.locType)));
+                const sel = document.getElementById("filterType");
+                sel.innerHTML = '<option value="">全部類別</option>' + set.map((t) => `<option value="${t}">${t}</option>`).join("");
+            }
+            function applyLocFilter() {
+                const t = document.getElementById("filterType").value.trim();
+                const code = document.getElementById("filterCode").value.trim();
+                const kw = document.getElementById("filterKeyword").value.trim().toLowerCase();
+                const list = LOCS.filter((l) => {
+                    if (t && l.locType !== t) return false;
+                    if (code && l.locCode !== code) return false;
+                    if (kw) {
+                        const hay = `${l.locName} ${l.address}`.toLowerCase();
+                        if (!hay.includes(kw)) return false;
+                    }
+                    return true;
+                });
+                renderLocRows(list);
+            }
+            function clearLocFilters() {
+                document.getElementById("filterType").value = "";
+                document.getElementById("filterCode").value = "";
+                document.getElementById("filterKeyword").value = "";
+                renderLocRows(LOCS);
+            }
+
+            function renderLocRows(list) {
+                const rows = list
+                    .map((l) => {
+						const isMobile = window.matchMedia("(max-width: 767px)").matches;
+						const meta = !isMobile && l.tel ? `<br><span class="meta">${l.contact || ""} ${l.tel}</span>` : "";
+
+                        const inlineBtn = `<button class="btn btn-primary btn-choose" type="button" onclick='pickThis(${JSON.stringify(l).replaceAll("'", "&apos;")})'>選擇</button>`;
+                        return `<tr>
+            <td class="col-type">${l.locType}</td>
+            <td class="col-code">
+                <div class="code-wrap">
+                    <div>${l.locCode}</div>
+                    ${inlineBtn}
+                </div>
+            </td>
+            <td class="col-name">${l.locName}${meta}</td>
+            <td class="col-city">${getCityName(l.oidCity)}</td>
+            <td class="col-dist">${getDistName(l.oidDistrict)}</td>
+            <td class="col-address">${l.address || ""}</td>
+            <td class="col-op">
+                <button class="btn btn-primary" type="button" onclick='pickThis(${JSON.stringify(l).replaceAll("'", "&apos;")})'>選擇</button>
+            </td>
+        </tr>`;
+                    })
+                    .join("");
+                tbody().innerHTML = rows || `<tr><td colspan="7" class="meta">查無資料</td></tr>`;
+            }
+            function pickThis(l) {
+                ["Pc", "Mb"].forEach((sfx) => {
+                    document.getElementById("locName" + sfx).value = `${l.locName}（${l.locCode}）`;
+                    const citySel = document.getElementById("city" + sfx);
+                    const distSel = document.getElementById("dist" + sfx);
+                    citySel.value = l.oidCity;
+                    fillDistSelect("dist" + sfx, l.oidCity);
+                    distSel.value = l.oidDistrict;
+                    document.getElementById("addr" + sfx).value = l.address || "";
+                });
+                setHiddenOids(l.oid, l.oidCity, l.oidDistrict);
+                setHiddenOidsMb(l.oid, l.oidCity, l.oidDistrict);
+                closeLocPicker();
+                if (state.mode === "region") {
+                    clearStaffSelection();
+                    refreshCandidates();
+                }
+            }
+            ["filterCode", "filterKeyword"].forEach((id) => {
+                document.addEventListener("keydown", (e) => {
+                    if (e.key === "Enter" && document.activeElement.id === id && mask.style.display === "flex") applyLocFilter();
+                });
+            });
+
+            function bindAssignModeRadios() {
+                document.querySelectorAll("input[name=assignModePc]").forEach((r) => r.addEventListener("change", (e) => setMode(e.target.value)));
+                document.querySelectorAll("input[name=assignModeMb]").forEach((r) => r.addEventListener("change", (e) => setMode(e.target.value)));
+            }
+            function setMode(m) {
+                state.mode = m;
+                document.querySelectorAll("input[name=assignModePc]").forEach((r) => (r.checked = r.value === m));
+                document.querySelectorAll("input[name=assignModeMb]").forEach((r) => (r.checked = r.value === m));
+                document.getElementById("modeRegionRowPc").style.display = m === "region" ? "" : "none";
+                document.getElementById("modeOrgRowPc").style.display = m === "org" ? "" : "none";
+                document.getElementById("modeRegionBoxMb").style.display = m === "region" ? "" : "none";
+                document.getElementById("modeOrgBoxMb").style.display = m === "org" ? "" : "none";
+                document.getElementById("assignmentMode").value = m;
+                document.getElementById("assignmentModeMb").value = m;
+                clearStaffSelection();
+                refreshCandidates();
+            }
+            function clearStaffSelection() {
+                state.staffOid = null;
+                document.getElementById("oidTaskStaff").value = "";
+                document.getElementById("oidTaskStaffMb").value = "";
+                setOptions(document.getElementById("staffByRegionPc"), [], "請先選地點（縣市＋行政區）", true);
+                setOptions(document.getElementById("staffByRegionMb"), [], "請先選地點（縣市＋行政區）", true);
+                setOptions(document.getElementById("staffByUnitPc"), [], "請先選單位", true);
+                setOptions(document.getElementById("staffByUnitMb"), [], "請先選單位", true);
+            }
+            function setOptions(sel, list, placeholder, disabled) {
+                if (!sel) return;
+                sel.innerHTML = "";
+                const ph = document.createElement("option");
+                ph.textContent = placeholder;
+                ph.value = "";
+                sel.appendChild(ph);
+                list.forEach((x) => {
+                    const opt = document.createElement("option");
+                    opt.value = x.oid;
+                    opt.textContent = x.name;
+                    sel.appendChild(opt);
+                });
+                sel.disabled = !!disabled;
+            }
+            function fillUnitSelect(id) {
+                const sel = document.getElementById(id);
+                sel.innerHTML = '<option value="">請選擇單位</option>' + UNITS.map((u) => `<option value="${u.oid}">${u.name}</option>`).join("");
+            }
+            async function loadStaffByRegion(districtOid) {
+                if (cache.byRegion.has(districtOid)) return cache.byRegion.get(districtOid);
+                const regionOids = REGION_AREAS.filter((a) => a.isActive && String(a.districtOid) === String(districtOid)).map((a) => a.regionOid);
+                const staffOids = new Set(REGION_STAFFS.filter((rs) => rs.isActive && regionOids.includes(rs.regionOid)).map((rs) => rs.staffOid));
+                const list = STAFFS.filter((s) => s.isActive && staffOids.has(s.oid)).map((s) => ({ oid: s.oid, name: s.name }));
+                list.sort((a, b) => a.name.localeCompare(b.name, "zh-Hant"));
+                cache.byRegion.set(districtOid, list);
+                return list;
+            }
+            async function loadStaffByUnit(unitOid) {
+                if (cache.byUnit.has(unitOid)) return cache.byUnit.get(unitOid);
+                const list = STAFFS.filter((s) => s.isActive && String(s.unitOid) === String(unitOid)).map((s) => ({ oid: s.oid, name: s.name }));
+                list.sort((a, b) => a.name.localeCompare(b.name, "zh-Hant"));
+                cache.byUnit.set(unitOid, list);
+                return list;
+            }
+            function refreshCandidates() {
+                if (state.mode === "region") {
+                    const dOid = getCurrentDistrictOid();
+                    if (!dOid) {
+                        setOptions(document.getElementById("staffByRegionPc"), [], "請先選地點（縣市＋行政區）", true);
+                        setOptions(document.getElementById("staffByRegionMb"), [], "請先選地點（縣市＋行政區）", true);
+                        return;
+                    }
+                    loadStaffByRegion(dOid).then((list) => {
+                        const disabled = list.length === 0;
+                        setOptions(document.getElementById("staffByRegionPc"), list, disabled ? "此地區暫無可派人員" : "請選擇人員", disabled);
+                        setOptions(document.getElementById("staffByRegionMb"), list, disabled ? "此地區暫無可派人員" : "請選擇人員", disabled);
+                    });
+                } else {
+                    const uPc = document.getElementById("unitSelectPc").value;
+                    const uMb = document.getElementById("unitSelectMb")?.value;
+                    const uOid = uPc || uMb || "";
+                    if (!uOid) {
+                        setOptions(document.getElementById("staffByUnitPc"), [], "請先選單位", true);
+                        setOptions(document.getElementById("staffByUnitMb"), [], "請先選單位", true);
+                        return;
+                    }
+                    loadStaffByUnit(uOid).then((list) => {
+                        const disabled = list.length === 0;
+                        setOptions(document.getElementById("staffByUnitPc"), list, disabled ? "此單位暫無可派人員" : "請選擇人員", disabled);
+                        setOptions(document.getElementById("staffByUnitMb"), list, disabled ? "此單位暫無可派人員" : "請選擇人員", disabled);
+                    });
+                }
+            }
+
+            // ===== 成對區塊邏輯 =====
+            const listPc = () => document.getElementById("pairList");
+            const listMb = () => document.getElementById("pairListMb");
+            function addPair(values = { CLM_NO: "", PLATE_NO: "" }) {
+                [listPc(), listMb()].forEach((list) => {
+                    if (!list) return;
+                    const card = document.createElement("div");
+                    card.className = "pair-card";
+                    card.innerHTML = `
+          <div class="pair-fields">
+            <label>賠案號碼<span class="req">*</span><input class="clm" type="text" maxlength="20" placeholder="01012345" value="${values.CLM_NO || ""}"></label>
+            <label>車牌號碼<input class="plate" type="text" maxlength="20" placeholder="可留空" value="${values.PLATE_NO || ""}"></label>
+          </div>
+          <div class="pair-tools">
+            <button type="button" class="btn btn-danger" onclick="removePair(this)">－ 移除</button>
+          </div>`;
+                    list.appendChild(card);
+                    wireCard(card);
+                });
+                checkDup();
+            }
+            function wireCard(card) {
+                card.querySelectorAll(".clm,.plate").forEach((inp) => {
+                    inp.addEventListener("input", checkDup);
+                    inp.addEventListener("keydown", (e) => {
+                        if (e.key === "Enter") {
+                            e.preventDefault();
+                            const inputs = Array.from(card.querySelectorAll(".clm,.plate"));
+                            const idx = inputs.indexOf(e.target);
+                            if (idx === inputs.length - 1) {
+                                addPair();
+                                setTimeout(() => {
+                                    const last = card.parentElement.lastElementChild;
+                                    last.querySelector(".clm").focus();
+                                }, 0);
+                            } else {
+                                inputs[idx + 1].focus();
+                            }
+                        }
+                    });
+                });
+            }
+            function removePair(btn) {
+                const card = btn.closest(".pair-card");
+                const parent = card.parentElement;
+                parent.removeChild(card);
+                checkDup();
+            }
+            function collectPairs(fromMb) {
+                const list = fromMb ? listMb() : listPc();
+                const items = Array.from(list.querySelectorAll(".pair-card")).map((card) => ({ CLM_NO: card.querySelector(".clm").value.trim(), PLATE_NO: card.querySelector(".plate").value.trim() }));
+                return items.filter((it) => it.CLM_NO || it.PLATE_NO);
+            }
+            function checkDup() {
+                const allClm = [...collectPairs(false), ...collectPairs(true)].map((x) => x.CLM_NO).filter(Boolean);
+                const seen = new Set(),
+                    dups = new Set();
+                allClm.forEach((v) => {
+                    if (seen.has(v)) dups.add(v);
+                    else seen.add(v);
+                });
+                [listPc(), listMb()].forEach((list) => {
+                    if (!list) return;
+                    list.querySelectorAll(".pair-card").forEach((card) => {
+                        const clm = card.querySelector(".clm");
+                        const v = clm.value.trim();
+                        if (v && dups.has(v)) clm.classList.add("dup");
+                        else clm.classList.remove("dup");
+                    });
+                });
+                const hasDup = dups.size > 0;
+                if (document.getElementById("dupHint")) document.getElementById("dupHint").style.display = hasDup ? "" : "none";
+                if (document.getElementById("dupHintMb")) document.getElementById("dupHintMb").style.display = hasDup ? "" : "none";
+            }
+
+            // ===== 儲存 =====
+            function validateTimeRange(s, e) {
+                if (!s || !e) return "請輸入完整的任務時間";
+                const [sh, sm] = s.split(":"),
+                    [eh, em] = e.split(":");
+                const sv = Number(sh) * 60 + Number(sm),
+                    ev = Number(eh) * 60 + Number(em);
+                if (ev <= sv) return "結束時間需晚於開始時間";
+                return "";
+            }
+            function buildPayload(isMb) {
+                const sfx = isMb ? "Mb" : "Pc";
+                const city = document.getElementById("oidTaskCity" + (isMb ? "Mb" : ""))?.value || document.getElementById("oidTaskCity")?.value || "";
+                const dist = document.getElementById("oidTaskDist" + (isMb ? "Mb" : ""))?.value || document.getElementById("oidTaskDist")?.value || "";
+                const staff = document.getElementById("oidTaskStaff" + (isMb ? "Mb" : ""))?.value || document.getElementById("oidTaskStaff")?.value || "";
+                const date = document.getElementById("taskDate" + sfx).value;
+                const s = document.getElementById("timeS" + sfx).value;
+                const e = document.getElementById("timeE" + sfx).value;
+                const vr = validateTimeRange(s, e);
+                if (vr) return { error: vr };
+                if (!staff) return { error: "請選擇處理人員" };
+                if (!city || !dist) return { error: "請選擇完整的任務地址（縣市＋鄉鎮市區）" };
+                const header = {
+                    OID_TASK_LOC: document.getElementById("oidTaskLoc" + (isMb ? "Mb" : ""))?.value || document.getElementById("oidTaskLoc")?.value || "",
+                    OID_TASK_CITY: city,
+                    OID_TASK_DIST: dist,
+                    TASK_ADDR: document.getElementById("addr" + sfx).value.trim(),
+                    OID_PROC_ITEM: document.getElementById("proc" + sfx).value,
+                    TASK_DATE: date,
+                    TASK_TIME_S: s,
+                    TASK_TIME_E: e,
+                    TASK_STATUS: 0,
+                    REMARK: (document.getElementById("remark" + sfx)?.value || "").trim(),
+                    SRC_SYSTEM: "CTMS",
+                    OID_TASK_STAFF: staff,
+                };
+                const items = collectPairs(!!isMb);
+                if (items.length === 0) return { error: "請至少新增一組賠案/車牌" };
+                for (const it of items) {
+                    if (!it.CLM_NO) return { error: "有未填的賠案號碼，請補齊" };
+                    if (it.CLM_NO.length > 20) return { error: "賠案號碼長度不可超過 20" };
+                    if (it.PLATE_NO.length > 20) return { error: "車牌號碼長度不可超過 20" };
+                }
+                return { header, items };
+            }
+            function saveNew(isMb) {
+                const p = buildPayload(!!isMb);
+                if (p.error) return alert(p.error);
+                const text = JSON.stringify(p, null, 2);
+                alert("以下為示意送出內容\n（實務請改成呼叫 API）\n\n" + text);
+            }
+
+            function goBack() {
+                location.href = "06.clm_task_query.html";
+            }
+
+            // 初始化
+            function setDefaultDateTime() {
+                const today = new Date();
+                const yyyy = today.getFullYear();
+                const mm = String(today.getMonth() + 1).padStart(2, "0");
+                const dd = String(today.getDate()).padStart(2, "0");
+                const dateStr = `${yyyy}-${mm}-${dd}`;
+                ["Pc", "Mb"].forEach((sfx) => {
+                    const d = document.getElementById("taskDate" + sfx);
+                    if (d && !d.value) d.value = dateStr;
+                    const ts = document.getElementById("timeS" + sfx);
+                    if (ts && !ts.value) ts.value = "09:00";
+                    const te = document.getElementById("timeE" + sfx);
+                    if (te && !te.value) te.value = "10:00";
+                });
+            }
+            function initAddressControls() {
+                fillCitySelect("cityPc");
+                fillCitySelect("cityMb");
+                document.getElementById("cityPc").value = 1;
+                fillDistSelect("distPc", 1);
+                document.getElementById("distPc").value = 103;
+                document.getElementById("addrPc").value = "";
+                document.getElementById("cityMb").value = 1;
+                fillDistSelect("distMb", 1);
+                document.getElementById("distMb").value = 103;
+                document.getElementById("addrMb").value = "";
+                setHiddenOids("", 1, 103);
+                setHiddenOidsMb("", 1, 103);
+            }
+            function initAssignControls() {
+                bindAssignModeRadios();
+                fillUnitSelect("unitSelectPc");
+                fillUnitSelect("unitSelectMb");
+                document.getElementById("unitSelectPc")?.addEventListener("change", (e) => {
+                    state.unitOid = e.target.value || null;
+                    clearStaffSelection();
+                    refreshCandidates();
+                });
+                document.getElementById("unitSelectMb")?.addEventListener("change", (e) => {
+                    state.unitOid = e.target.value || null;
+                    clearStaffSelection();
+                    refreshCandidates();
+                });
+                bindAssignModeRadios();
+                refreshCandidates();
+            }
+
+            document.addEventListener("DOMContentLoaded", () => {
+                initAddressControls();
+                initAssignControls();
+                setDefaultDateTime();
+                addPair();
+            });
+        </script>
+    </body>
+</html>
