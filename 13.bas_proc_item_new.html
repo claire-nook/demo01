@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>基本資料管理 - 處理事項維護 - 新增</title>
+        <style>
+            body {
+                font-family: sans-serif;
+                margin: 0;
+                padding: 1rem;
+            }
+            h2 {
+                margin-bottom: 1rem;
+            }
+            .pc-wrapper {
+                max-width: 1000px;
+                margin: 0 auto;
+            }
+            .form-card {
+                background: #fff;
+                padding: 1rem;
+                border-radius: 12px;
+                box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            }
+            .row {
+                display: grid;
+                grid-template-columns: 160px 1fr;
+                gap: 0.75rem 1rem;
+                align-items: center;
+            }
+            .row + .row {
+                margin-top: 0.75rem;
+            }
+            label {
+                font-weight: 700;
+                color: #444;
+            }
+            input,
+            select,
+            textarea {
+                width: 100%;
+                padding: 0.6rem 0.7rem;
+                border: 1px solid #ccc;
+                border-radius: 8px;
+                box-sizing: border-box;
+            }
+            .inline-2 {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 1rem;
+            }
+            .btn-area {
+                display: flex;
+                gap: 0.75rem;
+                justify-content: center;
+                margin-top: 1rem;
+                flex-wrap: wrap;
+            }
+            .btn {
+                padding: 0.6rem 1.2rem;
+                border: none;
+                border-radius: 8px;
+                cursor: pointer;
+                font-weight: 700;
+            }
+            .btn-gray {
+                background: #ccc;
+                color: #222;
+            }
+            .btn-primary {
+                background: #f90;
+                color: #fff;
+            }
+            .hint {
+                color: #666;
+                font-size: 0.9rem;
+                margin-top: 0.25rem;
+            }
+
+            .pc {
+                display: block;
+            }
+            .mobile {
+                display: none;
+            }
+
+            @media screen and (max-width: 767px) {
+                .pc {
+                    display: none;
+                }
+                .mobile {
+                    display: block;
+                }
+                .form-card {
+                    padding: 1rem;
+                }
+                .row {
+                    display: block;
+                }
+                label {
+                    display: block;
+                    margin: 0.6rem 0 0.35rem;
+                }
+                input,
+                select,
+                textarea,
+                button {
+                    font-size: 16px !important;
+                    height: auto;
+                }
+                .inline-2 {
+                    grid-template-columns: 1fr;
+                    gap: 0.75rem;
+                }
+                .btn {
+                    width: 100%;
+                    padding: 0.8rem 1rem;
+                }
+            }
+
+            /* iOS 表單正常化（延續 detail/new 規則） */
+            @media screen and (max-width: 767px) {
+                select {
+                    -webkit-appearance: none;
+                    appearance: none;
+                    background-color: #fff !important;
+                    color: #222;
+                    border: 1px solid #ccc;
+                    border-radius: 8px;
+                    width: 100%;
+                    box-sizing: border-box;
+                    min-height: 44px;
+                    padding: 10px 36px 10px 12px;
+                    line-height: 1.2;
+                    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="%23666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>');
+                    background-repeat: no-repeat;
+                    background-position: right 0.6rem center;
+                    background-size: 1rem;
+                }
+                input[readonly],
+                textarea[readonly],
+                input[disabled],
+                select[disabled] {
+                    background-color: #f2f2f2 !important;
+                    color: #888 !important;
+                    border-color: #ddd !important;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <h2>處理事項新增</h2>
+
+        <!-- PC：內勤/主管新增 -->
+        <div class="pc-wrapper pc">
+            <div class="form-card">
+                <div class="row">
+                    <label for="pCodePc">處理事項代碼<span class="hint"></span></label>
+                    <input id="pCodePc" type="text" placeholder="例如：PI0001" maxlength="8" />
+                </div>
+                <div class="row">
+                    <label for="pNamePc">處理事項名稱</label>
+                    <input id="pNamePc" type="text" placeholder="例如：勘車" />
+                </div>
+                <div class="row">
+                    <label for="ovdPc">超時天數</label>
+                    <div class="inline-2">
+                        <input id="ovdPc" type="number" min="0" max="255" step="1" value="0" />
+                        <div class="hint">0 代表任務當日需完成</div>
+                    </div>
+                </div>
+                <div class="row">
+                    <label>排序與狀態</label>
+                    <div class="inline-2">
+                        <input id="sortPc" type="text" />
+                        <select id="activePc">
+                            <option value="1" selected>啟用</option>
+                            <option value="0">停用</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="btn-area">
+                    <button class="btn btn-primary" onclick="saveItem('pc')">儲存</button>
+                    <button class="btn btn-gray" onclick="backToList()">取消</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile：外勤也可能臨時補登（與 PC 欄位一致，但縱向） -->
+        <div class="mobile">
+            <div class="form-card">
+                <label>處理事項代碼<input id="pCodeMb" type="text" placeholder="例如：PI0001" maxlength="8" /></label>
+                <label>處理事項名稱<input id="pNameMb" type="text" placeholder="例如：勘車" /></label>
+                <label>超時天數<input id="ovdMb" type="number" min="0" max="255" step="1" value="0" /></label>
+                <div class="inline-2">
+                    <label>排序<input id="sortMb" type="text" /></label>
+                    <label>
+                        狀態
+                        <select id="activeMb">
+                            <option value="1" selected>啟用</option>
+                            <option value="0">停用</option>
+                        </select>
+                    </label>
+                </div>
+                <div class="btn-area">
+                    <button class="btn btn-primary" onclick="saveItem('mb')">儲存</button>
+                    <button class="btn btn-gray" onclick="backToList()">取消</button>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            // 代碼輸入：自動轉大寫，只允許英數，長度最多 8
+            function normalizeCodeInput(el) {
+                const p = el.selectionStart; // 嘗試維持游標
+                el.value = (el.value || "")
+                    .toUpperCase()
+                    .replace(/[^A-Z0-9]/g, "")
+                    .slice(0, 8);
+                // 恢復游標位置（簡化處理）
+                try {
+                    el.setSelectionRange(p, p);
+                } catch (_) {}
+            }
+
+            ["pCodePc", "pCodeMb"].forEach((id) => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.addEventListener("input", () => normalizeCodeInput(el));
+                }
+            });
+
+            function backToList() {
+                location.href = "13.bas_proc_item_query.html";
+            }
+
+            function saveItem(mode) {
+                const get = (id) => document.getElementById(id);
+                const isPc = mode === "pc";
+                const payload = {
+                    PITEM_CODE: (get(isPc ? "pCodePc" : "pCodeMb").value || "").trim().toUpperCase(),
+                    PITEM_NAME: (get(isPc ? "pNamePc" : "pNameMb").value || "").trim(),
+                    OVERDUE_DAYS: Number(get(isPc ? "ovdPc" : "ovdMb").value || 0),
+                    SORT_ORDER: Number(get(isPc ? "sortPc" : "sortMb").value || 0),
+                    IS_ACTIVE: Number(get(isPc ? "activePc" : "activeMb").value || 1),
+                };
+
+                // 基本驗證（符合資料表 NOT NULL 約束）
+                const errs = [];
+                if (!payload.PITEM_CODE) errs.push("請輸入處理事項代碼");
+                if (payload.PITEM_CODE.length > 8) errs.push("處理事項代碼限 8 碼以內");
+                if (!/^[A-Z0-9]+$/.test(payload.PITEM_CODE)) errs.push("處理事項代碼僅限英數字");
+                if (!payload.PITEM_NAME) errs.push("請輸入處理事項名稱");
+                if (Number.isNaN(payload.OVERDUE_DAYS) || payload.OVERDUE_DAYS < 0 || payload.OVERDUE_DAYS > 255) errs.push("超時天數須為 0~255 的整數");
+                if (errs.length) return alert(errs.join("\n"));
+
+                // Prototype：僅示意，實務改為 fetch('/api/proc-item','POST',payload)
+                alert("已新增處理事項\n" + JSON.stringify(payload, null, 2));
+                backToList();
+            }
+        </script>
+    </body>
+</html>
