@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>基本資料管理 - 任務地點維護 - 查詢</title>
+        <style>
+            body {
+                font-family: sans-serif;
+                margin: 0;
+                padding: 1rem;
+            }
+            h2 {
+                margin-bottom: 1rem;
+            }
+
+            /* 容器與共用樣式（沿用 05.leave_query.html 視覺） */
+            .pc-wrapper {
+                max-width: 1000px;
+                margin: 0 auto;
+            }
+            .query-form {
+                background: #fff;
+                padding: 1rem;
+                margin-bottom: 1rem;
+                border-radius: 12px;
+                box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            }
+            .query-form label {
+                display: block;
+                margin: 0.5rem 0 0.25rem;
+            }
+            .query-form input,
+            .query-form select {
+                width: 100%;
+                padding: 0.5rem;
+                border-radius: 6px;
+                border: 1px solid #ccc;
+                box-sizing: border-box;
+            }
+            .inline-row {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 1rem;
+            }
+            .btn-area {
+                margin-top: 1rem;
+                display: flex;
+                gap: 1rem;
+                justify-content: center;
+            }
+            .btn {
+                padding: 0.6rem 1.2rem;
+                border: none;
+                border-radius: 6px;
+                cursor: pointer;
+                font-weight: bold;
+            }
+            .btn-clear {
+                background: #ccc;
+                color: #000;
+            }
+            .btn-search {
+                background: #2f855a;
+                color: #fff;
+            }
+            .btn-add {
+                background: #007bff;
+                color: #fff;
+            }
+
+            /* PC 與 Mobile 顯示切換 */
+            .pc {
+                display: block;
+            }
+            .mobile {
+                display: none;
+            }
+
+            /* 表格樣式 */
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                background: #fff;
+                box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+                border-radius: 8px;
+                overflow: hidden;
+            }
+            th,
+            td {
+                padding: 0.75rem;
+                border-bottom: 1px solid #ddd;
+                text-align: left;
+            }
+            th {
+                background-color: #f5f5f5;
+            }
+            a {
+                color: #007bff;
+                text-decoration: underline;
+                font-size: 0.95rem;
+            }
+
+            /* 卡片樣式 (Mobile) */
+            .card {
+                background: #fff;
+                border-radius: 12px;
+                padding: 1rem;
+                margin-bottom: 1rem;
+                box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            }
+            .card div {
+                margin-bottom: 0.35rem;
+            }
+            .badge {
+                display: inline-block;
+                padding: 0.1rem 0.5rem;
+                border: 1px solid #bbb;
+                border-radius: 999px;
+                font-size: 0.8rem;
+            }
+
+            /* Mobile 響應式 */
+            @media screen and (max-width: 767px) {
+                .pc {
+                    display: none;
+                }
+                .mobile {
+                    display: block;
+                }
+                input,
+                select,
+                textarea,
+                button {
+                    font-size: 16px !important;
+                    height: 40px !important;
+                    padding: 8px 10px !important;
+                    box-sizing: border-box;
+                }
+                label {
+                    font-size: 1rem;
+                }
+                .btn {
+                    font-size: 1rem;
+                    padding: 0.6rem 1.2rem;
+                }
+                .card div {
+                    font-size: 1rem;
+                }
+            }
+
+            .btn-view {
+                background-color: transparent;
+                color: #3182ce;
+                border: 1px solid #3182ce;
+                border-radius: 4px;
+                padding: 4px 8px;
+                font-size: 0.9rem;
+                margin-top: 0.5rem;
+                cursor: pointer;
+                display: inline-block;
+                transition: all 0.2s ease;
+            }
+            .btn-view:hover {
+                background-color: #3182ce;
+                color: white;
+            }
+
+            /* 行動版 select 視覺修正（沿用） */
+            @media screen and (max-width: 767px) {
+                input[type="date"],
+                input[type="time"],
+                input[type="datetime-local"] {
+                    background-color: #fff !important;
+                    color: #222;
+                    -webkit-text-fill-color: #222;
+                    border: 1px solid #ccc;
+                }
+                select {
+                    -webkit-appearance: none;
+                    appearance: none;
+                    background-color: #fff !important;
+                    color: #222;
+                    border: 1px solid #ccc;
+                    padding-right: 2rem;
+                    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="%23666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>');
+                    background-repeat: no-repeat;
+                    background-position: right 0.6rem center;
+                    background-size: 1rem;
+                }
+                input[readonly],
+                textarea[readonly],
+                select[disabled],
+                input[disabled] {
+                    background-color: #f2f2f2 !important;
+                    color: #888 !important;
+                    border-color: #ddd !important;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <h2>地點資料維護</h2>
+
+        <div class="pc-wrapper">
+            <!-- PC: 主管雛型 -->
+            <div class="query-form pc">
+                <label>地點代碼<input id="locCodePc" type="text" placeholder="如：GAR001" /></label>
+                <label>地點名稱<input id="locNamePc" type="text" placeholder="如：仁愛修車廠" /></label>
+                <div class="inline-row">
+                    <label>
+                        地點類別
+                        <select id="locTypePc">
+                            <option value="">全部</option>
+                            <option value="Authorized">原廠</option>
+                            <option value="Independent">外廠</option>
+                            <option value="Others">其他</option>
+                        </select>
+                    </label>
+                    <label>
+                        啟用註記
+                        <select id="isActivePc">
+                            <option value="">全部</option>
+                            <option value="1">啟用</option>
+                            <option value="0">停用</option>
+                        </select>
+                    </label>
+                </div>
+                <div class="inline-row">
+                    <label>
+                        縣市
+                        <select id="cityPc"></select>
+                    </label>
+                    <label>
+                        鄉鎮市區
+                        <select id="districtPc"></select>
+                    </label>
+                </div>
+                <label>地址<input id="addrPc" type="text" placeholder="可輸入關鍵字" /></label>
+
+                <div class="btn-area">
+                    <button class="btn btn-add" onclick="goNew()">新增</button>
+                    <button class="btn btn-search" onclick="query('pc')">查詢</button>
+                    <button class="btn btn-clear" onclick="clearForm('pc')">清除</button>
+                </div>
+            </div>
+
+            <!-- PC 結果 Table -->
+            <div class="pc">
+                <table id="pcTable">
+                    <thead>
+                        <tr>
+                            <th>地點代碼</th>
+                            <th>地點名稱</th>
+                            <th>類別</th>
+                            <th>縣市</th>
+                            <th>鄉鎮市區</th>
+                            <th>地址</th>
+                            <th>狀態</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Mobile: 外勤人員雛型 -->
+        <div class="mobile">
+            <div class="query-form">
+                <label>地點名稱<input id="locNameMb" type="text" placeholder="輸入關鍵字" /></label>
+                <label>
+                    地點類別
+                    <select id="locTypeMb">
+                        <option value="">全部</option>
+                        <option value="Authorized">原廠</option>
+                        <option value="Independent">外廠</option>
+                        <option value="Others">其他</option>
+                    </select>
+                </label>
+                <label>
+                    縣市
+                    <select id="cityMb"></select>
+                </label>
+                <label>
+                    鄉鎮市區
+                    <select id="districtMb"></select>
+                </label>
+                <div class="btn-area">
+                    <button class="btn btn-add" onclick="goNew()">新增</button>
+                    <button class="btn btn-search" onclick="query('mb')">查詢</button>
+                    <button class="btn btn-clear" onclick="clearForm('mb')">清除</button>
+                </div>
+            </div>
+
+            <div id="mbCards"></div>
+        </div>
+
+        <script>
+            function goNew() {
+                location.href = "10.bas_task_loc_new.html";
+            }
+
+            // 簡化：PC 視為主管
+            const isSupervisor = window.innerWidth > 767;
+
+            // 假資料：縣市與區（實務由 BAS_CITY / BAS_DISTRICT 取得）
+            const CITY = [
+                { oid: 1, name: "台北市" },
+                { oid: 2, name: "新北市" },
+                { oid: 3, name: "台中市" },
+            ];
+            const DISTRICT = [
+                { oid: 11, cityOid: 1, name: "中正區" },
+                { oid: 12, cityOid: 1, name: "大安區" },
+                { oid: 21, cityOid: 2, name: "板橋區" },
+                { oid: 22, cityOid: 2, name: "新店區" },
+                { oid: 31, cityOid: 3, name: "西屯區" },
+                { oid: 32, cityOid: 3, name: "北屯區" },
+            ];
+
+            // 假資料：地點清單（對應資料表欄位）
+            const SAMPLE = [
+                {
+                    LOC_CODE: "GAR001",
+                    LOC_NAME: "仁愛修車廠",
+                    LOC_TYPE: "Authorized",
+                    OID_CITY: 1,
+                    OID_DISTRICT: 12,
+                    ADDRESS: "仁愛路一段10號",
+                    TEL: "02-1234-5678",
+                    CONTACT: "王師傅",
+                    SORT_ORDER: 10,
+                    IS_ACTIVE: 1,
+                    MODIFIER: "Alice",
+                    MODIFYTIME: "2025/07/18 15:30",
+                },
+                {
+                    LOC_CODE: "CRT201",
+                    LOC_NAME: "台北地方法院",
+                    LOC_TYPE: "Others",
+                    OID_CITY: 1,
+                    OID_DISTRICT: 11,
+                    ADDRESS: "忠孝西路一段120號",
+                    TEL: "02-2345-6789",
+                    CONTACT: "林小姐",
+                    SORT_ORDER: 20,
+                    IS_ACTIVE: 1,
+                    MODIFIER: "Bob",
+                    MODIFYTIME: "2025/06/05 11:10",
+                },
+                {
+                    LOC_CODE: "POL331",
+                    LOC_NAME: "板橋分局",
+                    LOC_TYPE: "Others",
+                    OID_CITY: 2,
+                    OID_DISTRICT: 21,
+                    ADDRESS: "文化路100號",
+                    TEL: "02-9876-5432",
+                    CONTACT: "張警員",
+                    SORT_ORDER: 30,
+                    IS_ACTIVE: 0,
+                    MODIFIER: "Carol",
+                    MODIFYTIME: "2025/05/01 09:05",
+                },
+            ];
+
+            const TYPE_MAP = { Authorized: "原廠", Independent: "外廠", Others: "其他" };
+
+            // 初始化下拉
+            function initCityDistrict(citySel, distSel) {
+                const city = document.getElementById(citySel);
+                const dist = document.getElementById(distSel);
+                city.innerHTML = '<option value="">全部</option>' + CITY.map((c) => `<option value="${c.oid}">${c.name}</option>`).join("");
+                dist.innerHTML = '<option value="">全部</option>';
+                city.addEventListener("change", () => {
+                    const v = city.value; // 可能為空（全部）
+                    const options = v ? DISTRICT.filter((d) => String(d.cityOid) === String(v)) : [];
+                    dist.innerHTML = '<option value="">全部</option>' + options.map((d) => `<option value="${d.oid}">${d.name}</option>`).join("");
+                });
+            }
+
+            function ready() {
+                initCityDistrict("cityPc", "districtPc");
+                initCityDistrict("cityMb", "districtMb");
+                // 預先載入 PC 結果
+                renderPc(SAMPLE);
+                renderMb(SAMPLE);
+            }
+
+            function clearForm(mode) {
+                if (mode === "pc") {
+                    ["locCodePc", "locNamePc", "addrPc"].forEach((id) => {
+                        const el = document.getElementById(id);
+                        if (el) el.value = "";
+                    });
+                    ["locTypePc", "isActivePc", "cityPc", "districtPc"].forEach((id) => {
+                        const el = document.getElementById(id);
+                        if (el) el.selectedIndex = 0;
+                    });
+                    // 觸發縣市改變以清空區
+                    document.getElementById("cityPc").dispatchEvent(new Event("change"));
+                } else {
+                    ["locNameMb"].forEach((id) => {
+                        const el = document.getElementById(id);
+                        if (el) el.value = "";
+                    });
+                    ["locTypeMb", "cityMb", "districtMb"].forEach((id) => {
+                        const el = document.getElementById(id);
+                        if (el) el.selectedIndex = 0;
+                    });
+                    document.getElementById("cityMb").dispatchEvent(new Event("change"));
+                }
+            }
+
+            function query(mode) {
+                const cond = {};
+                if (mode === "pc") {
+                    cond.code = document.getElementById("locCodePc").value.trim();
+                    cond.name = document.getElementById("locNamePc").value.trim();
+                    cond.type = document.getElementById("locTypePc").value;
+                    cond.isAct = document.getElementById("isActivePc").value;
+                    cond.city = document.getElementById("cityPc").value;
+                    cond.dist = document.getElementById("districtPc").value;
+                    cond.addr = document.getElementById("addrPc").value.trim();
+                } else {
+                    cond.name = document.getElementById("locNameMb").value.trim();
+                    cond.type = document.getElementById("locTypeMb").value;
+                    cond.city = document.getElementById("cityMb").value;
+                    cond.dist = document.getElementById("districtMb").value;
+                }
+                // 簡單前端篩選（實務交由 API）
+                const rows = SAMPLE.filter(
+                    (r) =>
+                        (!cond.code || r.LOC_CODE.toUpperCase().includes(cond.code.toUpperCase())) &&
+                        (!cond.name || r.LOC_NAME.includes(cond.name)) &&
+                        (!cond.type || r.LOC_TYPE === cond.type) &&
+                        (!cond.isAct || String(r.IS_ACTIVE) === String(cond.isAct)) &&
+                        (!cond.city || String(r.OID_CITY) === String(cond.city)) &&
+                        (!cond.dist || String(r.OID_DISTRICT) === String(cond.dist)) &&
+                        (!cond.addr || r.ADDRESS.includes(cond.addr))
+                );
+                if (mode === "pc") renderPc(rows);
+                else renderMb(rows);
+            }
+
+            function renderPc(rows) {
+                const tb = document.querySelector("#pcTable tbody");
+                if (!tb) return;
+                if (!rows.length) {
+                    tb.innerHTML = '<tr><td colspan="9">無資料</td></tr>';
+                    return;
+                }
+                tb.innerHTML = rows
+                    .map((r) => {
+                        const city = CITY.find((c) => c.oid === r.OID_CITY)?.name || "";
+                        const dist = DISTRICT.find((d) => d.oid === r.OID_DISTRICT)?.name || "";
+                        const type = TYPE_MAP[r.LOC_TYPE] || r.LOC_TYPE;
+                        const status = r.IS_ACTIVE ? "啟用" : "停用";
+                        return `<tr>
+            <td><a href="10.bas_task_loc_detail.html?code=${encodeURIComponent(r.LOC_CODE)}">${r.LOC_CODE}</a></td>
+            <td>${r.LOC_NAME}</td>
+            <td>${type}</td>
+            <td>${city}</td>
+            <td>${dist}</td>
+            <td>${r.ADDRESS}</td>
+            <td>${status}</td>
+          </tr>`;
+                    })
+                    .join("");
+            }
+
+            function renderMb(rows) {
+                const wrap = document.getElementById("mbCards");
+                if (!wrap) return;
+                if (!rows.length) {
+                    wrap.innerHTML = '<div class="card">無資料</div>';
+                    return;
+                }
+                wrap.innerHTML = rows
+                    .map((r) => {
+                        const city = CITY.find((c) => c.oid === r.OID_CITY)?.name || "";
+                        const dist = DISTRICT.find((d) => d.oid === r.OID_DISTRICT)?.name || "";
+                        const type = TYPE_MAP[r.LOC_TYPE] || r.LOC_TYPE;
+                        const status = r.IS_ACTIVE ? "啟用" : "停用";
+                        return `<div class="card">
+            <div><strong>${r.LOC_NAME}</strong> <span class="badge">${type}</span></div>
+            <div>代碼：${r.LOC_CODE}</div>
+            <div>地區：${city} ${dist}</div>
+            <div>地址：${r.ADDRESS}</div>
+            <div>狀態：${status}</div>
+            <button class="btn-view" onclick="location.href='10.bas_task_loc_detail.html?code=${encodeURIComponent(r.LOC_CODE)}'">查看明細</button>
+          </div>`;
+                    })
+                    .join("");
+            }
+
+            document.addEventListener("DOMContentLoaded", ready);
+        </script>
+    </body>
+</html>

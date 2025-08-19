@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>基本資料管理 - 任務地點維護 - 明細</title>
+        <style>
+            body {
+                font-family: sans-serif;
+                margin: 0;
+                padding: 1rem;
+            }
+            h2 {
+                margin-bottom: 1rem;
+            }
+            .pc-wrapper {
+                max-width: 1000px;
+                margin: 0 auto;
+            }
+            .form-card {
+                background: #fff;
+                padding: 1rem;
+                border-radius: 12px;
+                box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            }
+            .row {
+                display: grid;
+                grid-template-columns: 160px 1fr;
+                gap: 0.75rem 1rem;
+                align-items: center;
+            }
+            .row + .row {
+                margin-top: 0.75rem;
+            }
+            label {
+                font-weight: 700;
+                color: #444;
+            }
+            input,
+            select,
+            textarea {
+                width: 100%;
+                padding: 0.6rem 0.7rem;
+                border: 1px solid #ccc;
+                border-radius: 8px;
+                box-sizing: border-box;
+            }
+            textarea {
+                min-height: 110px;
+                resize: vertical;
+            }
+            .inline-2 {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 1rem;
+            }
+            .btn-area {
+                display: flex;
+                gap: 0.75rem;
+                justify-content: center;
+                margin-top: 1rem;
+                flex-wrap: wrap;
+            }
+            .btn {
+                padding: 0.6rem 1.2rem;
+                border: none;
+                border-radius: 8px;
+                cursor: pointer;
+                font-weight: 700;
+            }
+            .btn-gray {
+                background: #ccc;
+                color: #222;
+            }
+            .btn-primary {
+                background: #f90;
+                color: #fff;
+            }
+            .hint {
+                color: #666;
+                font-size: 0.9rem;
+                margin-top: 0.25rem;
+            }
+
+            .pc {
+                display: block;
+            }
+            .mobile {
+                display: none;
+            }
+
+            @media screen and (max-width: 767px) {
+                .pc {
+                    display: none;
+                }
+                .mobile {
+                    display: block;
+                }
+                .form-card {
+                    padding: 1rem;
+                }
+                .row {
+                    display: block;
+                }
+                label {
+                    display: block;
+                    margin: 0.6rem 0 0.35rem;
+                }
+                input,
+                select,
+                textarea,
+                button {
+                    font-size: 16px !important;
+                    height: auto;
+                }
+                .inline-2 {
+                    grid-template-columns: 1fr;
+                    gap: 0.75rem;
+                }
+                .btn {
+                    width: 100%;
+                    padding: 0.8rem 1rem;
+                }
+            }
+
+            /* iOS 表單正常化（延續 leave_new 規則） */
+            @media screen and (max-width: 767px) {
+                input[type="date"],
+                input[type="time"],
+                input[type="datetime-local"] {
+                    background-color: #fff !important;
+                    color: #222;
+                    -webkit-text-fill-color: #222;
+                    border: 1px solid #ccc;
+                    border-radius: 8px;
+                    width: 100%;
+                    box-sizing: border-box;
+                    min-height: 44px;
+                    padding: 10px 12px;
+                    line-height: 1.2;
+                }
+                select {
+                    -webkit-appearance: none;
+                    appearance: none;
+                    background-color: #fff !important;
+                    color: #222;
+                    border: 1px solid #ccc;
+                    border-radius: 8px;
+                    width: 100%;
+                    box-sizing: border-box;
+                    min-height: 44px;
+                    padding: 10px 36px 10px 12px;
+                    line-height: 1.2;
+                    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="%23666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>');
+                    background-repeat: no-repeat;
+                    background-position: right 0.6rem center;
+                    background-size: 1rem;
+                }
+                input[readonly],
+                textarea[readonly],
+                input[disabled],
+                select[disabled] {
+                    background-color: #f2f2f2 !important;
+                    color: #888 !important;
+                    border-color: #ddd !important;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <h2>地點新增</h2>
+
+        <!-- PC：內勤/主管新增 -->
+        <div class="pc-wrapper pc">
+            <div class="form-card">
+                <div class="row">
+                    <label for="locCodePc">地點代碼<span class="hint"></span></label>
+                    <input id="locCodePc" type="text" placeholder="例如：GAR001、CRT201" />
+                </div>
+                <div class="row">
+                    <label for="locNamePc">地點名稱</label>
+                    <input id="locNamePc" type="text" placeholder="例如：仁愛修車廠、台北地方法院" />
+                </div>
+                <div class="row">
+                    <label for="locTypePc">地點類別</label>
+                    <select id="locTypePc">
+                        <option value="">請選擇</option>
+                        <option value="Authorized">原廠</option>
+                        <option value="Independent">外廠</option>
+                        <option value="Others">其他</option>
+                    </select>
+                </div>
+                <div class="row">
+                    <label>所在行政區</label>
+                    <div class="inline-2">
+                        <select id="cityPc"></select>
+                        <select id="districtPc"></select>
+                    </div>
+                </div>
+                <div class="row">
+                    <label for="addrPc">地址</label>
+                    <input id="addrPc" type="text" placeholder="例如：中正路100號" />
+                </div>
+                <div class="row">
+                    <label for="telPc">聯絡電話</label>
+                    <input id="telPc" type="tel" placeholder="選填，如：02-1234-5678" />
+                </div>
+                <div class="row">
+                    <label for="contactPc">聯絡人</label>
+                    <input id="contactPc" type="text" placeholder="選填，如：王師傅" />
+                </div>
+                <div class="row">
+                    <label>狀態</label>
+                    <select id="activePc">
+                        <option value="1" selected>啟用</option>
+                        <option value="0">停用</option>
+                    </select>
+                </div>
+                <div class="btn-area">
+                    <button class="btn btn-primary" onclick="saveLoc('pc')">儲存</button>
+                    <button class="btn btn-gray" onclick="backToList()">取消</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile：外勤也可能臨時補登地點（與 PC 欄位一致，但版面縱向） -->
+        <div class="mobile">
+            <div class="form-card">
+                <label>地點代碼<input id="locCodeMb" type="text" placeholder="例如：GAR001、CRT201" /></label>
+                <label>地點名稱<input id="locNameMb" type="text" placeholder="例如：仁愛修車廠、台北地方法院" /></label>
+                <label>
+                    地點類別
+                    <select id="locTypeMb">
+                        <option value="">請選擇</option>
+                        <option value="Authorized">原廠</option>
+                        <option value="Independent">外廠</option>
+                        <option value="Others">其他</option>
+                    </select>
+                </label>
+                <label>
+                    縣市
+                    <select id="cityMb"></select>
+                </label>
+                <label>
+                    鄉鎮市區
+                    <select id="districtMb"></select>
+                </label>
+                <label>地址<input id="addrMb" type="text" placeholder="例如：中正路100號" /></label>
+                <label>聯絡電話<input id="telMb" type="tel" placeholder="選填，如：02-1234-5678" /></label>
+                <label>聯絡人<input id="contactMb" type="text" placeholder="選填，如：王師傅" /></label>
+                <label>
+                    狀態
+                    <select id="activeMb">
+                        <option value="1" selected>啟用</option>
+                        <option value="0">停用</option>
+                    </select>
+                </label>
+                <div class="btn-area">
+                    <button class="btn btn-primary" onclick="saveLoc('mb')">儲存</button>
+                    <button class="btn btn-gray" onclick="backToList()">取消</button>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            // 假資料：縣市與區（實務請改為 API 取得 BAS_CITY / BAS_DISTRICT）
+            const CITY = [
+                { oid: 1, name: "台北市" },
+                { oid: 2, name: "新北市" },
+                { oid: 3, name: "台中市" },
+            ];
+            const DISTRICT = [
+                { oid: 11, cityOid: 1, name: "中正區" },
+                { oid: 12, cityOid: 1, name: "大安區" },
+                { oid: 21, cityOid: 2, name: "板橋區" },
+                { oid: 22, cityOid: 2, name: "新店區" },
+                { oid: 31, cityOid: 3, name: "西屯區" },
+                { oid: 32, cityOid: 3, name: "北屯區" },
+            ];
+
+            function initCityDistrict(citySel, distSel) {
+                const city = document.getElementById(citySel);
+                const dist = document.getElementById(distSel);
+                city.innerHTML = '<option value="">請選擇</option>' + CITY.map((c) => `<option value="${c.oid}">${c.name}</option>`).join("");
+                dist.innerHTML = '<option value="">請先選縣市</option>';
+                city.addEventListener("change", () => {
+                    const v = city.value;
+                    const opts = v ? DISTRICT.filter((d) => String(d.cityOid) === String(v)) : [];
+                    dist.innerHTML = v ? '<option value="">請選擇</option>' + opts.map((d) => `<option value="${d.oid}">${d.name}</option>`).join("") : '<option value="">請先選縣市</option>';
+                });
+            }
+
+            function ready() {
+                initCityDistrict("cityPc", "districtPc");
+                initCityDistrict("cityMb", "districtMb");
+            }
+
+            function backToList() {
+                location.href = "10.bas_task_loc_query.html";
+            }
+
+            function saveLoc(mode) {
+                const get = (id) => document.getElementById(id);
+                const isPc = mode === "pc";
+                const payload = {
+                    LOC_CODE: (get(isPc ? "locCodePc" : "locCodeMb").value || "").trim(),
+                    LOC_NAME: (get(isPc ? "locNamePc" : "locNameMb").value || "").trim(),
+                    LOC_TYPE: get(isPc ? "locTypePc" : "locTypeMb").value,
+                    OID_CITY: Number(get(isPc ? "cityPc" : "cityMb").value || 0),
+                    OID_DISTRICT: Number(get(isPc ? "districtPc" : "districtMb").value || 0),
+                    ADDRESS: (get(isPc ? "addrPc" : "addrMb").value || "").trim(),
+                    TEL: (get(isPc ? "telPc" : "telMb").value || "").trim(),
+                    CONTACT: (get(isPc ? "contactPc" : "contactMb").value || "").trim(),
+                    IS_ACTIVE: Number(get(isPc ? "activePc" : "activeMb").value || 1),
+                };
+                // 基本驗證（符合資料表 NOT NULL 約束）
+                const errs = [];
+                if (!payload.LOC_CODE) errs.push("請輸入地點代碼");
+                if (!payload.LOC_NAME) errs.push("請輸入地點名稱");
+                if (!payload.LOC_TYPE) errs.push("請選擇地點類別");
+                if (!payload.OID_CITY) errs.push("請選擇縣市");
+                if (!payload.OID_DISTRICT) errs.push("請選擇鄉鎮市區");
+                if (!payload.ADDRESS) errs.push("請輸入地址");
+                if (errs.length) return alert(errs.join("\n"));
+
+                // Prototype：僅示意，實務改為 fetch('/api/loc','POST',payload)
+                alert("已新增地點\n" + JSON.stringify(payload, null, 2));
+                backToList();
+            }
+
+            document.addEventListener("DOMContentLoaded", ready);
+        </script>
+    </body>
+</html>

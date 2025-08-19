@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>基本資料管理 - 任務地點維護 - 明細</title>
+        <style>
+            body {
+                font-family: sans-serif;
+                margin: 0;
+                padding: 1rem;
+            }
+            h2 {
+                margin-bottom: 1rem;
+            }
+            .pc-wrapper {
+                max-width: 1000px;
+                margin: 0 auto;
+            }
+            .card {
+                background: #fff;
+                padding: 1rem;
+                border-radius: 12px;
+                box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            }
+            .row {
+                display: grid;
+                grid-template-columns: 160px 1fr;
+                gap: 0.75rem 1rem;
+                align-items: center;
+            }
+            .row + .row {
+                margin-top: 0.75rem;
+            }
+            label {
+                font-weight: 700;
+                color: #444;
+            }
+            input,
+            select,
+            textarea {
+                width: 100%;
+                padding: 0.6rem 0.7rem;
+                border: 1px solid #ccc;
+                border-radius: 8px;
+                box-sizing: border-box;
+            }
+            input[readonly],
+            select[disabled],
+            textarea[readonly] {
+                background: #f6f6f6;
+                color: #666;
+            }
+            textarea {
+                min-height: 96px;
+                resize: vertical;
+            }
+            .inline-2 {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 1rem;
+            }
+            .btn-area {
+                display: flex;
+                gap: 0.75rem;
+                justify-content: center;
+                margin-top: 1rem;
+                flex-wrap: wrap;
+            }
+            .btn {
+                padding: 0.6rem 1.2rem;
+                border: none;
+                border-radius: 8px;
+                cursor: pointer;
+                font-weight: 700;
+            }
+            .btn-gray {
+                background: #ccc;
+                color: #222;
+            }
+            .btn-primary {
+                background: #f90;
+                color: #fff;
+            }
+			
+            .status {
+                display: inline-block;
+                padding: 0.25rem 0.6rem;
+                border-radius: 999px;
+                font-size: 0.85rem;
+                margin-left: 0.5rem;
+            }
+            .status-active {
+                background: #e8f5e9;
+                color: #2e7d32;
+            }
+            .status-inactive {
+                background: #fffbeb;
+                color: #b45309;
+            }
+            .meta {
+                color: #666;
+                font-size: 0.9rem;
+            }
+
+            /* PC vs Mobile */
+            .pc {
+                display: block;
+            }
+            .mobile {
+                display: none;
+            }
+
+            /* Mobile */
+            @media screen and (max-width: 767px) {
+                .pc {
+                    display: none;
+                }
+                .mobile {
+                    display: block;
+                }
+                .card {
+                    padding: 1rem;
+                }
+                .row {
+                    display: block;
+                }
+                label {
+                    display: block;
+                    margin: 0.6rem 0 0.35rem;
+                }
+                input,
+                select,
+                textarea,
+                button {
+                    font-size: 16px !important;
+                    height: auto;
+                }
+                .inline-2 {
+                    grid-template-columns: 1fr;
+                    gap: 0.75rem;
+                }
+                .btn {
+                    width: 100%;
+                    padding: 0.8rem 1rem;
+                }
+            }
+
+            /* iOS 表單正常化：select/時間欄位一致化（延續 leave_detail 視覺規則） */
+            @media screen and (max-width: 767px) {
+                select {
+                    -webkit-appearance: none;
+                    appearance: none;
+                    background-color: #fff !important;
+                    color: #222;
+                    border: 1px solid #ccc;
+                    border-radius: 8px;
+                    width: 100%;
+                    box-sizing: border-box;
+                    min-height: 44px;
+                    padding: 10px 36px 10px 12px;
+                    line-height: 1.2;
+                    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="%23666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>');
+                    background-repeat: no-repeat;
+                    background-position: right 0.6rem center;
+                    background-size: 1rem;
+                }
+                input[readonly],
+                textarea[readonly],
+                input[disabled],
+                select[disabled] {
+                    background-color: #f2f2f2 !important;
+                    color: #888 !important;
+                    border-color: #ddd !important;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <h2>任務地點明細 <span id="statusBadge" class="status status-active">啟用</span></h2>
+
+        <!-- PC 區塊：主管/內勤視角 -->
+        <div class="pc-wrapper pc">
+            <div class="card">
+                <div class="row">
+                    <label for="locCodePc">地點代碼</label>
+                    <input id="locCodePc" type="text" value="GAR001" readonly />
+                </div>
+                <div class="row">
+                    <label for="locNamePc">地點名稱</label>
+                    <input id="locNamePc" type="text" value="仁愛修車廠" />
+                </div>
+                <div class="row">
+                    <label for="locTypePc">地點類別</label>
+                    <select id="locTypePc">
+                        <option value="Authorized">原廠</option>
+                        <option value="Independent">外廠</option>
+                        <option value="Others">其他</option>
+                    </select>
+                </div>
+                <div class="row">
+                    <label>所在行政區</label>
+                    <div class="inline-2">
+                        <select id="cityPc"></select>
+                        <select id="districtPc"></select>
+                    </div>
+                </div>
+                <div class="row">
+                    <label for="addrPc">地址</label>
+                    <input id="addrPc" type="text" value="仁愛路一段10號" />
+                </div>
+                <div class="row">
+                    <label for="telPc">聯絡電話</label>
+                    <input id="telPc" type="tel" value="02-1234-5678" />
+                </div>
+                <div class="row">
+                    <label for="contactPc">聯絡人</label>
+                    <input id="contactPc" type="text" value="王師傅" />
+                </div>
+
+                <div class="row">
+                    <label>狀態</label>
+                    <select id="activePc">
+                        <option value="1" selected>啟用</option>
+                        <option value="0">停用</option>
+                    </select>
+                </div>
+                <div class="row">
+                    <label>建立/異動</label>
+                    <div class="meta" id="auditPc">建立：2025/04/10 08:21（陳六） ・ 最後異動：2025/07/18 15:30（陳六）</div>
+                </div>
+                <div class="btn-area">
+                    <button class="btn btn-primary" onclick="saveDetail('pc')">儲存</button>
+                    <button class="btn btn-gray" onclick="goBack()">取消</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile 區塊：外勤/行動裝置視角 -->
+        <div class="mobile">
+            <div class="card">
+                <label><strong>地點代碼：</strong><span id="locCodeMb">GAR001</span></label>
+                <label>地點名稱<input id="locNameMb" type="text" value="仁愛修車廠" /></label>
+                <label>
+                    地點類別
+                    <select id="locTypeMb">
+                        <option value="Authorized">原廠</option>
+                        <option value="Independent">外廠</option>
+                        <option value="Others">其他</option>
+                    </select>
+                </label>
+                <label>
+                    縣市
+                    <select id="cityMb"></select>
+                </label>
+                <label>
+                    鄉鎮市區
+                    <select id="districtMb"></select>
+                </label>
+                <label>地址<input id="addrMb" type="text" value="仁愛路一段10號" /></label>
+                <label>聯絡電話<input id="telMb" type="tel" value="02-1234-5678" /></label>
+                <label>聯絡人<input id="contactMb" type="text" value="王師傅" /></label>
+                <div class="inline-2">
+                    <label>排序<input id="sortMb" type="number" min="0" step="1" value="10" /></label>
+                    <label>
+                        狀態
+                        <select id="activeMb">
+                            <option value="1" selected>啟用</option>
+                            <option value="0">停用</option>
+                        </select>
+                    </label>
+                </div>
+                <div class="meta" id="auditMb">建立：2025/04/10 08:21（陳六） ・ 最後異動：2025/07/18 15:30（陳六）</div>
+                <div class="btn-area">
+                    <button class="btn btn-primary" onclick="saveDetail('mb')">儲存</button>
+                    <button class="btn btn-gray" onclick="goBack()">取消</button>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            // Demo：從查詢頁帶入 code 參數後，可用於 API 讀取
+            const url = new URL(location.href);
+            const codeParam = url.searchParams.get("code") || "GAR001";
+
+            // 假資料：城市/區（對應 BAS_CITY / BAS_DISTRICT）
+            const CITY = [
+                { oid: 1, name: "台北市" },
+                { oid: 2, name: "新北市" },
+                { oid: 3, name: "台中市" },
+            ];
+            const DISTRICT = [
+                { oid: 11, cityOid: 1, name: "中正區" },
+                { oid: 12, cityOid: 1, name: "大安區" },
+                { oid: 21, cityOid: 2, name: "板橋區" },
+                { oid: 22, cityOid: 2, name: "新店區" },
+                { oid: 31, cityOid: 3, name: "西屯區" },
+                { oid: 32, cityOid: 3, name: "北屯區" },
+            ];
+
+            // 假資料：地點明細（實務請由 API 取得）
+            const SAMPLE_DETAIL = {
+                OID: 1001,
+                LOC_CODE: codeParam,
+                LOC_NAME: "仁愛修車廠",
+                LOC_TYPE: "Authorized",
+                OID_CITY: 1,
+                OID_DISTRICT: 12,
+                ADDRESS: "仁愛路一段10號",
+                TEL: "02-1234-5678",
+                CONTACT: "王師傅",
+                SORT_ORDER: 10,
+                IS_ACTIVE: 1,
+                CREATER: "陳六",
+                CREATETIME: "2025/04/10 08:21",
+                MODIFIER: "陳六",
+                MODIFYTIME: "2025/07/18 15:30",
+            };
+
+            function initCityDistrict(citySel, distSel, initCityOid, initDistOid) {
+                const city = document.getElementById(citySel);
+                const dist = document.getElementById(distSel);
+                // 城市
+                city.innerHTML = CITY.map((c) => `<option value="${c.oid}">${c.name}</option>`).join("");
+                if (initCityOid) city.value = String(initCityOid);
+                // 區
+                function fillDistrict() {
+                    const v = city.value;
+                    const options = DISTRICT.filter((d) => String(d.cityOid) === String(v));
+                    dist.innerHTML = options.map((d) => `<option value="${d.oid}">${d.name}</option>`).join("");
+                    if (initDistOid) dist.value = String(initDistOid);
+                }
+                fillDistrict();
+                city.addEventListener("change", () => {
+                    initDistOid = null;
+                    fillDistrict();
+                });
+            }
+
+            function loadDetail(d) {
+                // PC
+                document.getElementById("locCodePc").value = d.LOC_CODE;
+                document.getElementById("locNamePc").value = d.LOC_NAME;
+                document.getElementById("locTypePc").value = d.LOC_TYPE;
+                initCityDistrict("cityPc", "districtPc", d.OID_CITY, d.OID_DISTRICT);
+                document.getElementById("addrPc").value = d.ADDRESS;
+                document.getElementById("telPc").value = d.TEL || "";
+                document.getElementById("contactPc").value = d.CONTACT || "";
+                document.getElementById("sortPc").value = d.SORT_ORDER ?? 0;
+                document.getElementById("activePc").value = String(d.IS_ACTIVE ?? 1);
+                document.getElementById("auditPc").textContent = `建立：${d.CREATETIME}（${d.CREATER}） ・ 最後異動：${d.MODIFYTIME || ""}（${d.MODIFIER || ""}）`;
+
+                // MB
+                document.getElementById("locCodeMb").textContent = d.LOC_CODE;
+                document.getElementById("locNameMb").value = d.LOC_NAME;
+                document.getElementById("locTypeMb").value = d.LOC_TYPE;
+                initCityDistrict("cityMb", "districtMb", d.OID_CITY, d.OID_DISTRICT);
+                document.getElementById("addrMb").value = d.ADDRESS;
+                document.getElementById("telMb").value = d.TEL || "";
+                document.getElementById("contactMb").value = d.CONTACT || "";
+                document.getElementById("sortMb").value = d.SORT_ORDER ?? 0;
+                document.getElementById("activeMb").value = String(d.IS_ACTIVE ?? 1);
+                document.getElementById("auditMb").textContent = `建立：${d.CREATETIME}（${d.CREATER}） ・ 最後異動：${d.MODIFYTIME || ""}（${d.MODIFIER || ""}）`;
+
+                const badge = document.getElementById("statusBadge");
+                badge.textContent = d.IS_ACTIVE ? "啟用" : "停用";
+                badge.className = "status " + (d.IS_ACTIVE ? "status-active" : "status-inactive");
+            }
+
+            function saveDetail(mode) {
+                const get = (id) => document.getElementById(id);
+                const payload = {
+                    LOC_CODE: get("locCodePc")?.value || codeParam,
+                    LOC_NAME: get(mode === "pc" ? "locNamePc" : "locNameMb").value.trim(),
+                    LOC_TYPE: get(mode === "pc" ? "locTypePc" : "locTypeMb").value,
+                    OID_CITY: Number(get(mode === "pc" ? "cityPc" : "cityMb").value),
+                    OID_DISTRICT: Number(get(mode === "pc" ? "districtPc" : "districtMb").value),
+                    ADDRESS: get(mode === "pc" ? "addrPc" : "addrMb").value.trim(),
+                    TEL: get(mode === "pc" ? "telPc" : "telMb").value.trim(),
+                    CONTACT: get(mode === "pc" ? "contactPc" : "contactMb").value.trim(),
+                    IS_ACTIVE: Number(get(mode === "pc" ? "activePc" : "activeMb").value),
+                };
+                // 基本驗證
+                const errs = [];
+                if (!payload.LOC_NAME) errs.push("請輸入地點名稱");
+                if (!payload.LOC_TYPE) errs.push("請選擇地點類別");
+                if (!payload.OID_CITY) errs.push("請選擇縣市");
+                if (!payload.OID_DISTRICT) errs.push("請選擇鄉鎮市區");
+                if (!payload.ADDRESS) errs.push("請輸入地址");
+                if (errs.length) return alert(errs.join("\n"));
+
+                alert("已儲存地點資料\n" + JSON.stringify(payload, null, 2));
+                goBack();
+            }
+
+            function goBack() {
+                location.href = "10.bas_task_loc_query.html";
+            }
+
+            document.addEventListener("DOMContentLoaded", () => {
+                loadDetail(SAMPLE_DETAIL);
+            });
+        </script>
+    </body>
+</html>
