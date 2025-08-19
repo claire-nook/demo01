@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>派遣區域新增｜DISP_REGION NEW</title>
+        <style>
+            /* =============================
+       命名空間，避免汙染其他頁面
+       ============================= */
+            .disp-region {
+                --bg: #f7f8fa;
+                --card: #ffffff;
+                --text: #2b2f36;
+                --muted: #6c7280;
+                --line: #e6e8ee;
+                --primary: #2563eb;
+                --primary-weak: #e6efff;
+                --danger: #b42318;
+                --chip: #eef2ff;
+                font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans TC", Arial, sans-serif;
+                color: var(--text);
+                background: var(--bg);
+                min-height: 100dvh;
+            }
+            .disp-region .container {
+                max-width: 1100px;
+                margin: 0 auto;
+                padding: 24px 16px 56px;
+            }
+            .disp-region h1 {
+                font-size: 22px;
+                margin: 0 0 16px;
+            }
+            .disp-region .sub {
+                color: var(--muted);
+                font-size: 13px;
+                margin-bottom: 16px;
+            }
+
+            /* Cards */
+            .disp-region .grid {
+                display: grid;
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+            @media (min-width: 1024px) {
+                .disp-region .grid {
+                    grid-template-columns: 1fr 1fr;
+                }
+            }
+            .disp-region .card {
+                background: var(--card);
+                border: 1px solid var(--line);
+                border-radius: 12px;
+                overflow: hidden;
+            }
+            .disp-region .card .card-hd {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 12px 16px;
+                border-bottom: 1px solid var(--line);
+            }
+            .disp-region .card .card-hd h2 {
+                font-size: 16px;
+                margin: 0;
+            }
+            .disp-region .card .card-bd {
+                padding: 16px;
+            }
+
+            /* Form basics */
+            .disp-region label {
+                font-size: 13px;
+                color: var(--muted);
+                display: block;
+                margin-bottom: 6px;
+            }
+            .disp-region input[type="text"],
+            .disp-region select {
+                width: 100%;
+                padding: 10px 12px;
+                border: 1px solid var(--line);
+                border-radius: 10px;
+                background: #fff;
+                font-size: 14px;
+            }
+            .disp-region .row {
+                display: grid;
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+            @media (min-width: 640px) {
+                .disp-region .row.two {
+                    grid-template-columns: minmax(0,1fr) minmax(0,1fr);
+                }
+            }
+			/* Grid 小孩預設 min-width:auto，會導致溢出，清掉 */
+			.disp-region .row.two > div {
+			  min-width: 0;
+			}
+
+			/* 謹慎一點，確保 input 不會超出容器 */
+			.disp-region input[type="text"] {
+			  width: 100%;
+			  max-width: 100%;
+			  min-width: 0;
+			  box-sizing: border-box;
+			}
+            /* Toggle switch */
+            .disp-region .switch {
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+            }
+            .disp-region .switch input {
+                appearance: none;
+                width: 38px;
+                height: 22px;
+                border-radius: 22px;
+                background: #cbd5e1;
+                position: relative;
+                outline: none;
+                cursor: pointer;
+                transition: 0.2s;
+            }
+            .disp-region .switch input:checked {
+                background: #84cc16;
+            }
+            .disp-region .switch input::after {
+                content: "";
+                position: absolute;
+                top: 2px;
+                left: 2px;
+                width: 18px;
+                height: 18px;
+                border-radius: 50%;
+                background: #fff;
+                transition: 0.2s;
+            }
+            .disp-region .switch input:checked::after {
+                transform: translateX(16px);
+            }
+
+            /* Lists */
+            .disp-region .section-split {
+                display: grid;
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+            @media (min-width: 1024px) {
+                .disp-region .section-split {
+                    grid-template-columns: 1fr 1fr;
+                }
+            }
+
+            .disp-region .staff-list {
+                border: 1px solid var(--line);
+                border-radius: 10px;
+                padding: 6px;
+                max-height: 360px;
+                overflow: auto;
+                background: #fff;
+            }
+            .disp-region .staff-row {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 8px 10px;
+                border-radius: 8px;
+            }
+            .disp-region .staff-row:hover {
+                background: #f8fafc;
+            }
+            .disp-region .staff-left {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+            .disp-region .badge {
+                font-size: 11px;
+                padding: 2px 6px;
+                border-radius: 999px;
+                background: #f3f4f6;
+                border: 1px solid var(--line);
+                color: #374151;
+            }
+
+            .disp-region .checkline {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                padding: 6px 6px;
+                border-radius: 8px;
+            }
+            .disp-region .checkline .label {
+                font-size: 14px;
+                line-height: 1.2;
+            }
+
+            /* Chips */
+            .disp-region .chips {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+            .disp-region .chip {
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+                padding: 6px 10px;
+                border-radius: 999px;
+                background: var(--chip);
+                border: 1px solid var(--line);
+                font-size: 12px;
+            }
+            .disp-region .chip .x {
+                cursor: pointer;
+                border: none;
+                background: transparent;
+                font-size: 14px;
+                line-height: 1;
+            }
+
+            /* Toolbar & footer */
+            .disp-region .toolbar {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                justify-content: flex-end;
+                margin-bottom: 8px;
+            }
+            .disp-region .toolbar .btn-text {
+                border: none;
+                background: transparent;
+                color: var(--muted);
+                cursor: pointer;
+                font-size: 12px;
+                text-decoration: underline;
+            }
+
+            .disp-region .actions {
+                display: flex;
+                gap: 12px;
+				justify-content: center;
+                margin-top: 16px;
+            }
+            .disp-region .btn {
+                padding: 10px 14px;
+                border-radius: 10px;
+                border: 1px solid var(--line);
+                background: #fff;
+                cursor: pointer;
+                font-size: 14px;
+            }
+			
+            .disp-region .btn.primary {
+                background: var(--primary);
+                color: #fff;
+                border-color: var(--primary);
+            }
+            .disp-region .btn.ghost {
+                background: #fff;
+            }
+            .disp-region .btn.danger {
+                background: #fff0f0;
+                color: var(--danger);
+                border-color: #ffdede;
+            }
+
+            .disp-region .muted {
+                color: var(--muted);
+                font-size: 12px;
+            }
+            .disp-region .count {
+                font-size: 12px;
+                color: var(--muted);
+            }
+			/* 這頁的主色改成橘色 */
+			.disp-region { 
+			  --primary: #f90;
+			  --primary-weak: #fff3e0; /* 有需要的話，淡橘提醒底色 */
+			}			
+			/* 全頁背景純白，禁止任何小心機漸層 */
+			html, body, .page, .app, .content-wrapper {
+			  background: #fff !important;
+			  background-image: none !important;
+			}
+			/* 人員清單右側的單位徽章不要顯示 */
+			.disp-region #staffList .staff-row > div:last-child { display: none; }
+			/* 只有一側了，別用 space-between 把空白撐開 */
+			.disp-region #staffList .staff-row { justify-content: flex-start; }			
+        </style>
+    </head>
+    <body class="disp-region">
+        <div class="container">
+            <h1>派遣區域新增</h1>
+
+            <!-- 主檔卡片 -->
+            <section class="card">
+                <div class="card-hd"><h2>派遣區域設定</h2></div>
+                <div class="card-bd">
+                    <div class="row two">
+                        <div>
+                            <label for="regionCode">派遣區域代碼</label>
+                            <input id="regionCode" type="text" placeholder="例如 R001" />
+                        </div>
+                        <div>
+                            <label for="regionName">派遣區域名稱</label>
+                            <input id="regionName" type="text" placeholder="例如 雙北市" />
+                        </div>
+                    </div>
+                    <div style="margin-top: 12px; display: flex; align-items: center; gap: 16px;">
+                        <div class="switch">
+                            <input id="isActive" type="checkbox" checked />
+                            <label for="isActive" style="margin: 0;">啟用</label>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <div class="grid" style="margin-top: 16px;">
+                <!-- 地區設定：縣市下拉 + 行政區清單 + 全選本縣市 -->
+                <section class="card">
+                    <div class="card-hd">
+                        <h2>地區設定</h2>
+                        <div class="count"><span id="areaCount">0</span> 個行政區已選</div>
+                    </div>
+                    <div class="card-bd">
+                        <div class="row two">
+                            <div>
+                                <label for="citySelect">縣市</label>
+                                <select id="citySelect"></select>
+                            </div>
+                            <div style="display: flex; align-items: flex-end; justify-content: space-between;">
+                                <label class="checkline" style="padding: 0;">
+                                    <input type="checkbox" id="checkAllCity" />
+                                    <span class="label">全選本縣市</span>
+                                </label>
+                                <div class="toolbar" style="margin: 0;">
+                                    <button class="btn-text" id="btnClearAreas">清空已選</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="section-split" style="margin-top: 8px;">
+                            <div>
+                                <div class="staff-list" id="districtList"></div>
+                            </div>
+                            <div>
+                                <div class="chips" id="areaChips"></div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 人員設定：單位下拉 + 全選本單位 -->
+                <section class="card">
+                    <div class="card-hd">
+                        <h2>人員設定</h2>
+                        <div class="count"><span id="staffCount">0</span> 位人員已選</div>
+                    </div>
+                    <div class="card-bd">
+                        <div class="row two">
+                            <div>
+                                <label for="unitSelect">單位</label>
+                                <select id="unitSelect"></select>
+                            </div>
+                            <div style="display: flex; align-items: flex-end; justify-content: space-between;">
+                                <label class="checkline" style="padding: 0;">
+                                    <input type="checkbox" id="checkAllUnit" />
+                                    <span class="label">全選本單位</span>
+                                </label>
+                                <div class="toolbar" style="margin: 0;">
+                                    <button class="btn-text" id="btnClearStaff">清空已選</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="section-split" style="margin-top: 8px;">
+                            <div>
+                                <div class="staff-list" id="staffList"></div>
+                            </div>
+                            <div>
+                                <div class="chips" id="staffChips"></div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <div class="actions">
+                <button class="btn primary" id="btnSave">儲存</button>
+                <button class="btn ghost" id="btnCancel">取消</button>
+            </div>
+        </div>
+
+        <script>
+            // =============================
+            // 假資料：實際對接時請改成你們的 OID 資料
+            // =============================
+            const CITIES = [
+                {
+                    name: "台北市",
+                    districts: [
+                        { oid: 1001, name: "中正區" },
+                        { oid: 1002, name: "大同區" },
+                        { oid: 1003, name: "中山區" },
+                        { oid: 1004, name: "松山區" },
+                        { oid: 1005, name: "大安區" },
+                        { oid: 1006, name: "萬華區" },
+                        { oid: 1007, name: "信義區" },
+                        { oid: 1008, name: "士林區" },
+                        { oid: 1009, name: "北投區" },
+                        { oid: 1010, name: "內湖區" },
+                        { oid: 1011, name: "南港區" },
+                        { oid: 1012, name: "文山區" },
+                    ],
+                },
+                {
+                    name: "基隆市",
+                    districts: [
+                        { oid: 2001, name: "仁愛區" },
+                        { oid: 2002, name: "信義區" },
+                        { oid: 2003, name: "中正區" },
+                        { oid: 2004, name: "中山區" },
+                        { oid: 2005, name: "安樂區" },
+                        { oid: 2006, name: "暖暖區" },
+                        { oid: 2007, name: "七堵區" },
+                    ],
+                },
+                {
+                    name: "新北市",
+                    districts: [
+                        { oid: 3001, name: "萬里區" },
+                        { oid: 3002, name: "金山區" },
+                        { oid: 3003, name: "板橋區" },
+                        { oid: 3004, name: "汐止區" },
+                        { oid: 3005, name: "深坑區" },
+                        { oid: 3006, name: "石碇區" },
+                        { oid: 3007, name: "瑞芳區" },
+                        { oid: 3008, name: "平溪區" },
+                        { oid: 3009, name: "雙溪區" },
+                        { oid: 3010, name: "貢寮區" },
+                        { oid: 3011, name: "新店區" },
+                        { oid: 3012, name: "坪林區" },
+                        { oid: 3013, name: "烏來區" },
+                        { oid: 3014, name: "永和區" },
+                        { oid: 3015, name: "中和區" },
+                        { oid: 3016, name: "土城區" },
+                        { oid: 3017, name: "三峽區" },
+                        { oid: 3018, name: "樹林區" },
+                        { oid: 3019, name: "鶯歌區" },
+                        { oid: 3020, name: "三重區" },
+                        { oid: 3021, name: "新莊區" },
+                        { oid: 3022, name: "泰山區" },
+                        { oid: 3023, name: "林口區" },
+                        { oid: 3024, name: "蘆洲區" },
+                        { oid: 3025, name: "五股區" },
+                        { oid: 3026, name: "八里區" },
+                        { oid: 3027, name: "淡水區" },
+                        { oid: 3028, name: "三芝區" },
+                        { oid: 3029, name: "石門區" },
+                    ],
+                },
+                {
+                    name: "桃園市",
+                    districts: [
+                        { oid: 4001, name: "中壢區" },
+                        { oid: 4002, name: "平鎮區" },
+                        { oid: 4003, name: "龍潭區" },
+                        { oid: 4004, name: "楊梅區" },
+                        { oid: 4005, name: "新屋區" },
+                        { oid: 4006, name: "觀音區" },
+                        { oid: 4007, name: "桃園區" },
+                        { oid: 4008, name: "龜山區" },
+                        { oid: 4009, name: "八德區" },
+                        { oid: 4010, name: "大溪區" },
+                        { oid: 4011, name: "復興區" },
+                        { oid: 4012, name: "大園區" },
+                        { oid: 4013, name: "蘆竹區" },
+                    ],
+                },
+                {
+                    name: "台中市",
+                    districts: [
+                        { oid: 5001, name: "中區" },
+                        { oid: 5002, name: "東區" },
+                        { oid: 5003, name: "南區" },
+                        { oid: 5004, name: "西區" },
+                        { oid: 5005, name: "北區" },
+                        { oid: 5006, name: "北屯區" },
+                        { oid: 5007, name: "西屯區" },
+                        { oid: 5008, name: "南屯區" },
+                        { oid: 5009, name: "太平區" },
+                        { oid: 5010, name: "大里區" },
+                        { oid: 5011, name: "霧峰區" },
+                        { oid: 5012, name: "烏日區" },
+                        { oid: 5013, name: "豐原區" },
+                        { oid: 5014, name: "后里區" },
+                        { oid: 5015, name: "石岡區" },
+                        { oid: 5016, name: "東勢區" },
+                        { oid: 5017, name: "和平區" },
+                        { oid: 5018, name: "新社區" },
+                        { oid: 5019, name: "潭子區" },
+                        { oid: 5020, name: "大雅區" },
+                        { oid: 5021, name: "神岡區" },
+                        { oid: 5022, name: "大肚區" },
+                        { oid: 5023, name: "沙鹿區" },
+                        { oid: 5024, name: "龍井區" },
+                        { oid: 5025, name: "梧棲區" },
+                        { oid: 5026, name: "清水區" },
+                        { oid: 5027, name: "大甲區" },
+                        { oid: 5028, name: "外埔區" },
+                        { oid: 5029, name: "大安區" },
+                    ],
+                },
+                {
+                    name: "台南市",
+                    districts: [
+                        { oid: 6001, name: "中西區" },
+                        { oid: 6002, name: "東區" },
+                        { oid: 6003, name: "南區" },
+                        { oid: 6004, name: "北區" },
+                        { oid: 6005, name: "安平區" },
+                        { oid: 6006, name: "安南區" },
+                        { oid: 6007, name: "永康區" },
+                        { oid: 6008, name: "歸仁區" },
+                        { oid: 6009, name: "新化區" },
+                        { oid: 6010, name: "左鎮區" },
+                        { oid: 6011, name: "玉井區" },
+                        { oid: 6012, name: "楠西區" },
+                        { oid: 6013, name: "南化區" },
+                        { oid: 6014, name: "仁德區" },
+                        { oid: 6015, name: "關廟區" },
+                        { oid: 6016, name: "龍崎區" },
+                        { oid: 6017, name: "官田區" },
+                        { oid: 6018, name: "麻豆區" },
+                        { oid: 6019, name: "佳里區" },
+                        { oid: 6020, name: "西港區" },
+                        { oid: 6021, name: "七股區" },
+                        { oid: 6022, name: "將軍區" },
+                        { oid: 6023, name: "學甲區" },
+                        { oid: 6024, name: "北門區" },
+                        { oid: 6025, name: "新營區" },
+                        { oid: 6026, name: "後壁區" },
+                        { oid: 6027, name: "白河區" },
+                        { oid: 6028, name: "東山區" },
+                        { oid: 6029, name: "六甲區" },
+                        { oid: 6030, name: "下營區" },
+                        { oid: 6031, name: "柳營區" },
+                        { oid: 6032, name: "鹽水區" },
+                        { oid: 6033, name: "善化區" },
+                        { oid: 6034, name: "大內區" },
+                        { oid: 6035, name: "山上區" },
+                        { oid: 6036, name: "新市區" },
+                        { oid: 6037, name: "安定區" },
+                    ],
+                },
+                {
+                    name: "高雄市",
+                    districts: [
+                        { oid: 7001, name: "新興區" },
+                        { oid: 7002, name: "前金區" },
+                        { oid: 7003, name: "苓雅區" },
+                        { oid: 7004, name: "鹽埕區" },
+                        { oid: 7005, name: "鼓山區" },
+                        { oid: 7006, name: "旗津區" },
+                        { oid: 7007, name: "前鎮區" },
+                        { oid: 7008, name: "三民區" },
+                        { oid: 7009, name: "楠梓區" },
+                        { oid: 7010, name: "小港區" },
+                        { oid: 7011, name: "左營區" },
+                        { oid: 7012, name: "仁武區" },
+                        { oid: 7013, name: "大社區" },
+                        { oid: 7014, name: "岡山區" },
+                        { oid: 7015, name: "路竹區" },
+                        { oid: 7016, name: "阿蓮區" },
+                        { oid: 7017, name: "田寮區" },
+                        { oid: 7018, name: "燕巢區" },
+                        { oid: 7019, name: "橋頭區" },
+                        { oid: 7020, name: "梓官區" },
+                        { oid: 7021, name: "彌陀區" },
+                        { oid: 7022, name: "永安區" },
+                        { oid: 7023, name: "湖內區" },
+                        { oid: 7024, name: "鳳山區" },
+                        { oid: 7025, name: "大寮區" },
+                        { oid: 7026, name: "林園區" },
+                        { oid: 7027, name: "鳥松區" },
+                        { oid: 7028, name: "大樹區" },
+                        { oid: 7029, name: "旗山區" },
+                        { oid: 7030, name: "美濃區" },
+                        { oid: 7031, name: "六龜區" },
+                        { oid: 7032, name: "甲仙區" },
+                        { oid: 7033, name: "杉林區" },
+                        { oid: 7034, name: "內門區" },
+                        { oid: 7035, name: "茂林區" },
+                        { oid: 7036, name: "桃源區" },
+                        { oid: 7037, name: "那瑪夏區" },
+                    ],
+                },
+                {
+                    name: "宜蘭縣",
+                    districts: [
+                        { oid: 8001, name: "宜蘭市" },
+                        { oid: 8002, name: "頭城鎮" },
+                        { oid: 8003, name: "礁溪鄉" },
+                        { oid: 8004, name: "壯圍鄉" },
+                        { oid: 8005, name: "員山鄉" },
+                        { oid: 8006, name: "羅東鎮" },
+                        { oid: 8007, name: "三星鄉" },
+                        { oid: 8008, name: "大同鄉" },
+                        { oid: 8009, name: "五結鄉" },
+                        { oid: 8010, name: "冬山鄉" },
+                        { oid: 8011, name: "蘇澳鎮" },
+                        { oid: 8012, name: "南澳鄉" },
+                    ],
+                },
+                {
+                    name: "花蓮縣",
+                    districts: [
+                        { oid: 9001, name: "花蓮市" },
+                        { oid: 9002, name: "新城鄉" },
+                        { oid: 9003, name: "秀林鄉" },
+                        { oid: 9004, name: "吉安鄉" },
+                        { oid: 9005, name: "壽豐鄉" },
+                        { oid: 9006, name: "鳳林鎮" },
+                        { oid: 9007, name: "光復鄉" },
+                        { oid: 9008, name: "豐濱鄉" },
+                        { oid: 9009, name: "瑞穗鄉" },
+                        { oid: 9010, name: "萬榮鄉" },
+                        { oid: 9011, name: "玉里鎮" },
+                        { oid: 9012, name: "卓溪鄉" },
+                        { oid: 9013, name: "富里鄉" },
+                    ],
+                },
+                {
+                    name: "台東縣",
+                    districts: [
+                        { oid: 10001, name: "台東市" },
+                        { oid: 10002, name: "綠島鄉" },
+                        { oid: 10003, name: "蘭嶼鄉" },
+                        { oid: 10004, name: "延平鄉" },
+                        { oid: 10005, name: "卑南鄉" },
+                        { oid: 10006, name: "鹿野鄉" },
+                        { oid: 10007, name: "關山鎮" },
+                        { oid: 10008, name: "海端鄉" },
+                        { oid: 10009, name: "池上鄉" },
+                        { oid: 10010, name: "東河鄉" },
+                        { oid: 10011, name: "成功鎮" },
+                        { oid: 10012, name: "長濱鄉" },
+                        { oid: 10013, name: "太麻里鄉" },
+                        { oid: 10014, name: "金峰鄉" },
+                        { oid: 10015, name: "大武鄉" },
+                        { oid: 10016, name: "達仁鄉" },
+                    ],
+                },
+                {
+                    name: "澎湖縣",
+                    districts: [
+                        { oid: 11001, name: "馬公市" },
+                        { oid: 11002, name: "西嶼鄉" },
+                        { oid: 11003, name: "望安鄉" },
+                        { oid: 11004, name: "七美鄉" },
+                        { oid: 11005, name: "白沙鄉" },
+                        { oid: 11006, name: "湖西鄉" },
+                    ],
+                },
+                {
+                    name: "金門縣",
+                    districts: [
+                        { oid: 12001, name: "金沙鎮" },
+                        { oid: 12002, name: "金湖鎮" },
+                        { oid: 12003, name: "金寧鄉" },
+                        { oid: 12004, name: "金城鎮" },
+                        { oid: 12005, name: "烈嶼鄉" },
+                        { oid: 12006, name: "烏坵鄉" },
+                    ],
+                },
+                {
+                    name: "連江縣",
+                    districts: [
+                        { oid: 13001, name: "南竿鄉" },
+                        { oid: 13002, name: "北竿鄉" },
+                        { oid: 13003, name: "莒光鄉" },
+                        { oid: 13004, name: "東引鄉" },
+                    ],
+                },
+            ];
+            const UNITS = [
+                { id: "U01", name: "北區理賠室" },
+                { id: "U02", name: "中區理賠一室" },
+                { id: "U03", name: "中區理賠二室" },
+                { id: "U04", name: "南區理賠一室" },
+                { id: "U05", name: "南區理賠二室" },
+            ];
+
+            const STAFF = [
+                { oid: 9001, name: "張三", unit: "U01" },
+                { oid: 9002, name: "李四", unit: "U01" },
+                { oid: 9003, name: "田小草", unit: "U01" },
+                { oid: 9004, name: "塗小花", unit: "U01" },
+                { oid: 9005, name: "王五", unit: "U02" },
+                { oid: 9006, name: "趙六", unit: "U02" },
+                { oid: 9007, name: "陳七", unit: "U03" },
+                { oid: 9008, name: "劉八", unit: "U04" },
+                { oid: 9009, name: "戴九", unit: "U05" },
+                { oid: 9010, name: "任十", unit: "U05" },
+            ];
+
+            // =============================
+            // 狀態
+            // =============================
+            const state = {
+                currentCity: null,
+                selectedAreas: new Map(), // key: oid, val: {oid,name,city}
+                selectedStaff: new Map(), // key: oid, val: {oid,name,unit}
+                currentUnit: UNITS[0]?.id || null,
+            };
+
+            // =============================
+            // 地區 UI（縣市下拉 + 行政區清單 + 全選本縣市）
+            // =============================
+            const citySelect = document.getElementById("citySelect");
+            const districtList = document.getElementById("districtList");
+            const areaChips = document.getElementById("areaChips");
+            const areaCount = document.getElementById("areaCount");
+            const btnClearAreas = document.getElementById("btnClearAreas");
+            const checkAllCity = document.getElementById("checkAllCity");
+
+            function renderCityOptions() {
+                citySelect.innerHTML = "";
+                CITIES.forEach((c) => {
+                    const opt = document.createElement("option");
+                    opt.value = c.name;
+                    opt.textContent = c.name;
+                    citySelect.append(opt);
+                });
+                if (!state.currentCity) state.currentCity = CITIES[0]?.name || null;
+                citySelect.value = state.currentCity || "";
+            }
+
+            citySelect.addEventListener("change", () => {
+                state.currentCity = citySelect.value || null;
+                renderDistrictList();
+                updateCheckAllCity();
+            });
+
+            function renderDistrictList() {
+                districtList.innerHTML = "";
+                const city = CITIES.find((c) => c.name === state.currentCity);
+                if (!city) return;
+                city.districts.forEach((d) => {
+                    const row = document.createElement("div");
+                    row.className = "staff-row";
+
+                    const left = document.createElement("div");
+                    left.className = "staff-left";
+
+                    const cb = document.createElement("input");
+                    cb.type = "checkbox";
+                    cb.id = "d_" + d.oid;
+                    cb.checked = state.selectedAreas.has(d.oid);
+                    cb.addEventListener("change", () => {
+                        if (cb.checked) state.selectedAreas.set(d.oid, { oid: d.oid, name: d.name, city: city.name });
+                        else state.selectedAreas.delete(d.oid);
+                        renderAreaChips();
+                        updateCheckAllCity();
+                    });
+
+                    const lb = document.createElement("label");
+                    lb.className = "label";
+                    lb.setAttribute("for", cb.id);
+                    lb.textContent = d.name;
+
+                    left.append(cb, lb);
+                    row.append(left);
+                    districtList.append(row);
+                });
+            }
+
+            function renderAreaChips() {
+                areaChips.innerHTML = "";
+                const entries = Array.from(state.selectedAreas.values());
+                areaCount.textContent = entries.length;
+                entries.forEach((x) => {
+                    const chip = document.createElement("div");
+                    chip.className = "chip";
+                    chip.innerHTML = `<span>${x.city}・${x.name}</span>`;
+                    const btn = document.createElement("button");
+                    btn.className = "x";
+                    btn.textContent = "×";
+                    btn.addEventListener("click", () => {
+                        state.selectedAreas.delete(x.oid);
+                        renderDistrictList();
+                        renderAreaChips();
+                        updateCheckAllCity();
+                    });
+                    chip.append(btn);
+                    areaChips.append(chip);
+                });
+            }
+
+            function updateCheckAllCity() {
+                const city = CITIES.find((c) => c.name === state.currentCity);
+                if (!city) {
+                    checkAllCity.checked = false;
+                    checkAllCity.indeterminate = false;
+                    return;
+                }
+                const allOids = city.districts.map((d) => d.oid);
+                const selectedCount = allOids.filter((oid) => state.selectedAreas.has(oid)).length;
+                if (selectedCount === 0) {
+                    checkAllCity.checked = false;
+                    checkAllCity.indeterminate = false;
+                } else if (selectedCount === allOids.length) {
+                    checkAllCity.checked = true;
+                    checkAllCity.indeterminate = false;
+                } else {
+                    checkAllCity.checked = false;
+                    checkAllCity.indeterminate = true;
+                }
+            }
+
+            checkAllCity.addEventListener("change", () => {
+                const city = CITIES.find((c) => c.name === state.currentCity);
+                if (!city) return;
+                const check = checkAllCity.checked || checkAllCity.indeterminate; // 可從不定態切到全選
+                city.districts.forEach((d) => {
+                    if (check) state.selectedAreas.set(d.oid, { oid: d.oid, name: d.name, city: city.name });
+                    else state.selectedAreas.delete(d.oid);
+                });
+                renderDistrictList();
+                renderAreaChips();
+                updateCheckAllCity();
+            });
+
+            btnClearAreas.addEventListener("click", () => {
+                state.selectedAreas.clear();
+                renderDistrictList();
+                renderAreaChips();
+                updateCheckAllCity();
+            });
+
+            // =============================
+            // 人員 UI（單位下拉 + 全選本單位）
+            // =============================
+            const unitSelect = document.getElementById("unitSelect");
+            const staffList = document.getElementById("staffList");
+            const staffChips = document.getElementById("staffChips");
+            const staffCount = document.getElementById("staffCount");
+            const btnClearStaff = document.getElementById("btnClearStaff");
+            const checkAllUnit = document.getElementById("checkAllUnit");
+
+            function renderUnits() {
+                unitSelect.innerHTML = "";
+                UNITS.forEach((u) => {
+                    const opt = document.createElement("option");
+                    opt.value = u.id;
+                    opt.textContent = u.name;
+                    if (u.id === state.currentUnit) opt.selected = true;
+                    unitSelect.append(opt);
+                });
+            }
+
+            unitSelect.addEventListener("change", () => {
+                state.currentUnit = unitSelect.value;
+                renderStaffList();
+                updateCheckAllUnit();
+            });
+
+            function renderStaffList() {
+                staffList.innerHTML = "";
+                const list = STAFF.filter((s) => !state.currentUnit || s.unit === state.currentUnit);
+                list.forEach((s) => {
+                    const row = document.createElement("div");
+                    row.className = "staff-row";
+
+                    const left = document.createElement("div");
+                    left.className = "staff-left";
+
+                    const cb = document.createElement("input");
+                    cb.type = "checkbox";
+                    cb.id = "s_" + s.oid;
+                    cb.checked = state.selectedStaff.has(s.oid);
+                    cb.addEventListener("change", () => {
+                        if (cb.checked) state.selectedStaff.set(s.oid, { oid: s.oid, name: s.name, unit: s.unit });
+                        else state.selectedStaff.delete(s.oid);
+                        renderStaffChips();
+                        updateCheckAllUnit();
+                    });
+
+                    const lb = document.createElement("label");
+                    lb.className = "label";
+                    lb.setAttribute("for", cb.id);
+                    lb.textContent = `${s.name}（${s.oid}）`;
+
+                    left.append(cb, lb);
+
+                    const right = document.createElement("div");
+                    const unit = UNITS.find((u) => u.id === s.unit);
+                    right.innerHTML = `<span class="badge">${unit ? unit.name : s.unit}</span>`;
+
+                    row.append(left, right);
+					
+                    staffList.append(row);
+                });
+                updateCheckAllUnit();
+            }
+
+            function renderStaffChips() {
+                staffChips.innerHTML = "";
+                const entries = Array.from(state.selectedStaff.values());
+                staffCount.textContent = entries.length;
+                entries.forEach((x) => {
+                    const chip = document.createElement("div");
+                    chip.className = "chip";
+                    chip.innerHTML = `<span>${x.name}（${x.oid}）</span>`;
+                    const btn = document.createElement("button");
+                    btn.className = "x";
+                    btn.textContent = "×";
+                    btn.addEventListener("click", () => {
+                        state.selectedStaff.delete(x.oid);
+                        renderStaffList();
+                        renderStaffChips();
+                        updateCheckAllUnit();
+                    });
+                    chip.append(btn);
+                    staffChips.append(chip);
+                });
+                updateCheckAllUnit();
+            }
+
+            btnClearStaff.addEventListener("click", () => {
+                state.selectedStaff.clear();
+                renderStaffList();
+                renderStaffChips();
+                updateCheckAllUnit();
+            });
+
+            function updateCheckAllUnit() {
+                const list = STAFF.filter((s) => !state.currentUnit || s.unit === state.currentUnit);
+                const selectedCount = list.filter((s) => state.selectedStaff.has(s.oid)).length;
+                if (selectedCount === 0) {
+                    checkAllUnit.checked = false;
+                    checkAllUnit.indeterminate = false;
+                } else if (selectedCount === list.length) {
+                    checkAllUnit.checked = true;
+                    checkAllUnit.indeterminate = false;
+                } else {
+                    checkAllUnit.checked = false;
+                    checkAllUnit.indeterminate = true;
+                }
+            }
+
+            checkAllUnit.addEventListener("change", () => {
+                const list = STAFF.filter((s) => !state.currentUnit || s.unit === state.currentUnit);
+                const check = checkAllUnit.checked || checkAllUnit.indeterminate;
+                list.forEach((s) => {
+                    if (check) state.selectedStaff.set(s.oid, { oid: s.oid, name: s.name, unit: s.unit });
+                    else state.selectedStaff.delete(s.oid);
+                });
+                renderStaffList();
+                renderStaffChips();
+                updateCheckAllUnit();
+            });
+
+            // =============================
+            // 儲存 / 取消
+            // =============================
+            document.getElementById("btnCancel").addEventListener("click", () => {
+                if (confirm("要取消新增嗎？未儲存的變更將遺失。")) {
+                    window.location.href = "12.disp_region_query.html"; // 依需求導回清單頁
+                }
+            });
+
+            document.getElementById("btnSave").addEventListener("click", () => {
+                const code = document.getElementById("regionCode").value.trim();
+                const name = document.getElementById("regionName").value.trim();
+                const isActive = document.getElementById("isActive").checked ? 1 : 0;
+
+                const areas = Array.from(state.selectedAreas.values()).map((x) => x.oid);
+                const staff = Array.from(state.selectedStaff.values()).map((x) => x.oid);
+
+                const errs = [];
+                if (!code) errs.push("請輸入派遣區域代碼");
+                if (!name) errs.push("請輸入派遣區域名稱");
+                if (areas.length === 0) errs.push("請至少選擇一個行政區");
+
+                if (errs.length) {
+                    alert(errs.join("\n"));
+                    return;
+                }
+
+                const payload = {
+                    REGION_CODE: code,
+                    REGION_NAME: name,
+                    IS_ACTIVE: isActive,
+                    AREAS: areas,
+                    STAFF: staff,
+                };
+
+                console.log("[DISP_REGION_NEW] payload =", payload);
+                alert("已組裝 payload，請查看 console");
+            });
+
+            // =============================
+            // 初始渲染
+            // =============================
+            function init() {
+                renderCityOptions();
+                renderDistrictList();
+                renderAreaChips();
+                renderUnits();
+                renderStaffList();
+                renderStaffChips();
+                updateCheckAllCity();
+                updateCheckAllUnit();
+            }
+            init();
+        </script>
+    </body>
+</html>
