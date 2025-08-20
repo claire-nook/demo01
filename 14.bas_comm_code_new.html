@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>基本資料管理 - 共用代碼維護 - 新增</title>
+        <style>
+            body {
+                font-family: sans-serif;
+                margin: 0;
+                padding: 1rem;
+            }
+            h2 {
+                margin-bottom: 1rem;
+            }
+            .pc-wrapper {
+                max-width: 1000px;
+                margin: 0 auto;
+            }
+            .form-card {
+                background: #fff;
+                padding: 1rem;
+                border-radius: 12px;
+                box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            }
+            .row {
+                display: grid;
+                grid-template-columns: 160px 1fr;
+                gap: 0.75rem 1rem;
+                align-items: center;
+            }
+            .row + .row {
+                margin-top: 0.75rem;
+            }
+            label {
+                font-weight: 700;
+                color: #444;
+            }
+            input,
+            select,
+            textarea {
+                width: 100%;
+                padding: 0.6rem 0.7rem;
+                border: 1px solid #ccc;
+                border-radius: 8px;
+                box-sizing: border-box;
+            }
+            .hint {
+                color: #666;
+                font-size: 0.9rem;
+                margin-top: 0.25rem;
+            }
+            .btn-area {
+                display: flex;
+                gap: 0.75rem;
+                justify-content: center;
+                margin-top: 1rem;
+                flex-wrap: wrap;
+            }
+            .btn {
+                padding: 0.6rem 1.2rem;
+                border: none;
+                border-radius: 8px;
+                cursor: pointer;
+                font-weight: 700;
+            }
+            .btn-gray {
+                background: #ccc;
+                color: #222;
+            }
+            .btn-primary {
+                background: #f90;
+                color: #fff;
+            }
+            .btn-danger {
+                background: #c62828;
+                color: #fff;
+            }
+
+            /* PC vs Mobile */
+            .pc {
+                display: block;
+            }
+            .mobile {
+                display: none;
+            }
+
+            /* Mobile 調整：一行一欄 */
+            @media screen and (max-width: 767px) {
+                .pc {
+                    display: none;
+                }
+                .mobile {
+                    display: block;
+                }
+                .form-card {
+                    padding: 1rem;
+                }
+                .row {
+                    display: block;
+                }
+                label {
+                    display: block;
+                    margin: 0.6rem 0 0.35rem;
+                }
+                input,
+                select,
+                textarea,
+                button {
+                    font-size: 16px !important;
+                    height: auto;
+                }
+                .btn {
+                    width: 100%;
+                    padding: 0.8rem 1rem;
+                }
+            }
+            /* 行動版表單正常化 */
+            @media screen and (max-width: 767px) {
+                input[type="date"],
+                input[type="time"],
+                input[type="datetime-local"] {
+                    background-color: #fff !important;
+                    color: #222;
+                    -webkit-text-fill-color: #222;
+                    border: 1px solid #ccc;
+                    border-radius: 8px;
+                    width: 100%;
+                    box-sizing: border-box;
+                    min-height: 44px;
+                    padding: 10px 12px;
+                    line-height: 1.2;
+                }
+                select {
+                    -webkit-appearance: none;
+                    appearance: none;
+                    background-color: #fff !important;
+                    color: #222;
+                    border: 1px solid #ccc;
+                    border-radius: 8px;
+                    width: 100%;
+                    box-sizing: border-box;
+                    min-height: 44px;
+                    padding: 10px 36px 10px 12px;
+                    line-height: 1.2;
+                    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="%23666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>');
+                    background-repeat: no-repeat;
+                    background-position: right 0.6rem center;
+                    background-size: 1rem;
+                }
+                input[readonly],
+                textarea[readonly],
+                input[disabled],
+                select[disabled] {
+                    background-color: #f2f2f2 !important;
+                    color: #888 !important;
+                    border-color: #ddd !important;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <h2>共用代碼新增</h2>
+
+        <!-- PC：新增 BAS_COMM_CODE（不含建檔/異動欄位）-->
+        <div class="pc-wrapper pc">
+            <div class="form-card">
+                <div class="row">
+                    <label for="typeCodePc">類別代碼</label>
+                    <input id="typeCodePc" type="text" maxlength="20" placeholder="如：LOC_TYPE" />
+                </div>
+                <div class="row">
+                    <label for="typeNamePc">類別名稱</label>
+                    <input id="typeNamePc" type="text" maxlength="50" placeholder="如：任務地點類別" />
+                </div>
+                <div class="row">
+                    <label for="itemCodePc">項目代碼</label>
+                    <input id="itemCodePc" type="text" maxlength="20" placeholder="如：GARAGE" />
+                </div>
+                <div class="row">
+                    <label for="itemNamePc">項目名稱</label>
+                    <input id="itemNamePc" type="text" maxlength="50" placeholder="如：修理廠" />
+                </div>
+                <div class="row">
+                    <label for="sortPc">顯示排序</label>
+                    <input id="sortPc" type="text" />
+                </div>
+                <div class="row">
+                    <label for="isActivePc">啟用註記</label>
+                    <select id="isActivePc">
+                        <option value="1" selected>啟用</option>
+                        <option value="0">停用</option>
+                    </select>
+                </div>
+                <div class="btn-area">
+                    <button class="btn btn-primary" onclick="save('pc')">儲存</button>
+                    <button class="btn btn-gray" onclick="backToList()">取消</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile：欄位與 PC 一致，一行一欄 -->
+        <div class="mobile">
+            <div class="form-card">
+                <label>類別代碼<input id="typeCodeMb" type="text" maxlength="20" placeholder="如：LOC_TYPE" /></label>
+                <label>類別名稱<input id="typeNameMb" type="text" maxlength="50" placeholder="如：任務地點類別" /></label>
+                <label>項目代碼<input id="itemCodeMb" type="text" maxlength="20" placeholder="如：GARAGE" /></label>
+                <label>項目名稱<input id="itemNameMb" type="text" maxlength="50" placeholder="如：修理廠" /></label>
+                <label>顯示排序<input id="sortMb" type="text" /></label>
+                <label>
+                    啟用註記
+                    <select id="isActiveMb">
+                        <option value="1" selected>啟用</option>
+                        <option value="0">停用</option>
+                    </select>
+                </label>
+                <div class="btn-area">
+                    <button class="btn btn-primary" onclick="save('mb')">儲存</button>
+                    <button class="btn btn-gray" onclick="backToList()">取消</button>
+                </div>
+                <div class="hint">提示：代碼建議使用大寫英數，排序從 0 開始。類別代碼與項目代碼的組合需唯一。</div>
+            </div>
+        </div>
+
+        <script>
+            function backToList() {
+                location.href = "14.bas_comm_code_query.html";
+            }
+
+            function getMap(mode) {
+                return mode === "pc"
+                    ? {
+                          typeCode: "typeCodePc",
+                          typeName: "typeNamePc",
+                          itemCode: "itemCodePc",
+                          itemName: "itemNamePc",
+                          sort: "sortPc",
+                          isActive: "isActivePc",
+                      }
+                    : {
+                          typeCode: "typeCodeMb",
+                          typeName: "typeNameMb",
+                          itemCode: "itemCodeMb",
+                          itemName: "itemNameMb",
+                          sort: "sortMb",
+                          isActive: "isActiveMb",
+                      };
+            }
+
+            function clearForm(mode) {
+                const m = getMap(mode);
+                ["typeCode", "typeName", "itemCode", "itemName", "sort"].forEach((k) => {
+                    const el = document.getElementById(m[k]);
+                    if (!el) return;
+                    el.value = k === "sort" ? "0" : "";
+                });
+                const sel = document.getElementById(m.isActive);
+                if (sel) sel.value = "1";
+            }
+
+            function trimUpper(s) {
+                return (s || "").trim().toUpperCase();
+            }
+
+            function validate(payload) {
+                if (!payload.TYPE_CODE) return "請輸入「類別代碼」";
+                if (!payload.TYPE_NAME) return "請輸入「類別名稱」";
+                if (!payload.ITEM_CODE) return "請輸入「項目代碼」";
+                if (!payload.ITEM_NAME) return "請輸入「項目名稱」";
+                if (!/^[-A-Z0-9_]{1,20}$/.test(payload.TYPE_CODE)) return "類別代碼僅允許大寫英數、底線與減號，且長度 1~20";
+                if (!/^[-A-Z0-9_]{1,20}$/.test(payload.ITEM_CODE)) return "項目代碼僅允許大寫英數、底線與減號，且長度 1~20";
+                const sortNum = Number(payload.SORT_ORDER);
+                if (!Number.isInteger(sortNum) || sortNum < 0) return "顯示排序需為 0 以上之整數";
+                return "";
+            }
+
+            function collect(mode) {
+                const m = getMap(mode);
+                const data = {
+                    TYPE_CODE: trimUpper(document.getElementById(m.typeCode).value),
+                    TYPE_NAME: document.getElementById(m.typeName).value.trim(),
+                    ITEM_CODE: trimUpper(document.getElementById(m.itemCode).value),
+                    ITEM_NAME: document.getElementById(m.itemName).value.trim(),
+                    SORT_ORDER: Number(document.getElementById(m.sort).value || 0),
+                    IS_ACTIVE: Number(document.getElementById(m.isActive).value || 1),
+                };
+                const v = validate(data);
+                if (v) {
+                    alert(v);
+                    return null;
+                }
+                return data;
+            }
+
+            function save(mode) {
+                const payload = collect(mode);
+                if (!payload) return;
+                // 原型示意：顯示要送到後端的 JSON，並導回列表
+                alert("送出成功！\n\nPOST /api/bas/comm-code\n" + JSON.stringify(payload, null, 2));
+                backToList();
+            }
+        </script>
+    </body>
+</html>

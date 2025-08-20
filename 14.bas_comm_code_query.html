@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>基本資料管理 - 共用代碼維護 - 查詢</title>
+        <style>
+            body {
+                font-family: sans-serif;
+                margin: 0;
+                padding: 1rem;
+            }
+            h2 {
+                margin-bottom: 1rem;
+            }
+
+            /* 容器與共用樣式（完全對齊 13.bas_proc_item_query.html 的風格） */
+            .pc-wrapper {
+                max-width: 1000px;
+                margin: 0 auto;
+            }
+            .query-form {
+                background: #fff;
+                padding: 1rem;
+                margin-bottom: 1rem;
+                border-radius: 12px;
+                box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            }
+            .query-form label {
+                display: block;
+                margin: 0.5rem 0 0.25rem;
+            }
+            .query-form input,
+            .query-form select {
+                width: 100%;
+                padding: 0.5rem;
+                border-radius: 6px;
+                border: 1px solid #ccc;
+                box-sizing: border-box;
+            }
+            .inline-row {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 1rem;
+            }
+            .btn-area {
+                margin-top: 1rem;
+                display: flex;
+                gap: 1rem;
+                justify-content: center;
+            }
+            .btn {
+                padding: 0.6rem 1.2rem;
+                border: none;
+                border-radius: 6px;
+                cursor: pointer;
+                font-weight: bold;
+            }
+            .btn-clear {
+                background: #ccc;
+                color: #000;
+            }
+            .btn-search {
+                background: #2f855a;
+                color: #fff;
+            }
+            .btn-add {
+                background: #007bff;
+                color: #fff;
+            }
+
+            /* PC 與 Mobile 顯示切換 */
+            .pc {
+                display: block;
+            }
+            .mobile {
+                display: none;
+            }
+
+            /* 表格樣式 */
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                background: #fff;
+                box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+                border-radius: 8px;
+                overflow: hidden;
+            }
+            th,
+            td {
+                padding: 0.75rem;
+                border-bottom: 1px solid #ddd;
+                text-align: left;
+            }
+            th {
+                background-color: #f5f5f5;
+            }
+            a {
+                color: #007bff;
+                text-decoration: underline;
+                font-size: 0.95rem;
+            }
+
+            /* 卡片樣式 (Mobile) */
+            .card {
+                background: #fff;
+                border-radius: 12px;
+                padding: 1rem;
+                margin-bottom: 1rem;
+                box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            }
+            .card div {
+                margin-bottom: 0.35rem;
+            }
+            .badge {
+                display: inline-block;
+                padding: 0.1rem 0.5rem;
+                border: 1px solid #bbb;
+                border-radius: 999px;
+                font-size: 0.8rem;
+            }
+
+            /* Mobile 響應式（對齊 13.bas_proc_item_query.html） */
+            @media screen and (max-width: 767px) {
+                .pc {
+                    display: none;
+                }
+                .mobile {
+                    display: block;
+                }
+                input,
+                select,
+                textarea,
+                button {
+                    font-size: 16px !important;
+                    height: 40px !important;
+                    padding: 8px 10px !important;
+                    box-sizing: border-box;
+                }
+                label {
+                    font-size: 1rem;
+                }
+                .btn {
+                    font-size: 1rem;
+                    padding: 0.6rem 1.2rem;
+                }
+                .card div {
+                    font-size: 1rem;
+                }
+                /* 行動版一行只放一個欄位：把 inline-row 改為單欄 */
+                .inline-row {
+                    display: grid;
+                    grid-template-columns: 1fr;
+                    gap: 0.75rem;
+                }
+            }
+
+            .btn-view {
+                background-color: transparent;
+                color: #3182ce;
+                border: 1px solid #3182ce;
+                border-radius: 4px;
+                padding: 4px 8px;
+                font-size: 0.9rem;
+                margin-top: 0.5rem;
+                cursor: pointer;
+                display: inline-block;
+                transition: all 0.2s ease;
+            }
+            .btn-view:hover {
+                background-color: #3182ce;
+                color: #fff;
+            }
+
+            /* 行動版 select/日期 視覺修正（沿用） */
+            @media screen and (max-width: 767px) {
+                input[type="date"],
+                input[type="time"],
+                input[type="datetime-local"] {
+                    background-color: #fff !important;
+                    color: #222;
+                    -webkit-text-fill-color: #222;
+                    border: 1px solid #ccc;
+                }
+                select {
+                    -webkit-appearance: none;
+                    appearance: none;
+                    background-color: #fff !important;
+                    color: #222;
+                    border: 1px solid #ccc;
+                    padding-right: 2rem;
+                    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="%23666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>');
+                    background-repeat: no-repeat;
+                    background-position: right 0.6rem center;
+                    background-size: 1rem;
+                }
+                input[readonly],
+                textarea[readonly],
+                select[disabled],
+                input[disabled] {
+                    background-color: #f2f2f2 !important;
+                    color: #888 !important;
+                    border-color: #ddd !important;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <h2>共用代碼維護</h2>
+
+        <div class="pc-wrapper">
+            <!-- PC: 查詢條件（與行動版一致；不含排序條件） -->
+            <div class="query-form pc">
+                <div class="inline-row">
+                    <label>類別代碼<input id="typeCodePc" type="text" placeholder="如：LOC_TYPE" /></label>
+                    <label>類別名稱<input id="typeNamePc" type="text" placeholder="如：任務地點類別" /></label>
+                </div>
+                <div class="inline-row">
+                    <label>項目代碼<input id="itemCodePc" type="text" placeholder="如：GARAGE" /></label>
+                    <label>項目名稱<input id="itemNamePc" type="text" placeholder="如：修理廠" /></label>
+                </div>
+                <div class="inline-row">
+                    <label>
+                        啟用註記
+                        <select id="isActivePc">
+                            <option value="">全部</option>
+                            <option value="1">啟用</option>
+                            <option value="0">停用</option>
+                        </select>
+                    </label>
+                    <div></div>
+                </div>
+                <div class="btn-area">
+                    <button class="btn btn-add" onclick="goNew()">新增</button>
+                    <button class="btn btn-search" onclick="query('pc')">查詢</button>
+                    <button class="btn btn-clear" onclick="clearForm('pc')">清除</button>
+                </div>
+            </div>
+
+            <!-- PC 結果 Table -->
+            <div class="pc">
+                <table id="pcTable">
+                    <thead>
+                        <tr>
+                            <th>類別代碼</th>
+                            <th>類別名稱</th>
+                            <th>項目代碼</th>
+                            <th>項目名稱</th>
+                            <th>顯示排序</th>
+                            <th>狀態</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Mobile: 欄位與 PC 一致 -->
+        <div class="mobile">
+            <div class="query-form">
+                <div class="inline-row">
+                    <label>類別代碼<input id="typeCodeMb" type="text" placeholder="如：LOC_TYPE" /></label>
+                    <label>類別名稱<input id="typeNameMb" type="text" placeholder="如：任務地點類別" /></label>
+                </div>
+                <div class="inline-row">
+                    <label>項目代碼<input id="itemCodeMb" type="text" placeholder="如：GARAGE" /></label>
+                    <label>項目名稱<input id="itemNameMb" type="text" placeholder="如：修理廠" /></label>
+                </div>
+                <label>
+                    啟用註記
+                    <select id="isActiveMb">
+                        <option value="">全部</option>
+                        <option value="1">啟用</option>
+                        <option value="0">停用</option>
+                    </select>
+                </label>
+                <div class="btn-area">
+                    <button class="btn btn-add" onclick="goNew()">新增</button>
+                    <button class="btn btn-search" onclick="query('mb')">查詢</button>
+                    <button class="btn btn-clear" onclick="clearForm('mb')">清除</button>
+                </div>
+            </div>
+            <div id="mbCards"></div>
+        </div>
+
+        <script>
+            function goNew() {
+                location.href = "14.bas_comm_code_new.html";
+            }
+
+            // 假資料：共用代碼清單（對應 BAS_COMM_CODE 欄位）
+            const SAMPLE = [
+                { TYPE_CODE: "LOC_TYPE", TYPE_NAME: "任務地點類別", ITEM_CODE: "Authorized", ITEM_NAME: "原廠", SORT_ORDER: 1, IS_ACTIVE: 1 },
+                { TYPE_CODE: "LOC_TYPE", TYPE_NAME: "任務地點類別", ITEM_CODE: "Independent", ITEM_NAME: "外廠", SORT_ORDER: 2, IS_ACTIVE: 1 },
+                { TYPE_CODE: "LOC_TYPE", TYPE_NAME: "任務地點類別", ITEM_CODE: "Others", ITEM_NAME: "其他", SORT_ORDER: 3, IS_ACTIVE: 1 },
+                { TYPE_CODE: "TASK_STATUS", TYPE_NAME: "任務狀態", ITEM_CODE: "P", ITEM_NAME: "處理中", SORT_ORDER: 1, IS_ACTIVE: 1 },
+                { TYPE_CODE: "TASK_STATUS", TYPE_NAME: "任務狀態", ITEM_CODE: "C", ITEM_NAME: "取消", SORT_ORDER: 2, IS_ACTIVE: 1 },
+                { TYPE_CODE: "TASK_STATUS", TYPE_NAME: "任務狀態", ITEM_CODE: "D", ITEM_NAME: "完成", SORT_ORDER: 3, IS_ACTIVE: 1 },
+            ];
+
+            function ready() {
+                renderPc(SAMPLE);
+                renderMb(SAMPLE);
+            }
+
+            function clearForm(mode) {
+                const map =
+                    mode === "pc"
+                        ? {
+                              typeCode: "typeCodePc",
+                              typeName: "typeNamePc",
+                              itemCode: "itemCodePc",
+                              itemName: "itemNamePc",
+                              isActive: "isActivePc",
+                          }
+                        : {
+                              typeCode: "typeCodeMb",
+                              typeName: "typeNameMb",
+                              itemCode: "itemCodeMb",
+                              itemName: "itemNameMb",
+                              isActive: "isActiveMb",
+                          };
+                ["typeCode", "typeName", "itemCode", "itemName"].forEach((k) => {
+                    const el = document.getElementById(map[k]);
+                    if (el) el.value = "";
+                });
+                const sel = document.getElementById(map.isActive);
+                if (sel) sel.selectedIndex = 0;
+            }
+
+            function gatherCond(mode) {
+                const map =
+                    mode === "pc"
+                        ? {
+                              typeCode: "typeCodePc",
+                              typeName: "typeNamePc",
+                              itemCode: "itemCodePc",
+                              itemName: "itemNamePc",
+                              isActive: "isActivePc",
+                          }
+                        : {
+                              typeCode: "typeCodeMb",
+                              typeName: "typeNameMb",
+                              itemCode: "itemCodeMb",
+                              itemName: "itemNameMb",
+                              isActive: "isActiveMb",
+                          };
+                return {
+                    tcode: document.getElementById(map.typeCode).value.trim(),
+                    tname: document.getElementById(map.typeName).value.trim(),
+                    icode: document.getElementById(map.itemCode).value.trim(),
+                    iname: document.getElementById(map.itemName).value.trim(),
+                    act: document.getElementById(map.isActive).value,
+                };
+            }
+
+            function query(mode) {
+                const c = gatherCond(mode);
+                const rows = SAMPLE.filter(
+                    (r) =>
+                        (!c.tcode || r.TYPE_CODE.toUpperCase().includes(c.tcode.toUpperCase())) &&
+                        (!c.tname || r.TYPE_NAME.includes(c.tname)) &&
+                        (!c.icode || r.ITEM_CODE.toUpperCase().includes(c.icode.toUpperCase())) &&
+                        (!c.iname || r.ITEM_NAME.includes(c.iname)) &&
+                        (!c.act || String(r.IS_ACTIVE) === String(c.act))
+                );
+                if (mode === "pc") renderPc(rows);
+                else renderMb(rows);
+            }
+
+            function renderPc(rows) {
+                const tb = document.querySelector("#pcTable tbody");
+                if (!tb) return;
+                if (!rows.length) {
+                    tb.innerHTML = '<tr><td colspan="6">無資料</td></tr>';
+                    return;
+                }
+                tb.innerHTML = rows
+                    .map((r) => {
+                        const status = r.IS_ACTIVE ? "啟用" : "停用";
+                        const key = encodeURIComponent(r.TYPE_CODE + "|" + r.ITEM_CODE);
+                        return `<tr>
+            <td><a href="14.bas_comm_code_new.html?key=${key}">${r.TYPE_CODE}</a></td>
+            <td>${r.TYPE_NAME}</td>
+            <td>${r.ITEM_CODE}</td>
+            <td>${r.ITEM_NAME}</td>
+            <td>${r.SORT_ORDER}</td>
+            <td>${status}</td>
+          </tr>`;
+                    })
+                    .join("");
+            }
+
+            function renderMb(rows) {
+                const wrap = document.getElementById("mbCards");
+                if (!wrap) return;
+                if (!rows.length) {
+                    wrap.innerHTML = '<div class="card">無資料</div>';
+                    return;
+                }
+                wrap.innerHTML = rows
+                    .map((r) => {
+                        const status = r.IS_ACTIVE ? "啟用" : "停用";
+                        const key = encodeURIComponent(r.TYPE_CODE + "|" + r.ITEM_CODE);
+                        return `<div class="card">
+            <div><strong>${r.ITEM_NAME}</strong> <span class="badge">${r.ITEM_CODE}</span></div>
+            <div>類別：${r.TYPE_NAME} <span class="badge">${r.TYPE_CODE}</span></div>
+            <div>排序：${r.SORT_ORDER}</div>
+            <div>狀態：${status}</div>
+            <button class="btn-view" onclick="location.href='14.bas_comm_code_new.html?key=${key}'">查看明細</button>
+          </div>`;
+                    })
+                    .join("");
+            }
+
+            document.addEventListener("DOMContentLoaded", ready);
+        </script>
+    </body>
+</html>
