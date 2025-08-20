@@ -268,10 +268,6 @@
                             <th>姓名</th>
                             <th>所屬單位</th>
                             <th>AD 認證</th>
-                            <th>AD 帳號</th>
-                            <th>Email</th>
-                            <th>行動電話</th>
-                            <th>分機</th>
                             <th>狀態</th>
                         </tr>
                     </thead>
@@ -412,10 +408,6 @@
             <td>${r.STAFF_NAME}</td>
             <td>${ORG[r.OID_ORG_UNIT] || r.OID_ORG_UNIT}</td>
             <td>${isad}</td>
-            <td>${r.STAFF_AD || ""}</td>
-            <td>${r.EMAIL}</td>
-            <td>${r.MOBILE || ""}</td>
-            <td>${r.TEL_EXT || ""}</td>
             <td>${status}</td>
           </tr>`;
                     })
@@ -438,10 +430,6 @@
             <div><strong>${r.STAFF_NAME}</strong> <span class="badge">${r.USER_NAME}</span></div>
             <div>單位：${ORG[r.OID_ORG_UNIT] || r.OID_ORG_UNIT}</div>
             <div>認證：${isad}</div>
-            <div>AD：${r.STAFF_AD || ""}</div>
-            <div>Email：${r.EMAIL}</div>
-            <div>手機：${r.MOBILE || ""}</div>
-            <div>分機：${r.TEL_EXT || ""}</div>
             <div>狀態：${status}</div>
             <button class="btn-view" onclick="location.href='11.bas_staff_new.html?user=${key}'">查看明細</button>
           </div>`;
