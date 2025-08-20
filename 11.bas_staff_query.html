@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>基本資料管理 - 員工資料維護 - 查詢</title>
+        <style>
+            body {
+                font-family: sans-serif;
+                margin: 0;
+                padding: 1rem;
+            }
+            h2 {
+                margin-bottom: 1rem;
+            }
+
+            /* 容器與共用樣式（對齊 13.bas_proc_item_query.html 的視覺與按鈕） */
+            .pc-wrapper {
+                max-width: 1000px;
+                margin: 0 auto;
+            }
+            .query-form {
+                background: #fff;
+                padding: 1rem;
+                margin-bottom: 1rem;
+                border-radius: 12px;
+                box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            }
+            .query-form label {
+                display: block;
+                margin: 0.5rem 0 0.25rem;
+            }
+            .query-form input,
+            .query-form select {
+                width: 100%;
+                padding: 0.5rem;
+                border-radius: 6px;
+                border: 1px solid #ccc;
+                box-sizing: border-box;
+            }
+            .inline-row {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 1rem;
+            }
+            .btn-area {
+                margin-top: 1rem;
+                display: flex;
+                gap: 1rem;
+                justify-content: center;
+            }
+            .btn {
+                padding: 0.6rem 1.2rem;
+                border: none;
+                border-radius: 6px;
+                cursor: pointer;
+                font-weight: bold;
+            }
+            .btn-clear {
+                background: #ccc;
+                color: #000;
+            }
+            .btn-search {
+                background: #2f855a;
+                color: #fff;
+            }
+            .btn-add {
+                background: #007bff;
+                color: #fff;
+            }
+
+            /* PC 與 Mobile 顯示切換 */
+            .pc {
+                display: block;
+            }
+            .mobile {
+                display: none;
+            }
+
+            /* 表格樣式 */
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                background: #fff;
+                box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+                border-radius: 8px;
+                overflow: hidden;
+            }
+            th,
+            td {
+                padding: 0.75rem;
+                border-bottom: 1px solid #ddd;
+                text-align: left;
+            }
+            th {
+                background-color: #f5f5f5;
+            }
+            a {
+                color: #007bff;
+                text-decoration: underline;
+                font-size: 0.95rem;
+            }
+
+            /* 卡片樣式 (Mobile) */
+            .card {
+                background: #fff;
+                border-radius: 12px;
+                padding: 1rem;
+                margin-bottom: 1rem;
+                box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            }
+            .card div {
+                margin-bottom: 0.35rem;
+            }
+            .badge {
+                display: inline-block;
+                padding: 0.1rem 0.5rem;
+                border: 1px solid #bbb;
+                border-radius: 999px;
+                font-size: 0.8rem;
+            }
+
+            /* Mobile 響應式：行動版一行一個欄位 */
+            @media screen and (max-width: 767px) {
+                .pc {
+                    display: none;
+                }
+                .mobile {
+                    display: block;
+                }
+                input,
+                select,
+                textarea,
+                button {
+                    font-size: 16px !important;
+                    height: 40px !important;
+                    padding: 8px 10px !important;
+                    box-sizing: border-box;
+                }
+                label {
+                    font-size: 1rem;
+                }
+                .btn {
+                    font-size: 1rem;
+                    padding: 0.6rem 1.2rem;
+                }
+                .card div {
+                    font-size: 1rem;
+                }
+                .inline-row {
+                    grid-template-columns: 1fr;
+                    gap: 0.75rem;
+                }
+            }
+
+            .btn-view {
+                background-color: transparent;
+                color: #3182ce;
+                border: 1px solid #3182ce;
+                border-radius: 4px;
+                padding: 4px 8px;
+                font-size: 0.9rem;
+                margin-top: 0.5rem;
+                cursor: pointer;
+                display: inline-block;
+                transition: all 0.2s ease;
+            }
+            .btn-view:hover {
+                background-color: #3182ce;
+                color: #fff;
+            }
+
+            /* 行動版 select/日期 視覺修正（沿用專案規則） */
+            @media screen and (max-width: 767px) {
+                input[type="date"],
+                input[type="time"],
+                input[type="datetime-local"] {
+                    background-color: #fff !important;
+                    color: #222;
+                    -webkit-text-fill-color: #222;
+                    border: 1px solid #ccc;
+                }
+                select {
+                    -webkit-appearance: none;
+                    appearance: none;
+                    background-color: #fff !important;
+                    color: #222;
+                    border: 1px solid #ccc;
+                    padding-right: 2rem;
+                    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="%23666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>');
+                    background-repeat: no-repeat;
+                    background-position: right 0.6rem center;
+                    background-size: 1rem;
+                }
+                input[readonly],
+                textarea[readonly],
+                select[disabled],
+                input[disabled] {
+                    background-color: #f2f2f2 !important;
+                    color: #888 !important;
+                    border-color: #ddd !important;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <h2>員工資料維護</h2>
+
+        <div class="pc-wrapper">
+            <!-- PC: 查詢條件（與行動版一致；不含排序條件和建立/異動資訊） -->
+            <div class="query-form pc">
+                <div class="inline-row">
+                    <label>使用者代碼<input id="userNamePc" type="text" placeholder="如：u0001" /></label>
+                    <label>姓名<input id="staffNamePc" type="text" placeholder="如：王小明" /></label>
+                </div>
+                <div class="inline-row">
+                    <label>
+                        所屬單位
+                        <select id="orgPc">
+                            <option value="">全部</option>
+                            <option value="OU001">北區理賠一室</option>
+                            <option value="OU002">北區理賠二室</option>
+                            <option value="OU101">中區理賠一室</option>
+                            <option value="OU201">南區理賠室</option>
+                        </select>
+                    </label>
+                    <label>
+                        AD 認證
+                        <select id="isAdPc">
+                            <option value="">全部</option>
+                            <option value="0">使用 AD</option>
+                            <option value="1">不使用 AD</option>
+                        </select>
+                    </label>
+                </div>
+                <div class="inline-row">
+                    <label>AD 帳號<input id="staffAdPc" type="text" placeholder="如：corp\\u0001" /></label>
+                    <label>電子郵件<input id="emailPc" type="text" placeholder="如：user@example.com" /></label>
+                </div>
+                <div class="inline-row">
+                    <label>行動電話<input id="mobilePc" type="text" placeholder="如：0912xxxxxx" /></label>
+                    <label>分機<input id="telExtPc" type="text" placeholder="如：1234" /></label>
+                </div>
+                <div class="inline-row">
+                    <label>
+                        啟用註記
+                        <select id="isActivePc">
+                            <option value="">全部</option>
+                            <option value="1">啟用</option>
+                            <option value="0">停用</option>
+                        </select>
+                    </label>
+                    <div></div>
+                </div>
+                <div class="btn-area">
+                    <button class="btn btn-add" onclick="goNew()">新增</button>
+                    <button class="btn btn-search" onclick="query('pc')">查詢</button>
+                    <button class="btn btn-clear" onclick="clearForm('pc')">清除</button>
+                </div>
+            </div>
+
+            <!-- PC 結果 Table（不顯示建檔/異動資訊） -->
+            <div class="pc">
+                <table id="pcTable">
+                    <thead>
+                        <tr>
+                            <th>使用者代碼</th>
+                            <th>姓名</th>
+                            <th>所屬單位</th>
+                            <th>AD 認證</th>
+                            <th>AD 帳號</th>
+                            <th>Email</th>
+                            <th>行動電話</th>
+                            <th>分機</th>
+                            <th>狀態</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Mobile: 欄位與 PC 一致，但行動版一行一個欄位 -->
+        <div class="mobile">
+            <div class="query-form">
+                <div class="inline-row">
+                    <label>使用者代碼<input id="userNameMb" type="text" placeholder="如：u0001" /></label>
+                    <label>姓名<input id="staffNameMb" type="text" placeholder="如：王小明" /></label>
+                </div>
+                <label>
+                    所屬單位
+                    <select id="orgMb">
+                        <option value="">全部</option>
+                        <option value="OU001">北區理賠一室</option>
+                        <option value="OU002">北區理賠二室</option>
+                        <option value="OU101">中區理賠一室</option>
+                        <option value="OU201">南區理賠室</option>
+                    </select>
+                </label>
+                <label>
+                    AD 認證
+                    <select id="isAdMb">
+                        <option value="">全部</option>
+                        <option value="0">使用 AD</option>
+                        <option value="1">不使用 AD</option>
+                    </select>
+                </label>
+                <label>AD 帳號<input id="staffAdMb" type="text" placeholder="如：corp\\u0001" /></label>
+                <label>電子郵件<input id="emailMb" type="text" placeholder="如：user@example.com" /></label>
+                <label>行動電話<input id="mobileMb" type="text" placeholder="如：0912xxxxxx" /></label>
+                <label>分機<input id="telExtMb" type="text" placeholder="如：1234" /></label>
+                <label>
+                    啟用註記
+                    <select id="isActiveMb">
+                        <option value="">全部</option>
+                        <option value="1">啟用</option>
+                        <option value="0">停用</option>
+                    </select>
+                </label>
+                <div class="btn-area">
+                    <button class="btn btn-add" onclick="goNew()">新增</button>
+                    <button class="btn btn-search" onclick="query('mb')">查詢</button>
+                    <button class="btn btn-clear" onclick="clearForm('mb')">清除</button>
+                </div>
+            </div>
+            <div id="mbCards"></div>
+        </div>
+
+        <script>
+            function goNew() {
+                location.href = "11.bas_staff_new.html";
+            }
+
+            // 假資料：使用者帳號清單（對應 BAS_USER 欄位語意）
+            const ORG = { OU001: "北區理賠一室", OU002: "北區理賠二室", OU101: "中區理賠一室", OU201: "南區理賠室" };
+            const SAMPLE = [
+                { USER_NAME: "u0001", STAFF_NAME: "張三", IS_AD: 0, STAFF_AD: "corp\\u0001", OID_ORG_UNIT: "OU001", EMAIL: "u0001@example.com", MOBILE: "0912000001", TEL_EXT: "1001", IS_ACTIVE: 1 },
+                { USER_NAME: "u0002", STAFF_NAME: "李四", IS_AD: 1, STAFF_AD: "", OID_ORG_UNIT: "OU002", EMAIL: "u0002@example.com", MOBILE: "0912000002", TEL_EXT: "1002", IS_ACTIVE: 1 },
+                { USER_NAME: "u0101", STAFF_NAME: "王五", IS_AD: 0, STAFF_AD: "corp\\u0101", OID_ORG_UNIT: "OU101", EMAIL: "u0101@example.com", MOBILE: "0912010101", TEL_EXT: "1201", IS_ACTIVE: 0 },
+            ];
+
+            function ready() {
+                renderPc(SAMPLE);
+                renderMb(SAMPLE);
+            }
+
+            function clearForm(mode) {
+                const map =
+                    mode === "pc"
+                        ? { user: "userNamePc", name: "staffNamePc", org: "orgPc", isad: "isAdPc", ad: "staffAdPc", mail: "emailPc", mob: "mobilePc", ext: "telExtPc", act: "isActivePc" }
+                        : { user: "userNameMb", name: "staffNameMb", org: "orgMb", isad: "isAdMb", ad: "staffAdMb", mail: "emailMb", mob: "mobileMb", ext: "telExtMb", act: "isActiveMb" };
+                ["user", "name", "ad", "mail", "mob", "ext"].forEach((k) => {
+                    const el = document.getElementById(map[k]);
+                    if (el) el.value = "";
+                });
+                ["org", "isad", "act"].forEach((k) => {
+                    const el = document.getElementById(map[k]);
+                    if (el) el.selectedIndex = 0;
+                });
+            }
+
+            function gatherCond(mode) {
+                const map =
+                    mode === "pc"
+                        ? { user: "userNamePc", name: "staffNamePc", org: "orgPc", isad: "isAdPc", ad: "staffAdPc", mail: "emailPc", mob: "mobilePc", ext: "telExtPc", act: "isActivePc" }
+                        : { user: "userNameMb", name: "staffNameMb", org: "orgMb", isad: "isAdMb", ad: "staffAdMb", mail: "emailMb", mob: "mobileMb", ext: "telExtMb", act: "isActiveMb" };
+                return {
+                    user: document.getElementById(map.user).value.trim(),
+                    name: document.getElementById(map.name).value.trim(),
+                    org: document.getElementById(map.org).value,
+                    isad: document.getElementById(map.isad).value,
+                    ad: document.getElementById(map.ad).value.trim(),
+                    mail: document.getElementById(map.mail).value.trim(),
+                    mob: document.getElementById(map.mob).value.trim(),
+                    ext: document.getElementById(map.ext).value.trim(),
+                    act: document.getElementById(map.act).value,
+                };
+            }
+
+            function query(mode) {
+                const c = gatherCond(mode);
+                const rows = SAMPLE.filter(
+                    (r) =>
+                        (!c.user || r.USER_NAME.toUpperCase().includes(c.user.toUpperCase())) &&
+                        (!c.name || r.STAFF_NAME.includes(c.name)) &&
+                        (!c.org || r.OID_ORG_UNIT === c.org) &&
+                        (!c.isad || String(r.IS_AD) === String(c.isad)) &&
+                        (!c.ad || r.STAFF_AD.toUpperCase().includes(c.ad.toUpperCase())) &&
+                        (!c.mail || r.EMAIL.toUpperCase().includes(c.mail.toUpperCase())) &&
+                        (!c.mob || r.MOBILE.includes(c.mob)) &&
+                        (!c.ext || r.TEL_EXT.includes(c.ext)) &&
+                        (!c.act || String(r.IS_ACTIVE) === String(c.act))
+                );
+                if (mode === "pc") renderPc(rows);
+                else renderMb(rows);
+            }
+
+            function renderPc(rows) {
+                const tb = document.querySelector("#pcTable tbody");
+                if (!tb) return;
+                if (!rows.length) {
+                    tb.innerHTML = '<tr><td colspan="9">無資料</td></tr>';
+                    return;
+                }
+                tb.innerHTML = rows
+                    .map((r) => {
+                        const status = r.IS_ACTIVE ? "啟用" : "停用";
+                        const isad = r.IS_AD === 0 ? "使用 AD" : "不使用 AD";
+                        const key = encodeURIComponent(r.USER_NAME);
+                        return `<tr>
+            <td><a href="11.bas_staff_new.html?user=${key}">${r.USER_NAME}</a></td>
+            <td>${r.STAFF_NAME}</td>
+            <td>${ORG[r.OID_ORG_UNIT] || r.OID_ORG_UNIT}</td>
+            <td>${isad}</td>
+            <td>${r.STAFF_AD || ""}</td>
+            <td>${r.EMAIL}</td>
+            <td>${r.MOBILE || ""}</td>
+            <td>${r.TEL_EXT || ""}</td>
+            <td>${status}</td>
+          </tr>`;
+                    })
+                    .join("");
+            }
+
+            function renderMb(rows) {
+                const wrap = document.getElementById("mbCards");
+                if (!wrap) return;
+                if (!rows.length) {
+                    wrap.innerHTML = '<div class="card">無資料</div>';
+                    return;
+                }
+                wrap.innerHTML = rows
+                    .map((r) => {
+                        const status = r.IS_ACTIVE ? "啟用" : "停用";
+                        const isad = r.IS_AD === 0 ? "使用 AD" : "不使用 AD";
+                        const key = encodeURIComponent(r.USER_NAME);
+                        return `<div class="card">
+            <div><strong>${r.STAFF_NAME}</strong> <span class="badge">${r.USER_NAME}</span></div>
+            <div>單位：${ORG[r.OID_ORG_UNIT] || r.OID_ORG_UNIT}</div>
+            <div>認證：${isad}</div>
+            <div>AD：${r.STAFF_AD || ""}</div>
+            <div>Email：${r.EMAIL}</div>
+            <div>手機：${r.MOBILE || ""}</div>
+            <div>分機：${r.TEL_EXT || ""}</div>
+            <div>狀態：${status}</div>
+            <button class="btn-view" onclick="location.href='11.bas_staff_new.html?user=${key}'">查看明細</button>
+          </div>`;
+                    })
+                    .join("");
+            }
+
+            document.addEventListener("DOMContentLoaded", ready);
+        </script>
+    </body>
+</html>
