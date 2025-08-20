@@ -385,7 +385,7 @@
             <div><strong>${r.PITEM_NAME}</strong> <span class="badge">${r.PITEM_CODE}</span></div>
             <div>超時天數：${r.OVERDUE_DAYS === 0 ? "0（當日需完成）" : r.OVERDUE_DAYS}</div>
             <div>狀態：${status}</div>
-            <button class="btn-view" onclick="location.href='11.proc_item_detail.html?code=${encodeURIComponent(r.PITEM_CODE)}'">查看明細</button>
+            <button class="btn-view" onclick="location.href='13.bas_proc_item_detail.html?code=${encodeURIComponent(r.PITEM_CODE)}'">查看明細</button>
           </div>`;
                     })
                     .join("");
