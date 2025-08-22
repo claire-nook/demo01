@@ -617,7 +617,7 @@
         <div class="btn-row">
             <button class="btn btn-primary" onclick="location.href='03.claim_log_upload.html'">日誌新增</button>
             <button class="btn btn-primary" onclick="location.href='03.claim_file_upload.html'">檔案上傳</button>
-            <button class="btn btn-view-log-pc">查看補資料歷程</button>
+            <button class="btn btn-view-log-pc">查看處理歷程</button>
         </div>
         <div class="card tab-card">
             <div class="tab-nav">
@@ -779,6 +779,72 @@
                                 inputUsrID: "",
                                 inputUsrNm: "",
                             },
+							{
+							  seqNo: 2,
+							  inputDt: "20250320 090842",
+							  handleDt: "20250320",
+							  handleItemCD: "08",
+							  handleItemDesc: "Counter Fraud 反詐欺",
+							  contactNm: "",
+							  contentMatters: "◆上述風險指標皆已檢核，暫無符合通報事由。",
+							  handlerUsrID: "U123456789",
+							  handlerUsrNm: "陳方方",
+							  inputUsrID: "U123456789",
+							  inputUsrNm: "陳方方"
+							},
+							{
+							  seqNo: 3,
+							  inputDt: "20250424 090102",
+							  handleDt: "20250424",
+							  handleItemCD: "05",
+							  handleItemDesc: "Case Strategy 賠案處理策略",
+							  contactNm: "",
+							  contentMatters: "保駕診斷書、X光片上傳",
+							  handlerUsrID: "U123456789",
+							  handlerUsrNm: "陳方方",
+							  inputUsrID: "U123456789",
+							  inputUsrNm: "陳方方"
+							},
+							{
+							  seqNo: 4,
+							  inputDt: "20250514 095544",
+							  handleDt: "20250514",
+							  handleItemCD: "16",
+							  handleItemDesc: "Salvage 殘餘物作業",
+							  contactNm: "",
+							  contentMatters: "保車車頭受損嚴重，車身撞擊受損變形，底盤亦有受損，剩餘後門、尾門可用，依新式殘餘物評估表計算底標為82,365元，建議下修低標金額至60,000元，以利殘餘物標售\r\n通知人員：許正正",
+							  handlerUsrID: "N123456789",
+							  handlerUsrNm: "蕭美美",
+							  inputUsrID: "N123456789",
+							  inputUsrNm: "蕭美美"
+							},
+							{
+							  seqNo: 5,
+							  inputDt: "20250710 155726",
+							  handleDt: "20250710",
+							  handleItemCD: "16",
+							  handleItemDesc: "Salvage 殘餘物作業",
+							  contactNm: "",
+							  contentMatters: "殘餘物標售水單上傳\r\n通知人員：陳方方",
+							  handlerUsrID: "R123456789",
+							  handlerUsrNm: "章平平",
+							  inputUsrID: "R123456789",
+							  inputUsrNm: "章平平"
+							},
+							{
+							  seqNo: 6,
+							  inputDt: "20250408 093553",
+							  handleDt: "20250408",
+							  handleItemCD: "13",
+							  handleItemDesc: "File Mgmt 檔案管理",
+							  contactNm: "",
+							  contentMatters: "相驗屍體證明書比對結果已上傳_無資料 (系統處理中)\r\n待犯防有更新進度、再日誌通知\r\n通知人員：蕭美美,廖亮亮,陳方方",
+							  handlerUsrID: "Q123456789",
+							  handlerUsrNm: "盧大大",
+							  inputUsrID: "Q123456789",
+							  inputUsrNm: "盧大大"
+							},
+
                         ],
                         transLog: [
                             {
@@ -1199,7 +1265,7 @@
                 return s;
             }
 			
-            const journalState = { filter: "ALL" };
+            const journalState = { filter: "JOURNAL" };
 
 			function renderJournal() {
 			  const wrap = document.getElementById("journalWrap");
@@ -1214,6 +1280,7 @@
 
 			  // 篩選 chips（全部 / 人工日誌 / 系統異動）
 			  const bar = el("div", "toolbar");
+/*
 			  ["ALL", "JOURNAL", "TRANS"].forEach((k) => {
 				const map = { ALL: "全部", JOURNAL: "人工日誌", TRANS: "系統異動" };
 				const chip = el("span", "chip" + (journalState.filter === k ? " active" : ""), `${map[k]} ${counts[k]}`);
@@ -1223,7 +1290,7 @@
 				});
 				bar.appendChild(chip);
 			  });
-
+*/
 			  const actions = el("div", "bar-actions");
 			  const btnOpen = el("button", "link-xs", "全部展開");
 			  const btnClose = el("button", "link-xs", "全部收合");
