@@ -199,6 +199,56 @@
                     padding: 0.8rem 1rem;
                 }
             }
+			/* iOS 表單正常化：修掉灰底與不一致高度，但保留原生挑選器 */
+			@media screen and (max-width: 767px) {
+			  /* 統一外觀：日期/時間欄位 */
+			  input[type="date"],
+			  input[type="time"],
+			  input[type="datetime-local"] {
+				background-color: #fff !important;
+				color: #222;
+				-webkit-text-fill-color: #222;        /* iOS 內層字色 */
+				border: 1px solid #ccc;
+				border-radius: 8px;
+				width: 100%;
+				box-sizing: border-box;
+				/* 跟 select 對齊的尺寸 */
+				min-height: 44px;                     /* 手指友善高度 */
+				padding: 10px 12px;                   /* 與 select 同步 */
+				line-height: 1.2;
+			  }
+
+			  /* select 建議自訂外觀，避免系統灰感與高度不一致 */
+			  select {
+				-webkit-appearance: none; appearance: none;
+				background-color: #fff !important;
+				color: #222;
+				border: 1px solid #ccc;
+				border-radius: 8px;
+				width: 100%;
+				box-sizing: border-box;
+				min-height: 44px;
+				padding: 10px 36px 10px 12px;         /* 右側留給箭頭 */
+				line-height: 1.2;
+				background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="%23666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>');
+				background-repeat: no-repeat;
+				background-position: right .6rem center;
+				background-size: 1rem;
+			  }
+
+			  /* 真正唯讀/停用才灰底，語意明確 */
+			  input[readonly],
+			  textarea[readonly],
+			  input[disabled],
+			  select[disabled] {
+				background-color: #f2f2f2 !important;
+				color: #888 !important;
+				border-color: #ddd !important;
+			  }
+
+			  /*  query 頁有並排的日期欄，避免 iOS 內建寬度撐爆 */
+			  .inline-date input { min-width: 0; }
+			}			
         </style>
     </head>
     <body>
@@ -382,7 +432,7 @@
 								<div><span class=kv>狀態</span> ${badgeStatus(r.STATUS)}</div>
 								<div><span class=kv>代碼</span> ${r.CODE}</div>
 								<div><span class=kv>訊息</span> ${r.MSG}</div>
-								<div><span class=kv>回應序號</span> ${r.SERIAL}ms</div>
+								<div><span class=kv>回應序號</span> ${r.SERIAL}</div>
 							</div>`
                     )
                     .join("");
