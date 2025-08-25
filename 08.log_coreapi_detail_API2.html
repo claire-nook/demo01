@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>查詢作業 - API呼叫記錄 - 明細（檔案上傳）</title>
+        <style>
+            /* 與前兩頁一致的極簡風格 */
+            :root {
+                color-scheme: light;
+            }
+            html,
+            body {
+                margin: 0;
+                padding: 0;
+                font-family: system-ui, -apple-system, Segoe UI, Roboto, "Noto Sans TC", Arial, sans-serif;
+                background: #f6f7fb;
+            }
+            h2 {
+                margin: 0 0 0.75rem 0;
+                font-size: 1.25rem;
+            }
+            .container {
+                padding: 1rem;
+            }
+            .pc-wrapper {
+                display: block;
+            }
+            .mobile-wrapper {
+                display: none;
+            }
+            .card {
+                background: #fff;
+                border-radius: 12px;
+                padding: 1rem;
+                margin-bottom: 1rem;
+                box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+            }
+            .row-flex {
+                display: flex;
+                gap: 1rem;
+                margin-bottom: 0.75rem;
+            }
+            .col {
+                flex: 1;
+                min-width: 0;
+            }
+            .label {
+                font-size: 0.85rem;
+                color: #6b7280;
+                margin-bottom: 0.25rem;
+                display: block;
+            }
+            .val {
+                font-weight: 600;
+                color: #111;
+                word-break: break-all;
+            }
+            .kv {
+                color: #6b7280;
+                font-size: 0.9rem;
+            }
+            .grid-2 {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 1rem;
+            }
+            .grid-3 {
+                display: grid;
+                grid-template-columns: 1fr 1fr 1fr;
+                gap: 1rem;
+            }
+            .mono {
+                font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+            }
+            .muted {
+                color: #6b7280;
+                font-size: 0.9rem;
+            }
+            .badge {
+                display: inline-block;
+                font-size: 0.8rem;
+                padding: 0.15rem 0.5rem;
+                border: 1px solid #d1d5db;
+                border-radius: 999px;
+                color: #374151;
+                background: #fff;
+            }
+            .badge.ok {
+                color: #166534;
+                border-color: #86efac;
+            }
+            .badge.fail {
+                color: #991b1b;
+                border-color: #fca5a5;
+            }
+            .badge.progress {
+                color: #1e3a8a;
+                border-color: #93c5fd;
+            }
+            .btn-area {
+                display: flex;
+                gap: 0.75rem;
+                justify-content: center;
+                flex-wrap: wrap;
+                margin-top: 0.5rem;
+            }
+            .btn {
+                padding: 0.6rem 1.2rem;
+                border: 0;
+                border-radius: 8px;
+                font-weight: 700;
+                cursor: pointer;
+            }
+            .btn-gray {
+                background: #d1d5db;
+                color: #111;
+            }
+            .btn-warn {
+                background: #f59e0b;
+                color: #111;
+            }
+            .btn-primary {
+                background: #2f855a;
+                color: #fff;
+            }
+            .table-wrap {
+                width: 100%;
+                overflow: auto;
+            }
+            table.table {
+                width: 100%;
+                border-collapse: collapse;
+                table-layout: fixed;
+            }
+            .table th,
+            .table td {
+                border-bottom: 1px solid #e5e7eb;
+                padding: 0.5rem 0.4rem;
+                text-align: left;
+                vertical-align: top;
+            }
+            .table th {
+                color: #6b7280;
+                font-weight: 600;
+            }
+            .tr-fail {
+                background: #fff1f2;
+            }
+            .tr-ok {
+                background: #f0fdf4;
+            }
+            .section-title {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 0.5rem;
+                margin-bottom: 0.5rem;
+            }
+            .meta {
+                color: #6b7280;
+                font-size: 0.85rem;
+            }
+            .divider {
+                height: 1px;
+                background: #e5e7eb;
+                margin: 0.5rem 0 0.75rem;
+            }
+
+            details {
+                border: 1px solid #e5e7eb;
+                border-radius: 10px;
+                padding: 0.5rem 0.75rem;
+                background: #fafafa;
+            }
+            details + details {
+                margin-top: 0.5rem;
+            }
+            details summary {
+                cursor: pointer;
+                list-style: none;
+            }
+            details summary::-webkit-details-marker {
+                display: none;
+            }
+            details .files {
+                padding-top: 0.5rem;
+            }
+
+            @media screen and (max-width: 767px) {
+                .pc-wrapper {
+                    display: none;
+                }
+                .mobile-wrapper {
+                    display: block;
+                }
+                .grid-2,
+                .grid-3 {
+                    grid-template-columns: 1fr;
+                }
+                .row-flex {
+                    flex-direction: column;
+                    gap: 0.5rem;
+                }
+                .btn {
+                    width: 100%;
+                    padding: 0.8rem 1rem;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <!-- 1. 標題與 KPI -->
+            <div class="card" id="headerCard">
+                <div class="row-flex">
+                    <div class="col">
+                        <h2>API呼叫記錄 明細（檔案上傳） <span id="statusBadge" class="badge">狀態</span></h2>
+                        <div class="meta" id="auditInfo">建立：— ・ 最後異動：—</div>
+                    </div>
+                    <div class="col" style="text-align: right;">
+                        <div id="kpiRight" class="muted"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. 請求總覽（LOG_COREAPI） -->
+            <div class="card">
+                <div class="section-title"><strong>請求總覽</strong></div>
+                <div class="grid-2">
+                    <div>
+                        <div class="label">請求序號</div>
+                        <div class="val mono" id="oid">—</div>
+                    </div>
+                    <div>
+                        <div class="label">請求時間</div>
+                        <div class="val" id="reqTime">—</div>
+                    </div>
+                    <div>
+                        <div class="label">請求人員</div>
+                        <div class="val" id="reqStaff">—</div>
+                    </div>
+                    <div>
+                        <div class="label">處理狀態</div>
+                        <div class="val" id="reqStatusWrap">—</div>
+                    </div>
+                    <div>
+                        <div class="label">來源</div>
+                        <div class="val" id="srcCode">—</div>
+                    </div>
+                    <div>
+                        <div class="label">API 類型</div>
+                        <div class="val" id="apiType">—</div>
+                    </div>
+                    <div>
+                        <div class="label">賠案號碼</div>
+                        <div class="val mono" id="claimNo">—</div>
+                    </div>
+                    <div>
+                        <div class="label">任務編號</div>
+                        <div class="val mono" id="taskOid">—</div>
+                    </div>
+                    <div>
+                        <div class="label">是否關聯任務</div>
+                        <div class="val" id="hasTask">—</div>
+                    </div>
+                    <div>
+                        <div class="label">排程編號</div>
+                        <div class="val mono" id="jobOid">—</div>
+                    </div>
+                    <div>
+                        <div class="label">重送編號</div>
+                        <div class="val mono" id="resendOid">—</div>
+                    </div>
+                    <div>
+                        <div class="label">重送鎖定</div>
+                        <div class="val mono" id="resendLock">—</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. 呼叫時間軸（LOG_COREAPI_CALL） -->
+            <div class="card">
+                <div class="section-title"><strong>呼叫時間軸</strong></div>
+                <div class="pc-wrapper">
+                    <div class="table-wrap">
+                        <table class="table" id="callTable">
+                            <colgroup>
+                                <col style="width: 56px;" />
+                                <col style="width: 160px;" />
+                                <col style="width: 160px;" />
+                                <col style="width: 120px;" />
+                                <col style="width: 120px;" />
+                                <col />
+                                <col style="width: 120px;" />
+                            </colgroup>
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>呼叫時間</th>
+                                    <th>回應時間</th>
+                                    <th>狀態</th>
+                                    <th>代碼</th>
+                                    <th>訊息</th>
+                                    <th>回應序號</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="mobile-wrapper" id="callCards"></div>
+            </div>
+
+            <!-- 4. 動態卡片：檔案上傳（LOG_COREAPI_FILE + FILELIST） -->
+            <div class="card" id="fileCard">
+                <div class="section-title"><strong>檔案上傳資訊</strong></div>
+                <div class="grid-3">
+                    <div>
+                        <div class="label">上傳模式</div>
+                        <div class="val" id="uploadMode">—</div>
+                    </div>
+                    <div>
+                        <div class="label">上傳類別</div>
+                        <div class="val" id="uploadType">—</div>
+                    </div>
+                    <div>
+                        <div class="label">說明</div>
+                        <div class="val" id="fileDesc">—</div>
+                    </div>
+                </div>
+                <div class="grid-3" style="margin-top: 0.75rem;">
+                    <div>
+                        <div class="label">原始上傳檔案數量</div>
+                        <div class="val" id="origCnt">—</div>
+                    </div>
+                    <div>
+                        <div class="label">實際接收檔案數量</div>
+                        <div class="val" id="finalCnt">—</div>
+                    </div>
+                    <div>
+                        <div class="label">傳送中間層檔案數量</div>
+                        <div class="val" id="procCnt">—</div>
+                    </div>
+                </div>
+                <div class="grid-2" style="margin-top: 0.75rem;">
+                    <div>
+                        <div class="label">暫存路徑</div>
+                        <div class="val mono" id="filePath">—</div>
+                    </div>
+                    <div>
+                        <div class="label">總檔案大小</div>
+                        <div class="val" id="finalSize">—</div>
+                    </div>
+                </div>
+                <div class="divider"></div>
+                <div>
+                    <div class="label">排程處理記錄</div>
+                    <div class="val" id="procMemo" style="white-space: pre-wrap; max-width: 75ch;">—</div>
+                </div>
+                <div class="divider"></div>
+                <div>
+                    <div class="label">批次與檔案清單（依 CALL_SEQ 分組）</div>
+                    <div id="batches"></div>
+                </div>
+            </div>
+
+            <!-- 5. 操作區（檔案上傳允許重送） -->
+            <div class="card">
+                <div class="section-title"><strong>操作與連結</strong></div>
+                <div class="btn-area">
+                    <button class="btn btn-warn" id="btnResend" onclick="resend()" disabled>重送</button>
+                    <button class="btn btn-gray" onclick="goBack()">返回查詢</button>
+                </div>
+                <div id="resendInfo" class="muted" style="margin-top: 0.5rem;"></div>
+            </div>
+        </div>
+
+        <script>
+            function badgeStatus(s) {
+                const map = { 0: ["progress", "待處理"], 1: ["ok", "成功"], 2: ["fail", "失敗"], 3: ["fail", "逾時"], 4: ["fail", "取消"], 5: ["progress", "處理中"] };
+                const v = map[s] || ["", "未知"];
+                return `<span class="badge ${v[0]}">${s} ${v[1]}</span>`;
+            }
+
+            // Sample data for Page C
+            const SAMPLE = {
+                LOG_COREAPI: {
+                    OID: 102,
+                    REQ_TIME: "2025/08/21 10:05:10",
+                    SRC_CODE: "SUPP",
+                    API_TYPE: 2,
+                    CLAIM_NO: "01078967",
+                    OID_REQ_STAFF: "李四",
+                    OID_CLM_TASK: null,
+                    HAS_RELATED_TASK: "Y",
+                    OID_JOB_HISTORY: 19,
+                    REQ_STATUS: 2, // 失敗（因為有一批失敗）
+                    OID_RESEND: 103,
+                    RESEND_LOCK: "未鎖定",
+                    CREATE_INFO: "建立：2025/08/21 10:05:10（李四）",
+                    UPDATE_INFO: "最後異動：2025/08/21 10:21:04（系統）",
+                },
+                LOG_COREAPI_CALL: [
+                    { CALL_SEQ: 1, CALL_TIME: "09:12:05", RETURN_TIME: "09:12:06", STATUS: 1, CODE: "000", MSG: "呼叫成功", DUR: 410, SERIAL: 21880 },
+                    { CALL_SEQ: 2, CALL_TIME: "09:12:20", RETURN_TIME: "09:12:25", STATUS: 2, CODE: "E99", MSG: "驗證失敗", DUR: 5260, SERIAL: 21881 },
+                    { CALL_SEQ: 3, CALL_TIME: "09:15:01", RETURN_TIME: "09:15:02", STATUS: 1, CODE: "000", MSG: "呼叫成功", DUR: 380, SERIAL: 21882 },
+                ],
+                LOG_COREAPI_FILE: {
+                    OID: 90011,
+                    OID_COREAPI: 73001,
+                    CLAIM_NO: "A20250818001",
+                    UPLOAD_MODE: 0,
+                    FILE_UPLOAD_TYPE: "保戶",
+                    FILE_DESC: "保車照片",
+                    FILE_PATH: "D:/ClaimsFiles/2025/0821/102/",
+                    ORIG_FCOUNT: 12,
+                    FINAL_FCOUNT: 12,
+                    PROC_FCOUNT: 7,
+                    FINA_FSIZE: 13400320,
+                    PROC_MEMO: "CALL_SEQ=1 成功 5 檔; CALL_SEQ=2 失敗 5 檔(批次驗證: 檔名含不允許字元); CALL_SEQ=3 成功 2 檔",
+                },
+                LOG_COREAPI_FILELIST: [
+                    // seq1: 5 files
+                    { FILE_NAME: "IMG_001.jpg", CALL_SEQ: 1 },
+                    { FILE_NAME: "IMG_002.jpg", CALL_SEQ: 1 },
+                    { FILE_NAME: "IMG_003.jpg", CALL_SEQ: 1 },
+                    { FILE_NAME: "IMG_004.jpg", CALL_SEQ: 1 },
+                    { FILE_NAME: "IMG_005.jpg", CALL_SEQ: 1 },
+                    // seq2: 5 files (failed batch)
+                    { FILE_NAME: "IMG_006.jpg", CALL_SEQ: 2 },
+                    { FILE_NAME: "IMG_007.jpg", CALL_SEQ: 2 },
+                    { FILE_NAME: "IMG_008.jpg", CALL_SEQ: 2 },
+                    { FILE_NAME: "IMG_009.jpg", CALL_SEQ: 2 },
+                    { FILE_NAME: "IMG_010.jpg", CALL_SEQ: 2 },
+                    // seq3: 2 files
+                    { FILE_NAME: "IMG_011.jpg", CALL_SEQ: 3 },
+                    { FILE_NAME: "IMG_012.jpg", CALL_SEQ: 3 },
+                ],
+            };
+
+            function renderAll(d) {
+                const g = d.LOG_COREAPI;
+                if (String(g.API_TYPE) !== "2") {
+                    document.body.innerHTML = '<div class="container"><div class="card"><h2>頁面錯誤</h2><div class="muted">本頁僅顯示「檔案上傳」的明細。偵測到這筆請求 API_TYPE = ' + g.API_TYPE + "，請開啟對應頁面。</div></div></div>";
+                    return;
+                }
+                // header
+                document.getElementById("auditInfo").textContent = `${g.CREATE_INFO} ・ ${g.UPDATE_INFO}`;
+                document.getElementById("statusBadge").outerHTML = badgeStatus(g.REQ_STATUS);
+                document.getElementById("kpiRight").textContent = "";
+
+                // summary
+                document.getElementById("oid").textContent = g.OID;
+                document.getElementById("reqTime").textContent = g.REQ_TIME;
+                document.getElementById("srcCode").textContent = g.SRC_CODE;
+                document.getElementById("apiType").textContent = `${g.API_TYPE} 檔案上傳`;
+                document.getElementById("claimNo").textContent = g.CLAIM_NO || "";
+                document.getElementById("reqStaff").textContent = g.OID_REQ_STAFF || "";
+                document.getElementById("taskOid").textContent = g.OID_CLM_TASK || "";
+                document.getElementById("hasTask").textContent = g.HAS_RELATED_TASK === "Y" ? "是" : "否";
+                document.getElementById("jobOid").textContent = g.OID_JOB_HISTORY || "";
+                document.getElementById("resendOid").textContent = g.OID_RESEND || "";
+                document.getElementById("resendLock").textContent = g.RESEND_LOCK || "";
+                document.getElementById("reqStatusWrap").innerHTML = badgeStatus(g.REQ_STATUS);
+
+                // calls
+                renderCalls(d.LOG_COREAPI_CALL || []);
+
+                // file card
+                const f = d.LOG_COREAPI_FILE;
+                document.getElementById("uploadMode").textContent = f.UPLOAD_MODE === 1 ? "多張圖片合併為PDF上傳" : "逐張相片/逐個檔案上傳";
+                document.getElementById("uploadType").textContent = f.FILE_UPLOAD_TYPE || "";
+                document.getElementById("filePath").textContent = f.FILE_PATH || "";
+                document.getElementById("origCnt").textContent = f.ORIG_FCOUNT;
+                document.getElementById("finalCnt").textContent = f.FINAL_FCOUNT;
+                document.getElementById("procCnt").textContent = f.PROC_FCOUNT;
+                document.getElementById("finalSize").textContent = formatBytes(f.FINA_FSIZE);
+                document.getElementById("fileDesc").textContent = f.FILE_DESC || "";
+                document.getElementById("procMemo").textContent = f.PROC_MEMO || "";
+
+                renderBatches(d.LOG_COREAPI_CALL, d.LOG_COREAPI_FILELIST);
+
+                setupResend(g, d.LOG_COREAPI_CALL, d.LOG_COREAPI_FILELIST);
+            }
+
+            function renderCalls(rows) {
+                const tb = document.querySelector("#callTable tbody");
+                tb.innerHTML = rows
+                    .map((r) => {
+                        const cls = r.STATUS === 1 ? "tr-ok" : "tr-fail";
+                        return `<tr class="${cls}">
+									<td>${r.CALL_SEQ}</td>
+									<td>${r.CALL_TIME}</td>
+									<td>${r.RETURN_TIME || ""}</td>
+									<td>${badgeStatus(r.STATUS)}</td>
+									<td class="mono">${r.CODE || ""}</td>
+									<td>${r.MSG || ""}</td>
+									<td class="mono">${r.SERIAL || ""}</td>
+								</tr>`;}
+						).join("");
+
+                const mc = document.getElementById("callCards");
+                mc.innerHTML = rows
+                    .map(
+                        (r) => `
+						  <div class="card" style="margin:0 0 0.75rem 0">
+							<div><span class="kv">批次</span> <span class="val mono">${r.CALL_SEQ}</span></div>
+							<div><span class="kv">呼叫</span> <span class="val">${r.CALL_TIME}</span></div>
+							<div><span class="kv">回應</span> <span class="val">${r.RETURN_TIME || ""}</span></div>
+							<div><span class="kv">狀態</span> ${badgeStatus(r.STATUS)}</div>
+							<div><span class="kv">代碼</span> <span class="val mono">${r.CODE || ""}</span></div>
+							<div><span class="kv">訊息</span> <span class="val">${r.MSG || ""}</span></div>
+							<div><span class="kv">回應序號</span> <span class="val mono">${r.SERIAL || ""} ms</span></div>
+						  </div>`
+                    )
+                    .join("");
+            }
+
+            function renderBatches(calls, list) {
+                const wrap = document.getElementById("batches");
+                if (!calls || !calls.length) {
+                    wrap.innerHTML = '<div class="muted">尚無批次資訊</div>';
+                    return;
+                }
+                // group files by CALL_SEQ
+                const group = {};
+                (list || []).forEach((f) => {
+                    (group[f.CALL_SEQ] ||= []).push(f);
+                });
+                // sort by seq
+                const ordered = [...calls].sort((a, b) => a.CALL_SEQ - b.CALL_SEQ);
+                wrap.innerHTML = ordered
+                    .map((c) => {
+                        const files = group[c.CALL_SEQ] || [];
+                        const fail = c.STATUS !== 1;
+                        const head = `批次 ${c.CALL_SEQ} ・ ${fail ? "失敗" : "成功"} ・ 檔案 ${files.length}`;
+                        const filesHtml = files.map((f) => `<div class="mono">${f.FILE_NAME}</div>`).join("");
+                        return `<details ${fail ? "open" : ""}>
+            <summary>${head}</summary>
+            <div class="files">${filesHtml || '<span class="muted">（無檔案清單）</span>'}</div>
+          </details>`;
+                    })
+                    .join("");
+            }
+
+            function setupResend(g, calls, list) {
+                const failedSeqs = (calls || []).filter((x) => x.STATUS !== 1).map((x) => x.CALL_SEQ);
+                const failedFiles = (list || []).filter((x) => failedSeqs.includes(x.CALL_SEQ));
+                const canResend = failedSeqs.length > 0 && !g.OID_RESEND && !g.RESEND_LOCK;
+                document.getElementById("btnResend").disabled = !canResend;
+                const info = document.getElementById("resendInfo");
+                if (!failedSeqs.length) info.textContent = "無失敗批次";
+                else if (!canResend) info.textContent = "不符合重送條件";
+                else info.textContent = `將重送失敗批次：${failedSeqs.join(", ")}（共 ${failedFiles.length} 檔）`;
+            }
+
+            function formatBytes(bytes) {
+                if (!bytes && bytes !== 0) return "—";
+                const units = ["B", "KB", "MB", "GB"];
+                let i = 0,
+                    n = bytes;
+                while (n >= 1024 && i < units.length - 1) {
+                    n /= 1024;
+                    i++;
+                }
+                return `${n.toFixed(1)} ${units[i]}`;
+            }
+
+            function goBack() {
+				location.href = "08.log_coreapi_query.html";
+            }
+            function resend() {
+                alert("POST /log-coreapi/{oid}/resend-files 送出模擬。");
+            }
+
+            document.addEventListener("DOMContentLoaded", () => {
+                renderAll(SAMPLE);
+            });
+        </script>
+    </body>
+</html>

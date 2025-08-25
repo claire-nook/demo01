@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>查詢作業 - API呼叫記錄查詢 - 查詢</title>
+        <style>
+            /* ===== Base ===== */
+            :root {
+                color-scheme: light;
+            }
+            html,
+            body {
+                margin: 0;
+                padding: 0;
+                font-family: system-ui, -apple-system, Segoe UI, Roboto, "Noto Sans TC", Arial, sans-serif;
+                color: #222;
+            }
+            h2 {
+                margin: 1rem auto;
+                max-width: 1000px;
+                padding: 0 1rem;
+            }
+
+            /* ===== Containers ===== */
+            .pc-wrapper {
+                max-width: 1000px;
+                margin: 0 auto 2rem;
+                padding: 0 1rem;
+            }
+            .query-form {
+                background: #fff;
+                padding: 1rem;
+                margin-bottom: 1rem;
+                border-radius: 12px;
+                box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+            }
+            .inline-row {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 1rem;
+            }
+            .query-form label {
+                display: block;
+                font-size: 0.92rem;
+                color: #333;
+            }
+            .query-form input,
+            .query-form select {
+                width: 100%;
+                padding: 0.55rem 0.65rem;
+                border: 1px solid #cfd3d9;
+                border-radius: 8px;
+                box-sizing: border-box;
+            }
+            .query-form .hint {
+                font-size: 0.8rem;
+                color: #777;
+            }
+            .btn-area {
+                margin-top: 0.8rem;
+                display: flex;
+                gap: 0.75rem;
+                justify-content: center;
+            }
+            .btn {
+                padding: 0.6rem 1.2rem;
+                border: 0;
+                border-radius: 8px;
+                font-weight: 700;
+                cursor: pointer;
+            }
+            .btn-clear {
+                background: #d1d5db;
+                color: #111;
+            }
+            .btn-search {
+                background: #2f855a;
+                color: #fff;
+            }
+
+            /* ===== Table ===== */
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                background: #fff;
+                border-radius: 10px;
+                overflow: hidden;
+                box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+            }
+            th,
+            td {
+                padding: 0.75rem;
+                border-bottom: 1px solid #eceff3;
+                text-align: left;
+            }
+            th {
+                background: #f3f4f6;
+                color: #111;
+                font-weight: 700;
+                font-size: 0.95rem;
+            }
+            td {
+                font-size: 0.92rem;
+            }
+            .ops {
+                white-space: nowrap;
+            }
+            .link {
+                color: #2563eb;
+                text-decoration: underline;
+                cursor: pointer;
+            }
+            .badge {
+                display: inline-block;
+                padding: 0.15rem 0.5rem;
+                border-radius: 999px;
+                border: 1px solid #cbd5e1;
+                font-size: 0.78rem;
+            }
+            .badge.ok {
+                color: #065f46;
+                border-color: #34d399;
+            }
+            .badge.fail {
+                color: #991b1b;
+                border-color: #fca5a5;
+            }
+            .badge.progress {
+                color: #1e3a8a;
+                border-color: #93c5fd;
+            }
+
+            /* ===== Responsive (Mobile) ===== */
+            .pc {
+                display: block;
+            }
+            .mobile {
+                display: none;
+            }
+            .card {
+                background: #fff;
+                border-radius: 12px;
+                padding: 1rem;
+                margin: 0 1rem 1rem;
+                box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+            }
+            .card div {
+                margin: 0.25rem 0;
+            }
+            .kv {
+                color: #6b7280;
+                font-size: 0.9rem;
+            }
+            .val {
+                color: #111;
+                font-weight: 600;
+            }
+
+            @media (max-width: 767px) {
+                .pc {
+                    display: none;
+                }
+                .mobile {
+                    display: block;
+                }
+                .inline-row {
+                    grid-template-columns: 1fr;
+                    gap: 0.75rem;
+                }
+                input,
+                select,
+                button {
+                    font-size: 16px !important;
+                    height: 40px !important;
+                    padding: 8px 10px !important;
+                }
+                label {
+                    font-size: 1rem;
+                }
+                .btn {
+                    font-size: 1rem;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <h2>API呼叫記錄查詢（LOG_COREAPI）</h2>
+
+        <!-- ==== PC: 查詢條件 ==== -->
+        <div class="pc-wrapper pc">
+            <div class="query-form">
+                <div class="inline-row">
+                    <label>
+                        請求日期起
+                        <input id="qStartPc" type="date" />
+                    </label>
+                    <label>
+                        請求日期迄
+                        <input id="qEndPc" type="date" />
+                    </label>
+                </div>
+                <div class="inline-row">
+                    <label>
+                        來源功能
+                        <select id="qSrcPc">
+                            <option value="">全部</option>
+                            <option value="TASK">TASK 我的任務</option>
+                            <option value="SUPP">SUPP 資料補傳</option>
+                            <option value="RETRY">RETRY 人工重送</option>
+                        </select>
+                    </label>
+                    <label>
+                        API類型
+                        <select id="qApiPc">
+                            <option value="">全部</option>
+                            <option value="1">1 日誌新增</option>
+                            <option value="2">2 檔案上傳</option>
+                            <option value="3">3 賠案查詢</option>
+                        </select>
+                    </label>
+                </div>
+                <div class="inline-row">
+                    <label>
+                        賠案號碼
+                        <input id="qClaimPc" type="text" placeholder="8碼" maxlength="20" />
+                    </label>
+                    <label>
+                        任務編號
+                        <input id="qTaskPc" type="text" maxlength="20" />
+                    </label>
+                </div>
+                <div class="inline-row">
+                    <label>
+                        請求序號
+                        <input id="qOidPc" type="text" maxlength="20" />
+                    </label>
+                    <label>
+                        重送序號
+                        <input id="qResendOidPc" type="text" maxlength="20" />
+                    </label>
+                </div>
+
+                <div class="inline-row">
+                    <label>
+                        請求人員姓名
+                        <input id="qStaffPc" type="number" inputmode="numeric" />
+                    </label>
+                    <label>
+                        處理狀態
+                        <select id="qStatusPc">
+                            <option value="">全部</option>
+                            <option value="0">0 待處理</option>
+                            <option value="1">1 處理中</option>
+                            <option value="2">2 成功</option>
+                            <option value="3">3 失敗</option>
+                            <option value="4">4 逾時</option>
+                            <option value="5">5 取消</option>
+                        </select>
+                    </label>
+                </div>
+                <div class="inline-row">
+                    <label>
+                        是否有關聯任務
+                        <select id="qHasTaskPc">
+                            <option value="">全部</option>
+                            <option value="Y">Y 有</option>
+                            <option value="N">N 無</option>
+                        </select>
+                    </label>
+                    <label>
+                        上傳模式
+                        <select id="qUploadModePc">
+                            <option value="">全部</option>
+                            <option value="0">0 逐張相片/逐個檔案上傳</option>
+                            <option value="1">1 多張圖片合併為PDF上傳</option>
+                        </select>
+                        <div class="hint">僅在 API_TYPE=2 檔案上傳時有意義</div>
+                    </label>
+                </div>
+                <div class="btn-area">
+                    <button class="btn btn-search" onclick="doQuery('pc')">查詢</button>
+                    <button class="btn btn-clear" onclick="doClear('pc')">清除</button>
+                </div>
+            </div>
+
+            <!-- PC: 結果表格 -->
+            <table id="pcTable">
+                <thead>
+                    <tr>
+                        <th>請求序號</th>
+                        <th>請求時間</th>
+                        <th>來源</th>
+                        <th>API類型</th>
+                        <th>賠案號碼</th>
+                        <th>請求人員</th>
+                        <th>任務編號</th>
+                        <th>關聯任務</th>
+                        <th>狀態</th>
+                        <th>重送序號</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+			<div class="hint">
+				<strong>雛型說明：</strong></br>
+				1. 請求序號101：明細頁面展示「日誌新增」</br>
+				2. 請求序號102：明細頁面展示「檔案上傳」</br>
+				3. 請求序號104：明細頁面展示「賠案查詢</br>
+				4. 其餘頁面沒有做雛型畫面</br></br>
+				
+				<strong>畫面案例說明：</strong></br>
+				1. 請求序號101的來源是TASK，代表張三透過「我的任務」進行日誌新增，故關聯任務=Y，因為張三擁有賠案號碼01078966的任務。</br>
+				2. 請求序號106的來源是SUPP，代表張三透過「資料補傳」進行日誌新增，因為張三「曾擁有過賠案號碼01078966的任務」，故此筆資料的關聯任務仍會判斷為Y。</br>
+				3. 請求序號102的來源是SUPP，代表李四透過「資料補傳」進行檔案上傳，而系統查無李四擁有過賠案號碼01078967的任務，故此筆資料的關聯任務=N。</br>
+				4. 請求序號102的檔案上傳失敗了，由系統管理員手動進行重送後曾功，因而請求序號102的「重送序號」會顯示103。</br>
+				5. 請求序號103為系統管理員手動上傳後系統自動新增的API請求記錄。
+			</div>
+        </div>
+
+        <!-- ==== Mobile: 查詢條件 + 結果卡片 ==== -->
+        <div class="mobile">
+            <div class="query-form">
+                <div class="inline-row">
+                    <label>請求日期起<input id="qStartMb" type="date" /></label>
+                    <label>請求日期迄<input id="qEndMb" type="date" /></label>
+                </div>
+                <div class="inline-row">
+                    <label>
+                        來源功能
+                        <select id="qSrcMb">
+                            <option value="">全部</option>
+                            <option value="TASK">TASK</option>
+                            <option value="SUPP">SUPP</option>
+                            <option value="RETRY">RETRY</option>
+                        </select>
+                    </label>
+                    <label>
+                        API類型
+                        <select id="qApiMb">
+                            <option value="">全部</option>
+                            <option value="1">1 日誌新增</option>
+                            <option value="2">2 檔案上傳</option>
+                            <option value="3">3 賠案查詢</option>
+                        </select>
+                    </label>
+                </div>
+                <div class="inline-row">
+                    <label>賠案號碼<input id="qClaimMb" type="text" maxlength="20" placeholder="8碼" /></label>
+                    <label>任務編號<input id="qTaskMb" type="text" maxlength="20" /></label>
+                </div>
+                <div class="inline-row">
+                    <label>請求序號<input id="qOidMb" type="text" maxlength="20" /></label>
+                    <label>重送序號<input id="qResendOidMb" type="text" maxlength="20" /></label>
+                </div>
+                <div class="inline-row">
+                    <label>請求人員姓名<input id="qStaffMb" type="number" inputmode="numeric" /></label>
+                    <label>
+                        狀態
+                        <select id="qStatusMb">
+                            <option value="">全部</option>
+                            <option value="0">0 待處理</option>
+                            <option value="1">1 處理中</option>
+                            <option value="2">2 成功</option>
+                            <option value="3">3 失敗</option>
+                            <option value="4">4 逾時</option>
+                            <option value="5">5 取消</option>
+                        </select>
+                    </label>
+                </div>
+                <div class="inline-row">
+                    <label>
+                        是否有關聯任務
+                        <select id="qHasTaskMb">
+                            <option value="">全部</option>
+                            <option value="Y">Y</option>
+                            <option value="N">N</option>
+                        </select>
+                    </label>
+                    <label>
+                        上傳模式
+                        <select id="qUploadModeMb">
+                            <option value="">全部</option>
+                            <option value="0">0 逐張相片/逐個檔案上傳</option>
+                            <option value="1">1 多張圖片合併為PDF上傳</option>
+                        </select>
+                    </label>
+                </div>
+                <div class="btn-area">
+                    <button class="btn btn-search" onclick="doQuery('mb')">查詢</button>
+                    <button class="btn btn-clear" onclick="doClear('mb')">清除</button>
+                </div>
+            </div>
+            <div id="mbCards"></div>
+        </div>
+
+        <script>
+            // ===== 假資料（對齊 LOG_COREAPI 欄位語意） =====
+            const DATA = [
+                { 	OID: 101, 
+					REQ_TIME: "2025-08-21 09:12:33", 
+					SRC_CODE: "TASK", 
+					API_TYPE: "1", 
+					CLAIM_NO: "01078966", 
+					OID_REQ_STAFF: "張三", 
+					OID_CLM_TASK: 551, 
+					HAS_RELATED_TASK: "Y", 
+					REQ_STATUS: 2, 
+					CALL_API_COUNT: 1, 
+					OID_RESEND: null 
+				},
+                {
+                    OID: 102,
+                    REQ_TIME: "2025-08-21 10:05:10",
+                    SRC_CODE: "SUPP",
+                    API_TYPE: "2",
+                    CLAIM_NO: "01078967",
+                    OID_REQ_STAFF: "李四",
+                    OID_CLM_TASK: null,
+                    HAS_RELATED_TASK: "N",
+                    REQ_STATUS: 3,
+                    CALL_API_COUNT: 3,
+                    UPLOAD_MODE: 2,
+                    OID_RESEND: 103,
+                },
+                {
+                    OID: 103,
+                    REQ_TIME: "2025-08-22 08:00:00",
+                    SRC_CODE: "RETRY",
+                    API_TYPE: "2",
+                    CLAIM_NO: "01078967",
+                    OID_REQ_STAFF: "系統管理員",
+                    OID_CLM_TASK: null,
+                    HAS_RELATED_TASK: "N",
+                    REQ_STATUS: 2,
+                    CALL_API_COUNT: 2,
+                    UPLOAD_MODE: 1,
+                    OID_RESEND: null,
+                },
+                { 
+					OID: 104, 
+					REQ_TIME: "2025-08-22 11:20:45", 
+					SRC_CODE: "TASK", API_TYPE: "3", 
+					CLAIM_NO: "01078969", 
+					OID_REQ_STAFF: "王五", 
+					OID_CLM_TASK: 777, 
+					HAS_RELATED_TASK: "Y", 
+					REQ_STATUS: 2, 
+					CALL_API_COUNT: 1, 
+					OID_RESEND: null 
+				},
+                {
+                    OID: 105,
+                    REQ_TIME: "2025-08-23 15:25:30",
+                    SRC_CODE: "SUPP",
+                    API_TYPE: "2",
+                    CLAIM_NO: "01078999",
+                    OID_REQ_STAFF: "李四",
+                    OID_CLM_TASK: null,
+                    HAS_RELATED_TASK: "N",
+                    REQ_STATUS: 1,
+                    CALL_API_COUNT: 3,
+                    UPLOAD_MODE: 2,
+                    OID_RESEND: null,
+                },
+                { 
+					OID: 106, 
+					REQ_TIME: "2025-08-21 09:12:33", 
+					SRC_CODE: "SUPP", 
+					API_TYPE: "1", 
+					CLAIM_NO: "01078966", 
+					OID_REQ_STAFF: "張三", 
+					OID_CLM_TASK: null, 
+					HAS_RELATED_TASK: "Y", 
+					REQ_STATUS: 2, 
+					CALL_API_COUNT: 1, 
+					OID_RESEND: null 
+				},
+            ];
+
+            function badgeStatus(s) {
+                const map = { 0: ["待處理", "progress"], 1: ["處理中", "progress"], 2: ["成功", "ok"], 3: ["失敗", "fail"], 4: ["逾時", "fail"], 5: ["取消", "fail"] };
+                const [txt, cls] = map[s] || ["未知", ""];
+                return `<span class="badge ${cls}">${s} ${txt}</span>`;
+            }
+
+            function apiName(a) {
+                return a === "1" ? "1 日誌新增" : a === "2" ? "2 檔案上傳" : a === "3" ? "3 賠案查詢" : "?";
+            }
+
+            function readForm(mode) {
+                const suf = mode === "pc" ? "Pc" : "Mb";
+                return {
+                    start: document.getElementById("qStart" + suf).value,
+                    end: document.getElementById("qEnd" + suf).value,
+                    src: document.getElementById("qSrc" + suf).value,
+                    api: document.getElementById("qApi" + suf).value,
+                    claim: document.getElementById("qClaim" + suf).value.trim(),
+                    staff: document.getElementById("qStaff" + suf).value,
+                    task: document.getElementById("qTask" + suf).value,
+                    status: document.getElementById("qStatus" + suf).value,
+                    hasTask: document.getElementById("qHasTask" + suf).value,
+                    upMode: document.getElementById("qUploadMode" + suf).value,
+                };
+            }
+
+            function filter(data, q) {
+                return data.filter((r) => {
+                    if (q.src && r.SRC_CODE !== q.src) return false;
+                    if (q.api && r.API_TYPE !== q.api) return false;
+                    if (q.claim && !String(r.CLAIM_NO).includes(q.claim)) return false;
+                    if (q.staff && String(r.OID_REQ_STAFF) !== String(q.staff)) return false;
+                    if (q.task) {
+                        if (!r.OID_CLM_TASK) return false;
+                        if (String(r.OID_CLM_TASK) !== String(q.task)) return false;
+                    }
+                    if (q.status !== "" && q.status != null) {
+                        if (String(r.REQ_STATUS) !== String(q.status)) return false;
+                    }
+                    if (q.hasTask && r.HAS_RELATED_TASK !== q.hasTask) return false;
+                    if (q.upMode && String(r.UPLOAD_MODE || "") !== String(q.upMode)) return false;
+                    if (q.start && r.REQ_TIME < q.start + " 00:00:00") return false;
+                    if (q.end && r.REQ_TIME > q.end + " 23:59:59") return false;
+                    return true;
+                });
+            }
+
+			// 1) OID → 對應的 detail 測試頁（先把目前有畫的 OID 列進來）
+			const DETAIL_PAGE = {
+			  "101": "08.log_coreapi_detail_API1.html", // 日誌新增
+			  "102": "08.log_coreapi_detail_API2.html", // 檔案上傳(失敗)
+			  "104": "08.log_coreapi_detail_API3.html"  // 賠案查詢
+			};
+
+			// 產生連結：把 OID 帶在 query string，detail 頁可用來載入對應資料
+			function resolveDetail(oid) {
+			  return DETAIL_PAGE[String(oid)] || null;
+			}
+
+			function resolveDetail(oid) {
+			  return DETAIL_PAGE[String(oid)] || null;
+			}
+
+			// 有對應頁就回傳 URL，沒有就回傳 null
+			function toDetailUrl(row) {
+			  const page = resolveDetail(row.OID);
+			  return page ? `${page}?oid=${encodeURIComponent(row.OID)}` : null;
+			}
+
+			// 統一的「沒有雛型」訊息
+			function noPrototype(oid) {
+			  alert(`此請求序號沒有做雛型畫面：${oid}`);
+			}
+
+			// 2) PC 表格：有頁面就用 <a>，沒有頁面就用可點的文字給提示
+			function renderPc(rows) {
+			  const tbody = document.querySelector("#pcTable tbody");
+			  tbody.innerHTML = rows.map((r) => {
+				const url = toDetailUrl(r);
+				const link = url
+				  ? `<a href="${url}">${r.OID}</a>`
+				  : `<span class="link" onclick="noPrototype(${r.OID})">${r.OID}</span>`;
+				return `
+				  <tr>
+					<td>${link}</td>
+					<td>${r.REQ_TIME}</td>
+					<td>${r.SRC_CODE}</td>
+					<td>${apiName(r.API_TYPE)}</td>
+					<td>${r.CLAIM_NO}</td>
+					<td>${r.OID_REQ_STAFF ?? ""}</td>
+					<td>${r.OID_CLM_TASK ?? ""}</td>
+					<td>${r.HAS_RELATED_TASK}</td>
+					<td>${badgeStatus(r.REQ_STATUS)}</td>
+					<td>${r.OID_RESEND ?? ""}</td>
+				  </tr>`;
+			  }).join("");
+			}
+
+			// 3) Mobile：用按鈕。不改卡片結構，只把 viewDetail 改成看 OID 對應
+			function viewDetail(oid) {
+			  const page = resolveDetail(oid);
+			  if (!page) { noPrototype(oid); return; }
+			  location.href = `${page}?oid=${encodeURIComponent(oid)}`;
+			}
+
+
+            function renderMb(rows) {
+                const wrap = document.getElementById("mbCards");
+                wrap.innerHTML = rows
+                    .map(
+                        (r) => `
+          <div class="card">
+            <div><span class="kv">請求序號：</span><span class="val">${r.OID}</span></div>
+            <div><span class="kv">時間：</span><span class="val">${r.REQ_TIME}</span></div>
+            <div><span class="kv">來源：</span><span class="val">${r.SRC_CODE}</span></div>
+            <div><span class="kv">API：</span><span class="val">${apiName(r.API_TYPE)}</span></div>
+            <div><span class="kv">賠案號碼：</span><span class="val">${r.CLAIM_NO}</span></div>
+            <div><span class="kv">請求人員：</span><span class="val">${r.OID_REQ_STAFF ?? ""}</span></div>
+            <div><span class="kv">任務編號：</span><span class="val">${r.OID_CLM_TASK ?? ""}</span></div>
+            <div><span class="kv">狀態：</span> ${badgeStatus(r.REQ_STATUS)}</div>
+            <div><span class="kv">重送序號：</span><span class="val">${r.OID_RESEND ?? ""}</span></div>
+            <div class="ops"><button class="btn-view" onclick="viewDetail(${r.OID})">查看明細</button></div>
+          </div>`
+                    )
+                    .join("");
+            }
+
+            function doQuery(mode) {
+                const q = readForm(mode);
+                const rows = filter(DATA, q);
+                if (mode === "pc") renderPc(rows);
+                else renderMb(rows);
+            }
+            function doClear(mode) {
+                const suf = mode === "pc" ? "Pc" : "Mb";
+                ["Start", "End", "Src", "Api", "Claim", "Staff", "Task", "Status", "HasTask", "UploadMode"].forEach((k) => {
+                    const el = document.getElementById("q" + k + suf);
+                    if (!el) return;
+                    if (el.tagName === "SELECT") el.selectedIndex = 0;
+                    else el.value = "";
+                });
+                if (mode === "pc") renderPc(DATA);
+                else renderMb(DATA);
+            }
+
+            function viewDetail(oid) {
+                // 明細頁尚未定義，先導到預留頁面/或彈出
+                //alert(`TODO: 導向明細頁，OID=${oid}`);
+                location.href = `08.log_coreapi_detail.html?oid=${oid}`;
+            }
+
+            // 初始渲染
+            (function ready() {
+                renderPc(DATA);
+                renderMb(DATA);
+            })();
+        </script>
+    </body>
+</html>

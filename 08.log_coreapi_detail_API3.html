@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>查詢作業 - API呼叫記錄 - 明細 (賠案查詢)</title>
+        <style>
+            :root {
+                color-scheme: light;
+            }
+            html,
+            body {
+                margin: 0;
+                padding: 0;
+                font-family: system-ui, -apple-system, Segoe UI, Roboto, "Noto Sans TC", Arial, sans-serif;
+                background: #f6f7fb;
+            }
+            h2 {
+                margin: 0 0 0.75rem 0;
+                font-size: 1.25rem;
+            }
+            .container {
+                padding: 1rem;
+            }
+            .pc-wrapper {
+                display: block;
+            }
+            .mobile-wrapper {
+                display: none;
+            }
+            .card {
+                background: #fff;
+                border-radius: 12px;
+                padding: 1rem;
+                margin-bottom: 1rem;
+                box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+            }
+            .row-flex {
+                display: flex;
+                gap: 1rem;
+                margin-bottom: 0.75rem;
+            }
+            .col {
+                flex: 1;
+                min-width: 0;
+            }
+            .label {
+                font-size: 0.85rem;
+                color: #6b7280;
+                margin-bottom: 0.25rem;
+                display: block;
+            }
+            .val {
+                font-weight: 600;
+                color: #111;
+                word-break: break-all;
+            }
+            .kv {
+                color: #6b7280;
+                font-size: 0.9rem;
+            }
+            .grid-2 {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 1rem;
+            }
+            .mono {
+                font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+            }
+            .muted {
+                color: #6b7280;
+                font-size: 0.9rem;
+            }
+            .badge {
+                display: inline-block;
+                font-size: 0.8rem;
+                padding: 0.15rem 0.5rem;
+                border: 1px solid #d1d5db;
+                border-radius: 999px;
+                color: #374151;
+                background: #fff;
+            }
+            .badge.ok {
+                color: #166534;
+                border-color: #86efac;
+            }
+            .badge.fail {
+                color: #991b1b;
+                border-color: #fca5a5;
+            }
+            .badge.progress {
+                color: #1e3a8a;
+                border-color: #93c5fd;
+            }
+            .btn-area {
+                display: flex;
+                gap: 0.75rem;
+                justify-content: center;
+                flex-wrap: wrap;
+                margin-top: 0.5rem;
+            }
+            .btn {
+                padding: 0.6rem 1.2rem;
+                border: 0;
+                border-radius: 8px;
+                font-weight: 700;
+                cursor: pointer;
+            }
+            .btn-gray {
+                background: #d1d5db;
+                color: #111;
+            }
+            .btn-primary {
+                background: #2f855a;
+                color: #fff;
+            }
+            .table-wrap {
+                width: 100%;
+                overflow: auto;
+            }
+            table.table {
+                width: 100%;
+                border-collapse: collapse;
+                table-layout: fixed;
+            }
+            .table th,
+            .table td {
+                border-bottom: 1px solid #e5e7eb;
+                padding: 0.5rem 0.4rem;
+                text-align: left;
+                vertical-align: top;
+            }
+            .table th {
+                color: #6b7280;
+                font-weight: 600;
+            }
+            .section-title {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 0.5rem;
+                margin-bottom: 0.5rem;
+            }
+            .meta {
+                color: #6b7280;
+                font-size: 0.85rem;
+            }
+            @media screen and (max-width: 767px) {
+                .pc-wrapper {
+                    display: none;
+                }
+                .mobile-wrapper {
+                    display: block;
+                }
+                .grid-2 {
+                    grid-template-columns: 1fr;
+                }
+                .row-flex {
+                    flex-direction: column;
+                    gap: 0.5rem;
+                }
+                .btn {
+                    width: 100%;
+                    padding: 0.8rem 1rem;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="card">
+                <div class="row-flex">
+                    <div class="col">
+                        <h2>API呼叫記錄 明細 (賠案查詢) <span id="statusBadge" class="badge">狀態</span></h2>
+                        <div class="meta" id="auditInfo">建立：— ・ 最後異動：—</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="section-title"><strong>請求總覽</strong></div>
+                <div class="grid-2">
+                    <div>
+                        <div class="label">請求序號</div>
+                        <div class="val mono" id="oid">—</div>
+                    </div>
+                    <div>
+                        <div class="label">請求時間</div>
+                        <div class="val" id="reqTime">—</div>
+                    </div>
+                    <div>
+                        <div class="label">請求人員</div>
+                        <div class="val" id="reqStaff">—</div>
+                    </div>
+                    <div>
+                        <div class="label">處理狀態</div>
+                        <div class="val" id="reqStatusWrap">—</div>
+                    </div>
+                    <div>
+                        <div class="label">來源</div>
+                        <div class="val" id="srcCode">—</div>
+                    </div>
+                    <div>
+                        <div class="label">API 類型</div>
+                        <div class="val" id="apiType">—</div>
+                    </div>
+                    <div>
+                        <div class="label">賠案號碼</div>
+                        <div class="val mono" id="claimNo">—</div>
+                    </div>
+                    <div>
+                        <div class="label">任務編號</div>
+                        <div class="val mono" id="taskOid">—</div>
+                    </div>
+                    <div>
+                        <div class="label">是否關聯任務</div>
+                        <div class="val" id="hasTask">—</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="section-title"><strong>呼叫時間軸</strong></div>
+                <div class="pc-wrapper">
+                    <div class="table-wrap">
+                        <table class="table" id="callTable">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>呼叫時間</th>
+                                    <th>回應時間</th>
+                                    <th>狀態</th>
+                                    <th>代碼</th>
+                                    <th>訊息</th>
+                                    <th>回應序號</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="mobile-wrapper" id="callCards"></div>
+            </div>
+<!--
+            <div class="card" id="queryCard">
+                <div class="section-title"><strong>賠案查詢結果摘要</strong><span class="muted">抓取最後一次成功回應</span></div>
+                <div class="grid-2">
+                    <div>
+                        <div class="label">回應代碼</div>
+                        <div class="val" id="qCode">—</div>
+                    </div>
+                    <div>
+                        <div class="label">回應訊息</div>
+                        <div class="val" id="qMsg">—</div>
+                    </div>
+                </div>
+                <div class="muted" style="margin-top: 0.5rem;">核心判定路徑：由賠案號自動判斷寫入新舊核心。</div>
+            </div>
+-->
+            <div class="card">
+                <div class="section-title"><strong>操作與連結</strong></div>
+                <div class="btn-area">
+                    <button class="btn btn-gray" onclick="goBack()">返回查詢</button>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            function badgeStatus(s) {
+                const map = { 0: ["progress", "待處理"], 1: ["ok", "成功"], 2: ["fail", "失敗"], 3: ["fail", "逾時"], 4: ["fail", "取消"], 5: ["progress", "處理中"] };
+                const v = map[s] || ["", "未知"];
+                return `<span class="badge ${v[0]}">${s} ${v[1]}</span>`;
+            }
+
+            const SAMPLE = {
+                LOG_COREAPI: {
+                    OID: 104,
+                    REQ_TIME: "2025/08/22 11:20:45",
+                    SRC_CODE: "TASK",
+                    API_TYPE: 3,
+                    CLAIM_NO: "01078969",
+                    OID_REQ_STAFF: "王五",
+                    OID_CLM_TASK: 777,
+                    HAS_RELATED_TASK: "Y",
+                    REQ_STATUS: 1,
+                    CREATE_INFO: "建立：2025/08/22 11:20:45（王五）",
+                    UPDATE_INFO: "最後異動：2025/08/22 11:21:10（系統）",
+                },
+                LOG_COREAPI_CALL: [{ SEQ: 1, CALL_TIME: "11:20:46", RETURN_TIME: "11:21:08", STATUS: 1, CODE: "000", MSG: "呼叫成功", DUR: 120, SERIAL: 21676 }],
+            };
+
+            function render() {
+                const g = SAMPLE.LOG_COREAPI;
+                document.getElementById("auditInfo").textContent = `${g.CREATE_INFO} ・ ${g.UPDATE_INFO}`;
+                document.getElementById("statusBadge").outerHTML = badgeStatus(g.REQ_STATUS);
+                document.getElementById("oid").textContent = g.OID;
+                document.getElementById("reqTime").textContent = g.REQ_TIME;
+                document.getElementById("srcCode").textContent = g.SRC_CODE;
+                document.getElementById("apiType").textContent = `${g.API_TYPE} 賠案查詢`;
+                document.getElementById("claimNo").textContent = g.CLAIM_NO;
+                document.getElementById("reqStaff").textContent = g.OID_REQ_STAFF;
+                document.getElementById("taskOid").textContent = g.OID_CLM_TASK;
+                document.getElementById("hasTask").textContent = g.HAS_RELATED_TASK === "Y" ? "是" : "否";
+                document.getElementById("reqStatusWrap").innerHTML = badgeStatus(g.REQ_STATUS);
+
+                const calls = SAMPLE.LOG_COREAPI_CALL;
+                const tb = document.querySelector("#callTable tbody");
+                tb.innerHTML = calls.map((r) => `<tr>
+													<td>${r.SEQ}</td>
+													<td>${r.CALL_TIME}</td>
+													<td>${r.RETURN_TIME}</td>
+													<td>${badgeStatus(r.STATUS)}</td>
+													<td>${r.CODE}</td>
+													<td>${r.MSG}</td>
+													<td>${r.SERIAL}</td>
+												</tr>`
+										).join("");
+                document.getElementById("callCards").innerHTML = calls
+                    .map(
+                        (r) =>
+                            `<div class=card>
+								<div><span class=kv>#</span> ${r.SEQ}</div>
+								<div><span class=kv>呼叫</span> ${r.CALL_TIME}</div>
+								<div><span class=kv>回應</span> ${r.RETURN_TIME}</div>
+								<div><span class=kv>狀態</span> ${badgeStatus(r.STATUS)}</div>
+								<div><span class=kv>代碼</span> ${r.CODE}</div>
+								<div><span class=kv>訊息</span> ${r.MSG}</div>
+								<div><span class=kv>回應序號</span> ${r.SERIAL}</div></div>`
+                    )
+                    .join("");
+
+                const lastOK = calls.find((x) => x.STATUS === 1);
+                document.getElementById("qCode").textContent = lastOK?.CODE || "—";
+                document.getElementById("qMsg").textContent = lastOK?.MSG || "—";
+            }
+
+            function goBack() {
+				location.href = "08.log_coreapi_query.html";
+            }
+            document.addEventListener("DOMContentLoaded", render);
+        </script>
+    </body>
+</html>
