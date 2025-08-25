@@ -608,7 +608,8 @@
             }
             #log-section .log-status-process {
                 color: blue;
-            }			
+            }		
+			
         </style>
     </head>
     <body>
@@ -1267,117 +1268,125 @@
 			
             const journalState = { filter: "JOURNAL" };
 
-			function renderJournal() {
-			  const wrap = document.getElementById("journalWrap");
-			  wrap.innerHTML = "";
+function renderJournal() {
+  const wrap = document.getElementById("journalWrap");
+  wrap.innerHTML = "";
 
-			  const itemsAll = normalizeTimeline({ journal: data.journal || [], transLog: data.transLog || [] });
-			  const counts = {
-				ALL: itemsAll.length,
-				JOURNAL: itemsAll.filter((x) => x.kind === "JOURNAL").length,
-				TRANS: itemsAll.filter((x) => x.kind === "TRANS").length
-			  };
+  const itemsAll = normalizeTimeline({ journal: data.journal || [], transLog: data.transLog || [] });
+  const counts = {
+    ALL: itemsAll.length,
+    JOURNAL: itemsAll.filter((x) => x.kind === "JOURNAL").length,
+    TRANS: itemsAll.filter((x) => x.kind === "TRANS").length
+  };
 
-			  // 篩選 chips（全部 / 人工日誌 / 系統異動）
-			  const bar = el("div", "toolbar");
-/*
-			  ["ALL", "JOURNAL", "TRANS"].forEach((k) => {
-				const map = { ALL: "全部", JOURNAL: "人工日誌", TRANS: "系統異動" };
-				const chip = el("span", "chip" + (journalState.filter === k ? " active" : ""), `${map[k]} ${counts[k]}`);
-				chip.addEventListener("click", () => {
-				  journalState.filter = k;
-				  renderJournal();
-				});
-				bar.appendChild(chip);
-			  });
-*/
-			  const actions = el("div", "bar-actions");
-			  const btnOpen = el("button", "link-xs", "全部展開");
-			  const btnClose = el("button", "link-xs", "全部收合");
-			  btnOpen.addEventListener("click", () => expandAll(true));
-			  btnClose.addEventListener("click", () => expandAll(false));
-			  actions.appendChild(btnOpen);
-			  actions.appendChild(btnClose);
-			  bar.appendChild(actions);
-			  wrap.appendChild(bar);
+  // 篩選列（目前只保留全展開/收合）
+  const bar = el("div", "toolbar");
+  const actions = el("div", "bar-actions");
+  const btnOpen = el("button", "link-xs", "全部展開");
+  const btnClose = el("button", "link-xs", "全部收合");
+  btnOpen.addEventListener("click", () => expandAll(true));
+  btnClose.addEventListener("click", () => expandAll(false));
+  actions.appendChild(btnOpen);
+  actions.appendChild(btnClose);
+  bar.appendChild(actions);
+  wrap.appendChild(bar);
 
-			  // 只留下「全部 / 人工 / 系統」的過濾
-			  let items = itemsAll.slice();
-			  if (journalState.filter !== "ALL") {
-				items = items.filter((x) => x.kind === journalState.filter);
-			  }
+  // 目前保留 JOURNAL 篩選預設，若要顯示全部可把 journalState.filter 設為 "ALL"
+  let items = itemsAll.slice();
+  if (journalState.filter !== "ALL") {
+    items = items.filter((x) => x.kind === journalState.filter);
+  }
 
-			  const tl = el("div", "timeline");
-			  if (!items.length) {
-				tl.appendChild(el("div", "muted", "沒有符合條件的紀錄。"));
-				wrap.appendChild(tl);
-				return;
-			  }
+  const tl = el("div", "timeline");
+  if (!items.length) {
+    tl.appendChild(el("div", "muted", "沒有符合條件的紀錄。"));
+    wrap.appendChild(tl);
+    return;
+  }
 
-			  items.forEach((it) => {
-				const row = el("div", "t-item");
-				row.appendChild(el("div", "t-time", fmtTS(it.ts)));
+  items.forEach((it) => {
+    const row = el("div", "t-item");
+    row.appendChild(el("div", "t-time", fmtTS(it.ts)));
 
-				const card = el("section", "t-card");
-				const head = el("div", "t-head");
-				head.appendChild(el("div", "t-title", it.title || (it.kind === "TRANS" ? "系統異動" : "處理日誌")));
-				const right = el("div");
-				right.appendChild(el("span", "badge-src " + (it.kind === "TRANS" ? "system" : "manual"), it.kind === "TRANS" ? "系統" : "人工"));
-				const btn = el("button", "link-xs", "詳細");
-				right.appendChild(btn);
-				head.appendChild(right);
-				card.appendChild(head);
+    const card = el("section", "t-card");
+    const head = el("div", "t-head");
+    head.appendChild(el("div", "t-title", it.title || (it.kind === "TRANS" ? "系統異動" : "處理日誌")));
+    const right = el("div");
+    right.appendChild(el("span", "badge-src " + (it.kind === "TRANS" ? "system" : "manual"), it.kind === "TRANS" ? "系統" : "人工"));
+    const btn = el("button", "link-xs", "詳細");
+    right.appendChild(btn);
+    head.appendChild(right);
+    card.appendChild(head);
 
-				const body = el("div", "t-body");
-				body.style.display = "none";
-				const grid = el("div", "kv kv-two kv-plain");
+    const body = el("div", "t-body");
+    body.style.display = "none";
+    const grid = el("div", "kv kv-two kv-plain"); // 四欄格：key 1fr key 1fr:contentReference[oaicite:1]{index=1}
 
-				if (it.kind === "JOURNAL") {
-				  const j = it.raw || {};
-				  [
-					["處理項目", it.title],
-					["處理項目代碼", j.handleItemCD || j.handleelItemCD],
-					["處理人員", it.actor || "—"],
-					["處理人員ID", it.actorId || j.handlerUsrID || j.inputUsrID],
-					["聯絡對象", it.contact || j.contactNm],
-					["建立人員", (j.inputUsrNm ? j.inputUsrNm + " " : "") + (j.inputUsrID || "")],
-					["內容", it.content || j.contentMatters]
-				  ].forEach(([k, v]) => {
-					grid.appendChild(el("div", "k", k));
-					grid.appendChild(el("div", "v", v == null || String(v).trim() === "" ? "—" : String(v)));
-				  });
-				} else {
-				  const t = it.raw || {};
-				  [
-					["異動類型", it.title],
-					["說明", it.subTitle || "—"],
-					["AS400序號", it.as400No || "—"],
-					["使用者", (it.userName ? it.userName + " " : "") + (it.userAcct || "") || "—"],
-					["險別", it.premiumCls || "—"],
-					["類別", it.reserveCD || "—"],
-					["已決", t.lossPaid || "—"],
-					["未決", t.revbal || "—"],
-					["異動", t.chgbal || "—"]
-				  ].forEach(([k, v]) => {
-					grid.appendChild(el("div", "k", k));
-					grid.appendChild(el("div", "v", v == null ? "—" : String(v)));
-				  });
-				}
+    if (it.kind === "JOURNAL") {
+      const j = it.raw || {};
+      const pairs = [
+        ["處理項目", it.title],
+        ["處理項目代碼", j.handleItemCD || j.handleelItemCD],
+        ["處理人員", it.actor || "—"],
+        ["處理人員ID", it.actorId || j.handlerUsrID || j.inputUsrID],
+        ["聯絡對象", it.contact || j.contactNm],
+        ["建立人員", (j.inputUsrNm ? j.inputUsrNm + " " : "") + (j.inputUsrID || "")],
+        ["內容", it.content || j.contentMatters]
+      ];
 
-				body.appendChild(grid);
-				btn.addEventListener("click", () => {
-				  const open = body.style.display === "none";
-				  body.style.display = open ? "" : "none";
-				  btn.textContent = open ? "收合" : "詳細";
-				});
-				card.appendChild(body);
+      pairs.forEach(([k, v]) => {
+        // 先塞 key
+        grid.appendChild(el("div", "k", k));
 
-				row.appendChild(card);
-				tl.appendChild(row);
-			  });
+        // 內容欄位：value 橫跨至最後一欄，並保留換行
+        if (k === "內容") {
+          const val = el("div", "v");
+          val.textContent = (v == null || String(v).trim() === "") ? "—" : String(v);
+          // 讓 value 從第 2 欄跨到最後一欄（兼容桌機四欄與手機兩欄）
+          val.style.gridColumn = "2 / -1";
+          // 讓 \r\n 換行也能顯示
+          val.style.whiteSpace = "pre-wrap";
+          // 長字也能換行
+          val.style.wordBreak = "break-word";
+          grid.appendChild(val);
+        } else {
+          // 其他欄位照舊
+          grid.appendChild(el("div", "v", (v == null || String(v).trim() === "") ? "—" : String(v)));
+        }
+      });
+    } else {
+      const t = it.raw || {};
+      [
+        ["異動類型", it.title],
+        ["說明", it.subTitle || "—"],
+        ["AS400序號", it.as400No || "—"],
+        ["使用者", (it.userName ? it.userName + " " : "") + (it.userAcct || "") || "—"],
+        ["險別", it.premiumCls || "—"],
+        ["類別", it.reserveCD || "—"],
+        ["已決", t.lossPaid || "—"],
+        ["未決", t.revbal || "—"],
+        ["異動", t.chgbal || "—"]
+      ].forEach(([k, v]) => {
+        grid.appendChild(el("div", "k", k));
+        grid.appendChild(el("div", "v", v == null ? "—" : String(v)));
+      });
+    }
 
-			  wrap.appendChild(tl);
-			}
+    body.appendChild(grid);
+    btn.addEventListener("click", () => {
+      const open = body.style.display === "none";
+      body.style.display = open ? "" : "none";
+      btn.textContent = open ? "收合" : "詳細";
+    });
+    card.appendChild(body);
+
+    row.appendChild(card);
+    tl.appendChild(row);
+  });
+
+  wrap.appendChild(tl);
+}
+
 
             function expandAll(open) {
                 document.querySelectorAll("#journalWrap .t-body").forEach((b) => {
